@@ -1,0 +1,1850 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 PK Sales Dashboard | Promega Korea</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+/* ═══ 참조 파일 CSS 기반 — 완전 동일 구조 ═══ */
+:root{--sol:#FDB813;--dg:#13294B;--sw:#455DA0;--green:#166534;--yellow:#92400E;--red:#991B1B;--warn:#e67e22;--success:#27ae60;--danger:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Roboto',Arial,sans-serif;background:#f0f2f5;color:#222;font-size:14px;line-height:1.5}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:var(--dg);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:50px;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-title{color:#fff;font-size:13px;font-weight:700;letter-spacing:.3px}
+.nav-right{color:rgba(255,255,255,0.45);font-size:11px}
+/* HERO 탭바 */
+.hero-tabbar{background:#0f2040}
+.hero-tabbar-inner{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;gap:0;align-items:center}
+.hero-tab{display:inline-flex;align-items:center;gap:6px;padding:13px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.5);border:none;background:transparent;cursor:pointer;font-family:inherit;box-shadow:inset 0 -3px 0 transparent;transition:all .2s;white-space:nowrap}
+.hero-tab:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.05)}
+.hero-tab.active{color:#fff;box-shadow:inset 0 -3px 0 var(--sol);font-weight:600}
+.hero-tab.fcst-tab{color:rgba(253,184,19,0.55)}
+.hero-tab.fcst-tab.active{color:var(--sol);box-shadow:inset 0 -3px 0 var(--sol)}
+
+/* HERO */
+.hero{background:var(--dg);padding:36px 32px 32px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-40px;top:-40px;width:240px;height:240px;background:var(--sol);opacity:0.06;border-radius:50%}
+.hero-eyebrow{font-size:10px;font-weight:500;letter-spacing:2px;color:var(--sol);text-transform:uppercase;margin-bottom:6px}
+.hero-title{font-size:26px;font-weight:700;color:#fff;margin-bottom:4px}
+.hero-sub{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:24px}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:14px 16px;border-left:3px solid}
+.kpi-label{font-size:9.5px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:10px}
+.kpi-dual{display:flex;align-items:baseline;gap:10px}
+.kpi-val{font-size:22px;font-weight:700;line-height:1}
+.kpi-sep{font-size:13px;color:rgba(255,255,255,0.2);font-weight:300}
+.kpi-val2{font-size:22px;font-weight:700;line-height:1}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,0.35);margin-top:9px}
+/* KPI 다지표 그리드 */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.kpi-cell{display:flex;flex-direction:column;gap:3px}
+.kc-lbl{font-size:9px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,0.42)}
+.kc-val{font-size:17px;font-weight:700;line-height:1.05;color:#fff;white-space:nowrap}
+.kc-unit{font-size:10px;font-weight:400;color:rgba(255,255,255,0.4);margin-left:2px}
+
+/* LAYOUT */
+.container{max-width:1280px;margin:0 auto;padding:0 24px}
+.section{padding:24px 0}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #ddd}
+.sec-badge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.sec-title{font-size:16px;font-weight:700;color:var(--dg)}
+.sec-note{margin-left:auto;font-size:11px;color:#999;font-style:italic}
+
+/* CT-CARD */
+.ct-card{background:#fff;border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.09);margin-bottom:14px}
+.ct-title{font-size:11px;font-weight:600;color:#666;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+.ct-kpi{font-size:11.5px;font-weight:600;color:#555;margin:-6px 0 10px;display:flex;gap:16px;flex-wrap:wrap}
+.ct-kpi b{font-size:15px;font-weight:700}
+.chart-wrap{position:relative;width:100%}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+
+/* DATA-TABLE — 참조 파일과 동일 */
+.data-table{width:100%;border-collapse:collapse;margin-top:0;font-size:11px}
+.data-table thead tr{background:#f7f8fc}
+.data-table th{padding:5px 8px;text-align:center;font-weight:600;color:#555;border:1px solid #e8e8e8;white-space:nowrap;font-size:10.5px}
+.data-table th.cat{background:#eef1f8;color:var(--dg);font-weight:700}
+.data-table th.cat-sum{background:#dde3f0;color:var(--dg);font-weight:700}
+.data-table td{padding:4px 8px;text-align:center;border:1px solid #e8e8e8;white-space:nowrap}
+.data-table td.lbl{text-align:left;font-weight:600;color:#333;background:#fafafa;padding-left:10px}
+/* 행 색상 (참조 파일 동일) */
+.tr-sum td{background:#eef1f8}
+.tr-sum-dark td{background:#dde3f0;color:#1a3358;font-weight:600;border-color:#fff}
+.tr-grand td{background:var(--dg);color:#fff;font-weight:700;border-color:#fff}
+.tr-grand td.lbl{background:var(--dg);color:var(--sol)}
+/* 채널 그룹 구분 테두리 — JS에서 td 인라인으로 처리 */
+/* 달성률 색상 */
+.pct-g{color:var(--green)!important;font-weight:600}
+.pct-y{color:var(--yellow)!important;font-weight:600}
+.pct-r{color:var(--red)!important;font-weight:600}
+.pct-n{color:#9CA3AF}
+.gr-p{color:var(--sw);font-weight:500}
+.gr-n{color:var(--red);font-weight:500}
+
+/* LEGEND */
+.legend-row{display:flex;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#555}
+.leg-sq{width:12px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* 필터 탭 */
+.filter-bar{display:flex;gap:6px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.filter-btn{padding:4px 12px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:11.5px;cursor:pointer;font-family:inherit;color:#666;transition:all .15s}
+.filter-btn.active{background:var(--dg);color:#fff;border-color:var(--dg)}
+.filter-btn:hover:not(.active){border-color:var(--dg);color:var(--dg)}
+
+/* MEMO (Capital 당월 매출 / 영업 이슈) */
+.memo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
+.memo-field{display:flex;flex-direction:column;gap:5px}
+.memo-label{font-size:11px;font-weight:700;color:var(--dg)}
+.memo-area{width:100%;min-height:64px;border:1px solid #d6dbe6;border-radius:7px;padding:8px 10px;font-family:inherit;font-size:12px;line-height:1.5;color:#222;background:#fcfdff;resize:none;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.memo-area:focus{outline:none;border-color:var(--sw);box-shadow:0 0 0 2px rgba(69,93,160,0.15);background:#fff}
+.memo-area::placeholder{color:#b3b9c4}
+@media(max-width:760px){.memo-grid{grid-template-columns:1fr}}
+
+/* FOOTER */
+.footer{background:var(--dg);padding:20px 32px;margin-top:32px}
+.footer-txt{color:rgba(255,255,255,0.45);font-size:11px;line-height:1.7;text-align:center}
+.footer-txt strong{color:rgba(255,255,255,0.75)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-title">2026 PK Sales Dashboard</div>
+  <div class="nav-right" id="navRight"></div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">Promega Korea · Sales Operations</div>
+    <div class="hero-title">2026 PK 매출 실적 대시보드 <span style="font-size:14px;font-weight:400;color:rgba(255,255,255,.5)">— 6월 확정</span></div>
+    <div class="hero-sub">YTD 범위: 1월~6월 확정 매출 반영 | 데이터 출처: 8. 2026' Target(CUSD 1,300원)_v6.xlsx</div>
+    <div class="kpi-row">
+      <div class="kpi" style="border-color:var(--sol)">
+        <div class="kpi-label">① 당월 실적 (6월)</div>
+        <div class="kpi-grid">
+          <div class="kpi-cell"><span class="kc-lbl">당월 목표</span><span class="kc-val">2,777,272<span class="kc-unit">천원</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">당월 실적</span><span class="kc-val" style="color:var(--sol)">2,338,775<span class="kc-unit">천원</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">달성율</span><span class="kc-val" style="color:#f1948a">83.7%</span></div>
+          <div class="kpi-cell"><span class="kc-lbl">성장율</span><span class="kc-val" style="color:#6ee7a8">▲ 9.4%</span></div>
+        </div>
+        <div class="kpi-sub">단위: 천원 &nbsp;·&nbsp; 성장율: 전년 동월비</div>
+      </div>
+      <div class="kpi" style="border-color:#7b9fd4">
+        <div class="kpi-label">② YTD 누적 실적 (1~6월)</div>
+        <div class="kpi-grid">
+          <div class="kpi-cell"><span class="kc-lbl">누적 목표</span><span class="kc-val">16,634,470<span class="kc-unit">천원</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">누적 실적</span><span class="kc-val" style="color:#7b9fd4">16,117,742<span class="kc-unit">천원</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">누적 달성율</span><span class="kc-val" style="color:#FDB813">96.9%</span></div>
+          <div class="kpi-cell"><span class="kc-lbl">누적 성장율</span><span class="kc-val" style="color:#6ee7a8">▲ 17.6%</span></div>
+        </div>
+        <div class="kpi-sub">단위: 천원 &nbsp;·&nbsp; 성장율: 전년 동기비</div>
+      </div>
+      <div class="kpi" style="border-color:#80c7a0">
+        <div class="kpi-label">③ 연간 달성율</div>
+        <div class="kpi-grid">
+          <div class="kpi-cell"><span class="kc-lbl">연간 타겟</span><span class="kc-val">29,010,208<span class="kc-unit">천원</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">누적 실적</span><span class="kc-val" style="color:#7b9fd4">16,117,742<span class="kc-unit">천원</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">연간 달성율</span><span class="kc-val" style="color:#80c7a0">55.5%</span></div>
+        </div>
+        <div class="kpi-sub">단위: 천원 &nbsp;·&nbsp; 연간 달성율 = YTD실적 ÷ 연간타겟</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO 탭바 -->
+<div class="hero-tabbar">
+  <div class="hero-tabbar-inner">
+    <button class="hero-tab active" onclick="showSec('s1',this)">① 전사 요약</button>
+    <button class="hero-tab" onclick="showSec('s2',this)">② 팀별 상세</button>
+    <button class="hero-tab" onclick="showSec('s3',this)">③ 채널별 상세</button>
+    <button class="hero-tab" onclick="showSec('s4',this)">④ 세일즈담당자</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SECTION 1: 전사 요약
+════════════════════════════════════ -->
+<div id="s1" class="container">
+
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-badge" style="background:#e3f2fd;color:#1565c0">①</div>
+      <div class="sec-title">전사 요약 — 사업부별 실적</div>
+      <div class="sec-note">당월 Achv% 🟢 100%↑ &nbsp;🟡 90~100% &nbsp;🔴 90%↓</div>
+    </div>
+
+    <!-- 차트 카드 -->
+    <!-- PK 사업부별 (National Sales vs Forensic) -->
+    <div class="grid2">
+      <div class="ct-card">
+        <div class="ct-title">PK 사업부별 당월 달성율</div>
+        <div class="ct-kpi" id="pkCurKpi"></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartNatForCur"></canvas></div>
+      </div>
+      <div class="ct-card">
+        <div class="ct-title">YTD 달성율</div>
+        <div class="ct-kpi" id="pkYtdKpi"></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartNatForYTD"></canvas></div>
+      </div>
+    </div>
+    <div style="font-size:10.5px;color:#888;padding:0 2px 12px">
+      National Sales = Capital + Strategic CDx + Local &nbsp;|&nbsp; 당월 달성율 = 당월실적 ÷ 당월목표 &nbsp;|&nbsp; YTD 달성율 = YTD실적 ÷ YTD 누적목표
+    </div>
+
+    <div class="grid2">
+      <div class="ct-card">
+        <div class="ct-title">National sales 당월 달성율</div>
+        <div class="ct-kpi" id="natCurKpi"></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartCur"></canvas></div>
+      </div>
+      <div class="ct-card">
+        <div class="ct-title">YTD 달성률 — 사업부별 (1~6월)</div>
+        <div class="ct-kpi" id="natYtdKpi"></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartYTD"></canvas></div>
+      </div>
+    </div>
+
+    <!-- 전사 요약 테이블 -->
+    <div class="ct-card">
+      <div class="ct-title">전사 요약 — 사업부 × 시약/장비/합계 (단위: 천원)</div>
+      <div style="overflow-x:auto">
+      <table class="data-table" id="summaryTbl">
+        <colgroup>
+          <col style="width:115px"><col style="width:44px">
+          <col style="width:110px"><col style="width:58px">
+          <col style="width:100px"><col style="width:100px"><col style="width:56px"><col style="width:60px">
+          <col style="width:108px"><col style="width:60px"><col style="width:60px">
+          <col style="width:60px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" style="text-align:left">사업부</th>
+            <th rowspan="2">유형</th>
+            <th rowspan="2">연간 Target</th>
+            <th rowspan="2">목표 GR%</th>
+            <th colspan="4" class="cat" style="border-bottom:none">당월 실적 (6월)</th>
+            <th colspan="3" class="cat" style="border-bottom:none;background:#e8f0fb">YTD 누적 (1~6월)</th>
+            <th colspan="1" class="cat" style="border-bottom:none;background:#f3f4f6">달성률</th>
+          </tr>
+          <tr>
+            <th class="cat">당월 Target</th><th class="cat">당월 실적</th><th class="cat">Achv%</th><th class="cat">GR%</th>
+            <th class="cat" style="background:#e8f0fb">YTD 실적</th><th class="cat" style="background:#e8f0fb">YTD Achv%</th><th class="cat" style="background:#e8f0fb">GR%</th>
+            <th class="cat" style="background:#f3f4f6">연간 Achv%</th>
+          </tr>
+        </thead>
+        <tbody id="summaryTbody"></tbody>
+      </table>
+      </div>
+      <div style="display:flex;gap:16px;font-size:10.5px;color:#888;padding:8px 0 2px;flex-wrap:wrap">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:3px"></span>Achv% ≥ 100%</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:3px"></span>90% ≤ Achv% &lt; 100%</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:3px"></span>Achv% &lt; 90%</span>
+        <span style="margin-left:auto">YTD Achv% = YTD실적 ÷ YTD Target (월별 실제 누적 Target 기준) &nbsp;|&nbsp; 연간 Achv% = YTD실적 ÷ 연간Target</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /s1 -->
+
+<!-- ════════════════════════════════════
+  SECTION 2: 팀별 상세
+════════════════════════════════════ -->
+<div id="s2" class="container" style="display:none">
+
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-badge" style="background:#f3e5f5;color:#6a1b9a">②</div>
+      <div class="sec-title">팀별 상세 — 분석분류별 시약/장비/합계</div>
+      <div class="sec-note">보고 기준월: 6월 (확정) | Forensic_Direct는 실매출 발생 시 추가</div>
+    </div>
+
+    <div class="filter-bar" id="divFilter">
+      <span style="font-size:11px;color:#888">사업부:</span>
+      <button class="filter-btn active" onclick="setDivF('all',this)">전체</button>
+      <button class="filter-btn" onclick="setDivF('capital',this)">Capital</button>
+      <button class="filter-btn" onclick="setDivF('cdx',this)">Strategic CDx</button>
+      <button class="filter-btn" onclick="setDivF('local',this)">Local</button>
+      <button class="filter-btn" onclick="setDivF('forensic',this)">Strategic Forensic</button>
+    </div>
+
+    <div id="divWrap"></div>
+
+    <div style="font-size:10.5px;color:#999;padding:6px 0">
+      YTD Achv% = YTD실적 ÷ YTD Target (월별 실제 누적 Target 기준) &nbsp;|&nbsp; 연간 Achv% = YTD실적 ÷ 연간Target &nbsp;|&nbsp; 당월 GR% = 당월실적 ÷ 전년동월 − 1 &nbsp;|&nbsp; YTD GR% = YTD실적 ÷ 전년 동기간 누적 − 1
+    </div>
+  </div>
+
+</div><!-- /s2 -->
+
+<!-- ════════════════════════════════════
+  SECTION 3: 채널별 상세
+════════════════════════════════════ -->
+<div id="s3" class="container" style="display:none">
+
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-badge" style="background:#e8f5e9;color:#2e7d32">③</div>
+      <div class="sec-title">채널별 상세 — 세일즈 채널 × 시약/장비</div>
+      <div class="sec-note">6월 확정 기준 | YTD Achv% = YTD실적 ÷ YTD Target (월별 실제 누적 Target 기준) &nbsp;|&nbsp; 연간 Achv% = YTD실적 ÷ 연간Target</div>
+    </div>
+
+    <div id="chFilter" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
+      <!-- 1단계: 팀 -->
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="font-size:11px;color:#888;min-width:28px">팀</span>
+        <button class="filter-btn active" onclick="setChA('all',this)">전체</button>
+        <button class="filter-btn" onclick="setChA('capital',this)">Capital</button>
+        <button class="filter-btn" onclick="setChA('local',this)">Local</button>
+        <button class="filter-btn" onclick="setChA('cdx',this)">Strategic CDx</button>
+        <button class="filter-btn" onclick="setChA('forensic',this)">Strategic Forensic</button>
+      </div>
+      <!-- 2단계: 그룹 (동적) -->
+      <div id="chGrpBar" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;display:none">
+        <span style="font-size:11px;color:#888;min-width:28px">분류</span>
+        <div id="chGrpBtns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <!-- 3단계: 채널 (동적) -->
+      <div id="chChBar" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;display:none">
+        <span style="font-size:11px;color:#888;min-width:28px">채널</span>
+        <div id="chChBtns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+
+    <div id="chWrap"></div>
+  </div>
+
+</div><!-- /s3 -->
+
+<!-- ════════════════════════════════════
+  SECTION 4: 세일즈담당자
+════════════════════════════════════ -->
+<div id="s4" class="container" style="display:none">
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-badge" style="background:#e3f2fd;color:#1565c0">④</div>
+      <div class="sec-title">Sales Owner별 분기 매출 모니터링</div>
+      <div class="sec-note">연간목표 누적 달성율 | YTD = Q1+Q2 실적 기준 | 2026-05-31 마감</div>
+    </div>
+
+    <!-- 차트 -->
+    <div class="ct-card">
+      <div class="ct-title">YTD 달성율 — Sales Owner별 (담당자 합계 기준)</div>
+      <div class="chart-wrap" style="height:260px"><canvas id="chartOwnerAchv"></canvas></div>
+    </div>
+
+    <!-- 전체 요약 테이블 -->
+    <div class="ct-card">
+      <div class="ct-title">전체 Sales Owner 요약</div>
+      <div style="overflow-x:auto">
+      <table class="data-table" id="ownerSummaryTbl">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:160px">Sales Owner</th>
+            <th style="min-width:110px">담당팀</th>
+            <th style="min-width:120px">연간목표 (천원)</th>
+            <th style="min-width:100px">Q1 실적</th>
+            <th style="min-width:100px">Q2 실적</th>
+            <th style="min-width:100px">Q3 실적</th>
+            <th style="min-width:100px">Q4 실적</th>
+            <th style="min-width:110px">YTD 실적 (천원)</th>
+            <th style="min-width:80px">YTD 달성율</th>
+          </tr>
+        </thead>
+        <tbody id="ownerSummaryBody"></tbody>
+      </table>
+      </div>
+      <div style="font-size:10.5px;color:#888;padding:8px 0 2px">
+        🟢 ≥ 100% &nbsp;|&nbsp; 🟡 80~99% &nbsp;|&nbsp; 🔴 &lt; 80% &nbsp;|&nbsp; 담당자명 클릭 시 Market Segment 상세 확인
+      </div>
+    </div>
+
+    <!-- 2단계: Market Segment 상세 -->
+    <div id="ownerDetailWrap" style="display:none">
+      <div class="sec-hd" style="margin-top:20px">
+        <button onclick="closeOwnerDetail()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#666;margin-right:4px">←</button>
+        <div class="sec-title" id="ownerDetailTitle">Market Segment 상세</div>
+        <div class="sec-note" id="ownerDetailNote"></div>
+      </div>
+      <div class="ct-card">
+        <div class="ct-title" id="ownerSegTitle">Market Segment별 요약</div>
+        <div style="overflow-x:auto">
+        <table class="data-table" id="ownerSegTbl">
+          <thead>
+            <tr>
+              <th style="text-align:left;min-width:140px">Market Segment</th>
+              <th style="min-width:120px">연간목표 (천원)</th>
+              <th style="min-width:100px">Q1 실적</th>
+              <th style="min-width:100px">Q2 실적</th>
+              <th style="min-width:110px">YTD 실적 (천원)</th>
+              <th style="min-width:80px">YTD 달성율</th>
+            </tr>
+          </thead>
+          <tbody id="ownerSegBody"></tbody>
+        </table>
+        </div>
+        <div style="font-size:10.5px;color:#888;padding:8px 0 2px">
+          ▶ Segment명 클릭 시 ZEUC Customer Segment 인라인 펼치기/접기
+        </div>
+        <div style="font-size:10px;color:#aaa;padding:2px 0 4px">
+          * (Cap) = Capital팀 매출 &nbsp;|&nbsp; (Loc) = Local팀 매출 &nbsp;|&nbsp; (CDx전략) = Strategic CDx팀 매출
+        </div>
+      </div>
+
+      <!-- 3단계: ZEUC Customer Segment -->
+      <div id="custSegWrap" style="display:none">
+        <div class="sec-hd" style="margin-top:16px">
+          <button onclick="closeCustSeg()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#666;margin-right:4px">←</button>
+          <div class="sec-title" id="custSegTitle">ZEUC Customer Segment 상세</div>
+        </div>
+        <div class="ct-card">
+          <div class="ct-title" id="custSegSubTitle"></div>
+          <div style="overflow-x:auto">
+          <table class="data-table" id="custSegTbl">
+            <thead>
+              <tr>
+                <th style="text-align:left;min-width:180px">ZEUC Customer Segment</th>
+                <th style="min-width:120px">연간목표 (천원)</th>
+                <th style="min-width:100px">Q1 실적</th>
+                <th style="min-width:100px">Q2 실적</th>
+                <th style="min-width:110px">YTD 실적 (천원)</th>
+                <th style="min-width:80px">YTD 달성율</th>
+              </tr>
+            </thead>
+            <tbody id="custSegBody"></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /s4 -->
+
+<div class="footer">
+  <div class="footer-txt">
+    <strong>2026 PK Sales Dashboard</strong> &nbsp;|&nbsp; 보고월: 6월 (확정) &nbsp;|&nbsp; 세일즈담당자: Q1+Q2 실적 기준 (2026-05-31) &nbsp;|&nbsp; 데이터 출처: 8. 2026' Target(CUSD 1,300원)_v6.xlsx / ★2026 Sales Target by Account Owner.xlsx &nbsp;|&nbsp; Promega Korea Sales Operations
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA — 8. 2026' Target(CUSD 1,300원)_v6.xlsx (6월 기준 · 채널/사업부 자동 산출)
+// ═══════════════════════════════════════════════════
+const D = {
+  div: {
+    "Capital": {
+      gr_ann: 0.124724,
+      시약:{ ta:14560609000, ga:0.124722, tgt:1310400000, act:1250764006, ac:0.95449, ytd:6729271558, ay:0.96943, aa:0.462156, gr:0.176961, gm:0.131101 },
+      장비:{ ta:673700000, ga:0.124767, tgt:151400000, act:111938300, ac:0.739355, ytd:265232900, ay:0.71532, aa:0.393696, gr:-0.373318, gm:-0.395738 },
+      합계:{ ta:15234309000, ga:0.124724, tgt:1461800000, act:1362702306, ac:0.932208, ytd:6994504458, ay:0.956545, aa:0.459128, gr:0.139034, gm:0.055506 }
+    },
+    "Strategic CDx": {
+      gr_ann: 0.193299,
+      시약:{ ta:845688000, ga:0.146319, tgt:107920000, act:103758814, ac:0.961442, ytd:306002274, ay:0.8043, aa:0.361838, gr:0.131765, gm:3.784431 },
+      장비:{ ta:135651000, ga:0.602824, tgt:0, act:0, ac:null, ytd:146347800, ay:2.373811, aa:1.078855, gr:3.181366, gm:-1 },
+      합계:{ ta:981339000, ga:0.193299, tgt:107920000, act:103758814, ac:0.961442, ytd:452350074, ay:1.023164, aa:0.460952, gr:0.481288, gm:0.830389 }
+    },
+    "Local": {
+      gr_ann: 0.108608,
+      시약:{ ta:6023911000, ga:0.107072, tgt:609552000, act:533060840, ac:0.874512, ytd:2808692670, ay:0.975918, aa:0.466257, gr:0.151779, gm:0.17293 },
+      장비:{ ta:470649000, ga:0.128658, tgt:118000000, act:183430000, ac:1.554492, ytd:335004600, ay:0.865424, aa:0.711793, gr:0.616726, gm:2.979028 },
+      합계:{ ta:6494560000, ga:0.108608, tgt:727552000, act:716490840, ac:0.984797, ytd:3143697270, ay:0.962818, aa:0.484051, gr:0.188192, gm:0.431354 }
+    },
+    "Strategic Forensic": {
+      gr_ann: 0.104365,
+      시약:{ ta:6100000000, ga:0.069409, tgt:280000000, act:140909400, ac:0.503248, ytd:5512276646, ay:1.017964, aa:0.903652, gr:0.199512, gm:-0.490138 },
+      장비:{ ta:200000000, ga:363.298725, tgt:200000000, act:0, ac:0, ytd:0, ay:0, aa:0, gr:null, gm:null },
+      합계:{ ta:6300000000, ga:0.104365, tgt:480000000, act:140909400, ac:0.293561, ytd:5512276646, ay:0.981706, aa:0.874965, gr:0.199512, gm:-0.490138 }
+    }
+  },
+  grand: {
+    시약:{ ta:27530208000, ga:0.108788, tgt:2307872000, act:2028493060, ac:0.878945, ytd:15356243148, ay:0.983433, aa:0.557796, gr:0.179265, gm:0.091575 },
+    장비:{ ta:1480000000, ga:0.344051, tgt:469400000, act:295368300, ac:0.629246, ytd:746585300, ay:0.732277, aa:0.50445, gr:0.121934, gm:0.10896 },
+    합계:{ ta:29010208000, ga:0.118779, tgt:2777272000, act:2338775036, ac:0.842079, ytd:16117742124, ay:0.968918, aa:0.555592, gr:0.176478, gm:0.093754 }
+  },
+  secs: [
+    { key:"capital", area:"■ CAPITAL 영역", bg:"#13294B", badge:"#e3f2fd", badgeTxt:"#1565c0", rows:[
+      { lbl:"Indirect",
+        시약:{ ta:9828807000, ga:0.123036, tgt:885000000, act:880144000, ac:0.994513, ytd:4736896902, ay:1.012414, aa:0.48194, gr:0.144038, gm:0.158723 },
+        장비:{ ta:643700000, ga:0.075202, tgt:151400000, act:50688300, ac:0.334797, ytd:203199900, ay:0.596263, aa:0.315675, gr:-0.519887, gm:-0.726376 },
+        합계:{ ta:10472507000, ga:0.119974, tgt:1036400000, act:930832300, ac:0.89814, ytd:4940096802, ay:0.98416, aa:0.471721, gr:0.082467, gm:-0.014814 }},
+      { lbl:"PB Direct",
+        시약:{ ta:4615256000, ga:0.165537, tgt:420000000, act:364476980, ac:0.867802, ytd:1953993386, ay:0.88416, aa:0.423377, gr:0.275911, gm:0.069594 },
+        장비:{ ta:0, ga:-1, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null },
+        합계:{ ta:4615256000, ga:0.165451, tgt:420000000, act:364476980, ac:0.867802, ytd:1953993386, ay:0.88416, aa:0.423377, gr:0.275911, gm:0.069594 }},
+      { lbl:"Others Direct",
+        시약:{ ta:116546000, ga:-0.502371, tgt:5400000, act:6143026, ac:1.137597, ytd:38381270, ay:0.728892, aa:0.329323, gr:-0.157271, gm:0.127037 },
+        장비:{ ta:30000000, ga:null, tgt:0, act:61250000, ac:null, ytd:62033000, ay:2.067767, aa:2.067767, gr:null, gm:null },
+        합계:{ ta:146546000, ga:-0.374277, tgt:5400000, act:67393026, ac:12.48019, ytd:100414270, ay:1.214831, aa:0.685206, gr:1.204773, gm:11.364332 }},
+      { lbl:"Capital 합계", isSum:true,
+        시약:{ ta:14560609000, ga:0.124722, tgt:1310400000, act:1250764006, ac:0.95449, ytd:6729271558, ay:0.96943, aa:0.462156, gr:0.176961, gm:0.131101 },
+        장비:{ ta:673700000, ga:0.124767, tgt:151400000, act:111938300, ac:0.739355, ytd:265232900, ay:0.71532, aa:0.393696, gr:-0.373318, gm:-0.395738 },
+        합계:{ ta:15234309000, ga:0.124724, tgt:1461800000, act:1362702306, ac:0.932208, ytd:6994504458, ay:0.956545, aa:0.459128, gr:0.139034, gm:0.055506 }}
+    ]},
+    { key:"cdx", area:"■ Strategic CDx 영역", bg:"#1C4E7A", badge:"#f3e5f5", badgeTxt:"#6a1b9a", rows:[
+      { lbl:"CDx 씨젠",
+        시약:{ ta:236000000, ga:-0.055466, tgt:0, act:1440500, ac:null, ytd:83446040, ay:1.061411, aa:0.353585, gr:-0.275907, gm:-0.339511 },
+        장비:{ ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null },
+        합계:{ ta:236000000, ga:-0.055466, tgt:0, act:1440500, ac:null, ytd:83446040, ay:1.061411, aa:0.353585, gr:-0.275907, gm:-0.339511 }},
+      { lbl:"CDx OEM",
+        시약:{ ta:339688000, ga:0.429346, tgt:84920000, act:69770000, ac:0.821597, ytd:71763650, ay:0.422537, aa:0.211263, gr:0.695738, gm:null },
+        장비:{ ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null },
+        합계:{ ta:339688000, ga:0.429346, tgt:84920000, act:69770000, ac:0.821597, ytd:71763650, ay:0.422537, aa:0.211263, gr:0.695738, gm:null }},
+      { lbl:"CDx Partner+Dealer",
+        시약:{ ta:270000000, ga:0.079002, tgt:23000000, act:32548314, ac:1.415144, ytd:150792584, ay:1.142368, aa:0.558491, gr:0.336648, gm:0.668648 },
+        장비:{ ta:135651000, ga:0.602824, tgt:0, act:0, ac:null, ytd:146347800, ay:2.373811, aa:1.078855, gr:3.181366, gm:-1 },
+        합계:{ ta:405651000, ga:0.211391, tgt:23000000, act:32548314, ac:1.415144, ytd:297140384, ay:1.534412, aa:0.732503, gr:1.010232, gm:-0.402847 }},
+      { lbl:"Strategic CDx 합계", isSum:true,
+        시약:{ ta:845688000, ga:0.146319, tgt:107920000, act:103758814, ac:0.961442, ytd:306002274, ay:0.8043, aa:0.361838, gr:0.131765, gm:3.784431 },
+        장비:{ ta:135651000, ga:0.602824, tgt:0, act:0, ac:null, ytd:146347800, ay:2.373811, aa:1.078855, gr:3.181366, gm:-1 },
+        합계:{ ta:981339000, ga:0.193299, tgt:107920000, act:103758814, ac:0.961442, ytd:452350074, ay:1.023164, aa:0.460952, gr:0.481288, gm:0.830389 }}
+    ]},
+    { key:"local", area:"■ LOCAL 영역", bg:"#2E5E32", badge:"#e8f5e9", badgeTxt:"#2e7d32", rows:[
+      { lbl:"대전/충청",
+        시약:{ ta:3106500000, ga:0.112403, tgt:312000000, act:287332570, ac:0.920938, ytd:1494174860, ay:0.997846, aa:0.480983, gr:0.216992, gm:0.213996 },
+        장비:{ ta:183700000, ga:0.230924, tgt:20000000, act:0, ac:0, ytd:109325700, ay:0.90991, aa:0.595132, gr:1.296385, gm:-1 },
+        합계:{ ta:3290200000, ga:0.118416, tgt:332000000, act:287332570, ac:0.86546, ytd:1603500560, ay:0.991314, aa:0.487357, gr:0.257284, gm:0.170004 }},
+      { lbl:"제주/전라",
+        시약:{ ta:955569000, ga:0.102155, tgt:103500000, act:85363990, ac:0.824773, ytd:448349950, ay:1.051971, aa:0.469197, gr:0.099379, gm:0.011141 },
+        장비:{ ta:105949000, ga:0.188813, tgt:37000000, act:0, ac:0, ytd:26576000, ay:0.250838, aa:0.250838, gr:-0.131617, gm:null },
+        합계:{ ta:1061518000, ga:0.110232, tgt:140500000, act:85363990, ac:0.607573, ytd:474925950, ay:0.892468, aa:0.447403, gr:0.083254, gm:0.011141 }},
+      { lbl:"경상",
+        시약:{ ta:1961842000, ga:0.101108, tgt:194052000, act:160364280, ac:0.826398, ytd:866167860, ay:0.907552, aa:0.441507, gr:0.078681, gm:0.202466 },
+        장비:{ ta:181000000, ga:0.013213, tgt:61000000, act:183430000, ac:3.007049, ytd:199102900, ay:1.236664, aa:1.100016, gr:0.543433, gm:3.930914 },
+        합계:{ ta:2142842000, ga:0.093098, tgt:255052000, act:343794280, ac:1.347938, ytd:1065270760, ay:0.955057, aa:0.49713, gr:0.14301, gm:1.015646 }},
+      { lbl:"Local 합계", isSum:true,
+        시약:{ ta:6023911000, ga:0.107072, tgt:609552000, act:533060840, ac:0.874512, ytd:2808692670, ay:0.975918, aa:0.466257, gr:0.151779, gm:0.17293 },
+        장비:{ ta:470649000, ga:0.128658, tgt:118000000, act:183430000, ac:1.554492, ytd:335004600, ay:0.865424, aa:0.711793, gr:0.616726, gm:2.979028 },
+        합계:{ ta:6494560000, ga:0.108608, tgt:727552000, act:716490840, ac:0.984797, ytd:3143697270, ay:0.962818, aa:0.484051, gr:0.188192, gm:0.431354 }}
+    ]},
+    { key:"forensic", area:"■ Strategic Forensic 영역", bg:"#4A1C5E", badge:"#ede7f6", badgeTxt:"#4a148c", rows:[
+      { lbl:"국립과학수사연구원",
+        시약:{ ta:5500000000, ga:0.090962, tgt:0, act:4308000, ac:null, ytd:5185472050, ay:1.032963, aa:0.942813, gr:0.254345, gm:null },
+        장비:{ ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null },
+        합계:{ ta:5500000000, ga:0.090962, tgt:0, act:4308000, ac:null, ytd:5185472050, ay:1.032963, aa:0.942813, gr:0.254345, gm:null }},
+      { lbl:"대검찰청",
+        시약:{ ta:100000000, ga:-0.458426, tgt:0, act:0, ac:null, ytd:190139800, ay:1.901398, aa:1.901398, gr:0.029747, gm:null },
+        장비:{ ta:200000000, ga:363.298725, tgt:200000000, act:0, ac:0, ytd:0, ay:0, aa:0, gr:null, gm:null },
+        합계:{ ta:300000000, ga:0.619905, tgt:200000000, act:0, ac:0, ytd:190139800, ay:0.633799, aa:0.633799, gr:0.029747, gm:null }},
+      { lbl:"국방부",
+        시약:{ ta:500000000, ga:0.045988, tgt:280000000, act:136601400, ac:0.487862, ytd:136664796, ay:0.46327, aa:0.27333, gr:-0.506232, gm:-0.505726 },
+        장비:{ ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null },
+        합계:{ ta:500000000, ga:0.045988, tgt:280000000, act:136601400, ac:0.487862, ytd:136664796, ay:0.46327, aa:0.27333, gr:-0.506232, gm:-0.505726 }},
+      { lbl:"Strategic Forensic 합계", isSum:true,
+        시약:{ ta:6100000000, ga:0.069409, tgt:280000000, act:140909400, ac:0.503248, ytd:5512276646, ay:1.017964, aa:0.903652, gr:0.199512, gm:-0.490138 },
+        장비:{ ta:200000000, ga:363.298725, tgt:200000000, act:0, ac:0, ytd:0, ay:0, aa:0, gr:null, gm:null },
+        합계:{ ta:6300000000, ga:0.104365, tgt:480000000, act:140909400, ac:0.293561, ytd:5512276646, ay:0.981706, aa:0.874965, gr:0.199512, gm:-0.490138 }}
+    ]}
+  ],
+  chs: [
+    {a:"capital",g:"Indirect",ch:"드림셀",ty:"시약", ta:3984856000, ga:0.122692, tgt:360000000, act:360000000, ac:1, ytd:1913565167, ay:1.002917, aa:0.480209, gr:0.166524, gm:0.210551},
+    {a:"capital",g:"Indirect",ch:"드림셀",ty:"장비", ta:244519000, ga:0.100772, tgt:40000000, act:0, ac:0, ytd:99144000, ay:0.901309, aa:0.405465, gr:0.030658, gm:-1},
+    {a:"capital",g:"Indirect",ch:"드림셀",ty:"합계", ta:4229375000, ga:0.121401, tgt:400000000, act:360000000, ac:0.9, ytd:2012709167, ay:0.997378, aa:0.475888, gr:0.158998, gm:0.117717},
+    {a:"capital",g:"Indirect",ch:"아이셀",ty:"시약", ta:5431316000, ga:0.127525, tgt:480000000, act:480000000, ac:1, ytd:2569697775, ay:1.000149, aa:0.473126, gr:0.112493, gm:0.142662},
+    {a:"capital",g:"Indirect",ch:"아이셀",ty:"장비", ta:253389000, ga:0.097478, tgt:28000000, act:48933300, ac:1.747618, ytd:102300900, ay:0.694088, aa:0.403731, gr:-0.464927, gm:0.981105},
+    {a:"capital",g:"Indirect",ch:"아이셀",ty:"합계", ta:5684705000, ga:0.12615, tgt:508000000, act:528933300, ac:1.041207, ytd:2671998675, ay:0.983544, aa:0.470033, gr:0.068353, gm:0.189224},
+    {a:"capital",g:"Indirect",ch:"프라임텍",ty:"시약", ta:234461000, ga:0.048172, tgt:27000000, act:24300000, ac:0.9, ytd:106274360, ay:0.944661, aa:0.453271, gr:0.07465, gm:0.029726},
+    {a:"capital",g:"Indirect",ch:"프라임텍",ty:"장비", ta:75922000, ga:0.001636, tgt:43400000, act:0, ac:0, ytd:0, ay:0, aa:0, gr:-1, gm:-1},
+    {a:"capital",g:"Indirect",ch:"프라임텍",ty:"합계", ta:310383000, ga:0.036394, tgt:70400000, act:24300000, ac:0.34517, ytd:106274360, ay:0.681683, aa:0.342397, gr:-0.368887, gm:-0.738986},
+    {a:"capital",g:"Indirect",ch:"엔테크",ty:"시약", ta:178174000, ga:0.100491, tgt:18000000, act:15844000, ac:0.880222, ytd:147359600, ay:1.655726, aa:0.827054, gr:0.612965, gm:-0.144751},
+    {a:"capital",g:"Indirect",ch:"엔테크",ty:"장비", ta:69870000, ga:9.4e-05, tgt:40000000, act:1755000, ac:0.043875, ytd:1755000, ay:0.043875, aa:0.025118, gr:-0.973549, gm:-0.973549},
+    {a:"capital",g:"Indirect",ch:"엔테크",ty:"합계", ta:248044000, ga:0.070227, tgt:58000000, act:17599000, ac:0.303431, ytd:149114600, ay:1.155927, aa:0.601162, gr:-0.054486, gm:-0.792645},
+    {a:"capital",g:"PB Direct",ch:"PB Direct",ty:"시약", ta:4615256000, ga:0.165537, tgt:420000000, act:364476980, ac:0.867802, ytd:1953993386, ay:0.88416, aa:0.423377, gr:0.275911, gm:0.069594},
+    {a:"capital",g:"PB Direct",ch:"PB Direct",ty:"장비", ta:0, ga:-1, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"capital",g:"PB Direct",ch:"PB Direct",ty:"합계", ta:4615256000, ga:0.165451, tgt:420000000, act:364476980, ac:0.867802, ytd:1953993386, ay:0.88416, aa:0.423377, gr:0.275911, gm:0.069594},
+    {a:"capital",g:"Others Direct",ch:"강원도(특약)",ty:"시약", ta:43161000, ga:-0.248322, tgt:0, act:0, ac:null, ytd:4267100, ay:0.237061, aa:0.098865, gr:-0.787351, gm:null},
+    {a:"capital",g:"Others Direct",ch:"강원도(특약)",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:783000, ay:null, aa:null, gr:null, gm:null},
+    {a:"capital",g:"Others Direct",ch:"강원도(특약)",ty:"합계", ta:43161000, ga:-0.248322, tgt:0, act:0, ac:null, ytd:5050100, ay:0.280561, aa:0.117006, gr:-0.748331, gm:null},
+    {a:"capital",g:"Others Direct",ch:"코스모진텍",ty:"시약", ta:15328000, ga:-0.877698, tgt:0, act:1147900, ac:null, ytd:13010740, ay:1.626343, aa:0.848822, gr:1.039653, gm:2.847495},
+    {a:"capital",g:"Others Direct",ch:"코스모진텍",ty:"장비", ta:30000000, ga:null, tgt:0, act:35250000, ac:null, ytd:35250000, ay:1.175, aa:1.175, gr:null, gm:null},
+    {a:"capital",g:"Others Direct",ch:"코스모진텍",ty:"합계", ta:45328000, ga:-0.638328, tgt:0, act:36397900, ac:null, ytd:48260740, ay:1.270019, aa:1.0647, gr:6.565684, gm:120.997319},
+    {a:"capital",g:"Others Direct",ch:"Capital Direct-1",ty:"시약", ta:58057000, ga:0.128328, tgt:5400000, act:4995126, ac:0.925023, ytd:21103430, ay:0.791666, aa:0.363495, gr:0.104964, gm:-0.030496},
+    {a:"capital",g:"Others Direct",ch:"Capital Direct-1",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"capital",g:"Others Direct",ch:"Capital Direct-1",ty:"합계", ta:58057000, ga:0.128328, tgt:5400000, act:4995126, ac:0.925023, ytd:21103430, ay:0.791666, aa:0.363495, gr:0.104964, gm:-0.030496},
+    {a:"capital",g:"Others Direct",ch:"Capital Direct-2",ty:"시약", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"capital",g:"Others Direct",ch:"Capital Direct-2",ty:"장비", ta:0, ga:null, tgt:0, act:26000000, ac:null, ytd:26000000, ay:null, aa:null, gr:null, gm:null},
+    {a:"capital",g:"Others Direct",ch:"Capital Direct-2",ty:"합계", ta:0, ga:null, tgt:0, act:26000000, ac:null, ytd:26000000, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"대전/충청",ch:"나노바이오",ty:"시약", ta:2263500000, ga:0.118668, tgt:196000000, act:200000000, ac:1.020408, ytd:1203222830, ay:1.073923, aa:0.531576, gr:0.243791, gm:0.136118},
+    {a:"local",g:"대전/충청",ch:"나노바이오",ty:"장비", ta:120000000, ga:-0.022148, tgt:20000000, act:0, ac:0, ytd:86608500, ay:0.951742, aa:0.721738, gr:1.937579, gm:-1},
+    {a:"local",g:"대전/충청",ch:"나노바이오",ty:"합계", ta:2383500000, ga:0.110616, tgt:216000000, act:200000000, ac:0.925926, ytd:1289831330, ay:1.064744, aa:0.54115, gr:0.293886, gm:0.081448},
+    {a:"local",g:"대전/충청",ch:"나노바이오_COD",ty:"시약", ta:100000000, ga:0.044932, tgt:50000000, act:26800000, ac:0.536, ytd:26800000, ay:0.536, aa:0.268, gr:null, gm:null},
+    {a:"local",g:"대전/충청",ch:"나노바이오_COD",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"대전/충청",ch:"나노바이오_COD",ty:"합계", ta:100000000, ga:0.044932, tgt:50000000, act:26800000, ac:0.536, ytd:26800000, ay:0.536, aa:0.268, gr:null, gm:null},
+    {a:"local",g:"대전/충청",ch:"옵티젠",ty:"시약", ta:558700000, ga:0.10427, tgt:40000000, act:40560820, ac:1.01402, ytd:204515270, ay:0.86659, aa:0.366056, gr:0.108537, gm:0.357784},
+    {a:"local",g:"대전/충청",ch:"옵티젠",ty:"장비", ta:26000000, ga:0.398526, tgt:0, act:0, ac:null, ytd:16921200, ay:0.650815, aa:0.650815, gr:0.129978, gm:null},
+    {a:"local",g:"대전/충청",ch:"옵티젠",ty:"합계", ta:584700000, ga:0.114699, tgt:40000000, act:40560820, ac:1.01402, ytd:221436470, ay:0.845177, aa:0.378718, gr:0.110147, gm:0.357784},
+    {a:"local",g:"대전/충청",ch:"LTSbio",ty:"시약", ta:184300000, ga:0.099839, tgt:26000000, act:19971750, ac:0.768144, ytd:59636760, ay:0.655349, aa:0.323585, gr:-0.214134, gm:-0.350987},
+    {a:"local",g:"대전/충청",ch:"LTSbio",ty:"장비", ta:37700000, ga:3.754998, tgt:0, act:0, ac:null, ytd:5796000, ay:1.84, aa:0.15374, gr:0.84, gm:null},
+    {a:"local",g:"대전/충청",ch:"LTSbio",ty:"합계", ta:222000000, ga:0.264968, tgt:26000000, act:19971750, ac:0.768144, ytd:65432760, ay:0.694984, aa:0.294742, gr:-0.172122, gm:-0.350987},
+    {a:"local",g:"대전/충청",ch:"Local Direct-1",ty:"시약", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"대전/충청",ch:"Local Direct-1",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"대전/충청",ch:"Local Direct-1",ty:"합계", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"다온바이오텍_A",ty:"시약", ta:155700000, ga:0.100881, tgt:15500000, act:18238430, ac:1.176673, ytd:68412830, ay:0.90613, aa:0.439389, gr:0.240442, gm:1.178352},
+    {a:"local",g:"제주/전라",ch:"다온바이오텍_A",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"다온바이오텍_A",ty:"합계", ta:155700000, ga:0.100881, tgt:15500000, act:18238430, ac:1.176673, ytd:68412830, ay:0.90613, aa:0.439389, gr:0.240442, gm:1.178352},
+    {a:"local",g:"제주/전라",ch:"다온바이오텍_B",ty:"시약", ta:72000000, ga:-0.012687, tgt:20000000, act:1809750, ac:0.090487, ytd:28526750, ay:0.79241, aa:0.396205, gr:-0.383475, gm:-0.904428},
+    {a:"local",g:"제주/전라",ch:"다온바이오텍_B",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:288000, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"다온바이오텍_B",ty:"합계", ta:72000000, ga:-0.012687, tgt:20000000, act:1809750, ac:0.090487, ytd:28814750, ay:0.80041, aa:0.400205, gr:-0.37725, gm:-0.904428},
+    {a:"local",g:"제주/전라",ch:"진성에스엠알",ty:"시약", ta:208500000, ga:0.154724, tgt:15000000, act:26765300, ac:1.784353, ytd:131684750, ay:1.881211, aa:0.631582, gr:0.921454, gm:0.800649},
+    {a:"local",g:"제주/전라",ch:"진성에스엠알",ty:"장비", ta:0, ga:-1, tgt:0, act:0, ac:null, ytd:288000, ay:null, aa:null, gr:-0.428571, gm:null},
+    {a:"local",g:"제주/전라",ch:"진성에스엠알",ty:"합계", ta:208500000, ga:0.15151, tgt:15000000, act:26765300, ac:1.784353, ytd:131972750, ay:1.885325, aa:0.632963, gr:0.911599, gm:0.800649},
+    {a:"local",g:"제주/전라",ch:"셀진",ty:"시약", ta:236100000, ga:0.099898, tgt:20000000, act:21505950, ac:1.075298, ytd:82077470, ay:0.742111, aa:0.347639, gr:-0.24469, gm:0.397157},
+    {a:"local",g:"제주/전라",ch:"셀진",ty:"장비", ta:37000000, ga:0.229236, tgt:37000000, act:0, ac:0, ytd:0, ay:0, aa:0, gr:-1, gm:null},
+    {a:"local",g:"제주/전라",ch:"셀진",ty:"합계", ta:273100000, ga:0.115804, tgt:57000000, act:21505950, ac:0.377297, ytd:82077470, ay:0.55608, aa:0.30054, gr:-0.408524, gm:0.397157},
+    {a:"local",g:"제주/전라",ch:"모닝바이오텍",ty:"시약", ta:91800000, ga:0.100321, tgt:13000000, act:2380800, ac:0.183138, ytd:55495300, ay:1.109906, aa:0.604524, gr:0.130735, gm:-0.561608},
+    {a:"local",g:"제주/전라",ch:"모닝바이오텍",ty:"장비", ta:0, ga:-1, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"모닝바이오텍",ty:"합계", ta:91800000, ga:-0.062215, tgt:13000000, act:2380800, ac:0.183138, ytd:55495300, ay:1.109906, aa:0.604524, gr:0.130735, gm:-0.561608},
+    {a:"local",g:"제주/전라",ch:"더원바이오",ty:"시약", ta:37269000, ga:0.102891, tgt:2000000, act:0, ac:0, ytd:9008000, ay:1.112099, aa:0.241702, gr:0.371028, gm:-1},
+    {a:"local",g:"제주/전라",ch:"더원바이오",ty:"장비", ta:26000000, ga:null, tgt:0, act:0, ac:null, ytd:26000000, ay:1, aa:1, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"더원바이오",ty:"합계", ta:63269000, ga:0.872302, tgt:2000000, act:0, ac:0, ytd:35008000, ay:1.026628, aa:0.55332, gr:4.32826, gm:-1},
+    {a:"local",g:"제주/전라",ch:"제주도(금성+캠바이오)",ty:"시약", ta:154200000, ga:0.099839, tgt:18000000, act:14663760, ac:0.814653, ytd:73144850, ay:0.962432, aa:0.474351, gr:-0.005491, gm:-0.256827},
+    {a:"local",g:"제주/전라",ch:"제주도(금성+캠바이오)",ty:"장비", ta:0, ga:-1, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"제주도(금성+캠바이오)",ty:"합계", ta:154200000, ga:-0.163139, tgt:18000000, act:14663760, ac:0.814653, ytd:73144850, ay:0.962432, aa:0.474351, gr:-0.005491, gm:-0.256827},
+    {a:"local",g:"제주/전라",ch:"Local Direct-2",ty:"시약", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"Local Direct-2",ty:"장비", ta:42949000, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:0, aa:0, gr:null, gm:null},
+    {a:"local",g:"제주/전라",ch:"Local Direct-2",ty:"합계", ta:42949000, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:0, aa:0, gr:null, gm:null},
+    {a:"local",g:"경상",ch:"라이프사이언스",ty:"시약", ta:463742000, ga:0.107254, tgt:45000000, act:45000000, ac:1, ytd:225639050, ay:1.00284, aa:0.486562, gr:0.098147, gm:0.32089},
+    {a:"local",g:"경상",ch:"라이프사이언스",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:144900, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"경상",ch:"라이프사이언스",ty:"합계", ta:463742000, ga:0.107254, tgt:45000000, act:45000000, ac:1, ytd:225783950, ay:1.003484, aa:0.486874, gr:0.098853, gm:0.32089},
+    {a:"local",g:"경상",ch:"퍼블릭사이언스",ty:"시약", ta:719000000, ga:0.099958, tgt:60000000, act:59876600, ac:0.997943, ytd:309586700, ay:0.887068, aa:0.43058, gr:0.121157, gm:0.106386},
+    {a:"local",g:"경상",ch:"퍼블릭사이언스",ty:"장비", ta:100000000, ga:-0.235114, tgt:0, act:183430000, ac:null, ytd:198670000, ay:1.9867, aa:1.9867, gr:1.164161, gm:null},
+    {a:"local",g:"경상",ch:"퍼블릭사이언스",ty:"합계", ta:819000000, ga:0.044111, tgt:60000000, act:243306600, ac:4.05511, ytd:508256700, ay:1.131975, aa:0.620582, gr:0.38139, gm:3.495762},
+    {a:"local",g:"경상",ch:"피오피바이오",ty:"시약", ta:224600000, ga:0.098774, tgt:26952000, act:26952000, ac:1, ytd:103154500, ay:0.918562, aa:0.459281, gr:0.097904, gm:1.222919},
+    {a:"local",g:"경상",ch:"피오피바이오",ty:"장비", ta:37000000, ga:9.110118, tgt:37000000, act:0, ac:0, ytd:0, ay:0, aa:0, gr:null, gm:null},
+    {a:"local",g:"경상",ch:"피오피바이오",ty:"합계", ta:261600000, ga:0.257273, tgt:63952000, act:26952000, ac:0.421441, ytd:103154500, ay:0.690921, aa:0.394321, gr:0.097904, gm:1.222919},
+    {a:"local",g:"경상",ch:"이티투바이오",ty:"시약", ta:525100000, ga:0.098381, tgt:61100000, act:26922180, ac:0.440625, ytd:215551410, ay:0.831924, aa:0.410496, gr:-0.024007, gm:-0.18544},
+    {a:"local",g:"경상",ch:"이티투바이오",ty:"장비", ta:44000000, ga:-0.005461, tgt:24000000, act:0, ac:0, ytd:288000, ay:0.012, aa:0.006545, gr:-0.992258, gm:-1},
+    {a:"local",g:"경상",ch:"이티투바이오",ty:"합계", ta:569100000, ga:0.089585, tgt:85100000, act:26922180, ac:0.316359, ytd:215839410, ay:0.762414, aa:0.379264, gr:-0.163586, gm:-0.616773},
+    {a:"local",g:"경상",ch:"Local Direct-3",ty:"시약", ta:29400000, ga:0.099544, tgt:1000000, act:1613500, ac:1.6135, ytd:12236200, ay:1.359578, aa:0.416197, gr:0.8612, gm:null},
+    {a:"local",g:"경상",ch:"Local Direct-3",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"local",g:"경상",ch:"Local Direct-3",ty:"합계", ta:29400000, ga:0.099544, tgt:1000000, act:1613500, ac:1.6135, ytd:12236200, ay:1.359578, aa:0.416197, gr:0.8612, gm:null},
+    {a:"cdx",g:"씨젠",ch:"프로타젠",ty:"시약", ta:236000000, ga:-0.055466, tgt:0, act:1440500, ac:null, ytd:83446040, ay:1.061411, aa:0.353585, gr:-0.275907, gm:-0.339511},
+    {a:"cdx",g:"씨젠",ch:"프로타젠",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"cdx",g:"씨젠",ch:"프로타젠",ty:"합계", ta:236000000, ga:-0.055466, tgt:0, act:1440500, ac:null, ytd:83446040, ay:1.061411, aa:0.353585, gr:-0.275907, gm:-0.339511},
+    {a:"cdx",g:"OEM",ch:"CDx_OEM",ty:"시약", ta:339688000, ga:0.429346, tgt:84920000, act:69770000, ac:0.821597, ytd:71763650, ay:0.422537, aa:0.211263, gr:0.695738, gm:null},
+    {a:"cdx",g:"OEM",ch:"CDx_OEM",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"cdx",g:"OEM",ch:"CDx_OEM",ty:"합계", ta:339688000, ga:0.429346, tgt:84920000, act:69770000, ac:0.821597, ytd:71763650, ay:0.422537, aa:0.211263, gr:0.695738, gm:null},
+    {a:"cdx",g:"CDx Partner+Dealer",ch:"CDx(에피노드,이원,다우)",ty:"시약", ta:270000000, ga:0.089704, tgt:23000000, act:32548314, ac:1.415144, ytd:150792584, ay:1.142368, aa:0.558491, gr:0.366415, gm:0.668648},
+    {a:"cdx",g:"CDx Partner+Dealer",ch:"CDx(에피노드,이원,다우)",ty:"장비", ta:135651000, ga:0.602824, tgt:0, act:0, ac:null, ytd:146347800, ay:2.373811, aa:1.078855, gr:3.181366, gm:-1},
+    {a:"cdx",g:"CDx Partner+Dealer",ch:"CDx(에피노드,이원,다우)",ty:"합계", ta:405651000, ga:0.220347, tgt:23000000, act:32548314, ac:1.415144, ytd:297140384, ay:1.534412, aa:0.732503, gr:1.04422, gm:-0.402847},
+    {a:"cdx",g:"CDx Partner+Dealer",ch:"Dealer",ty:"시약", ta:0, ga:-1, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:-1, gm:null},
+    {a:"cdx",g:"CDx Partner+Dealer",ch:"Dealer",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"cdx",g:"CDx Partner+Dealer",ch:"Dealer",ty:"합계", ta:0, ga:-1, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:-1, gm:null},
+    {a:"forensic",g:"Forensic_NFS",ch:"국립과학수사연구원",ty:"시약", ta:5500000000, ga:0.090962, tgt:0, act:4308000, ac:null, ytd:5185472050, ay:1.032963, aa:0.942813, gr:0.254345, gm:null},
+    {a:"forensic",g:"Forensic_NFS",ch:"국립과학수사연구원",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"forensic",g:"Forensic_NFS",ch:"국립과학수사연구원",ty:"합계", ta:5500000000, ga:0.090962, tgt:0, act:4308000, ac:null, ytd:5185472050, ay:1.032963, aa:0.942813, gr:0.254345, gm:null},
+    {a:"forensic",g:"Forensic_CIC",ch:"국방부",ty:"시약", ta:500000000, ga:0.045988, tgt:280000000, act:136601400, ac:0.487862, ytd:136664796, ay:0.46327, aa:0.27333, gr:-0.506232, gm:-0.505726},
+    {a:"forensic",g:"Forensic_CIC",ch:"국방부",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"forensic",g:"Forensic_CIC",ch:"국방부",ty:"합계", ta:500000000, ga:0.045988, tgt:280000000, act:136601400, ac:0.487862, ytd:136664796, ay:0.46327, aa:0.27333, gr:-0.506232, gm:-0.505726},
+    {a:"forensic",g:"Forensic_SPO",ch:"대검찰청",ty:"시약", ta:100000000, ga:-0.458426, tgt:0, act:0, ac:null, ytd:190139800, ay:1.901398, aa:1.901398, gr:0.029747, gm:null},
+    {a:"forensic",g:"Forensic_SPO",ch:"대검찰청",ty:"장비", ta:200000000, ga:363.298725, tgt:200000000, act:0, ac:0, ytd:0, ay:0, aa:0, gr:null, gm:null},
+    {a:"forensic",g:"Forensic_SPO",ch:"대검찰청",ty:"합계", ta:300000000, ga:0.619905, tgt:200000000, act:0, ac:0, ytd:190139800, ay:0.633799, aa:0.633799, gr:0.029747, gm:null},
+    {a:"forensic",g:"Forensic_Direct",ch:"Direct",ty:"시약", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"forensic",g:"Forensic_Direct",ch:"Direct",ty:"장비", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null},
+    {a:"forensic",g:"Forensic_Direct",ch:"Direct",ty:"합계", ta:0, ga:null, tgt:0, act:0, ac:null, ytd:0, ay:null, aa:null, gr:null, gm:null}
+  ]
+};
+
+// National Sales 집계 (Capital + Strategic CDx + Local)
+const NAT = {
+  gr_ann: 0.122844,
+  시약:{ ta:21430208000, ga:0.120533, tgt:2027872000, act:1887583660, ac:0.93082, ytd:9843966502, ay:0.965101, aa:0.45935, gr:0.168223, gm:0.193201 },
+  장비:{ ta:1280000000, ga:0.163002, tgt:269400000, act:295368300, ac:1.096393, ytd:746585300, ay:0.910982, aa:0.58327, gr:0.121934, gm:0.10896 },
+  합계:{ ta:22710208000, ga:0.122844, tgt:2297272000, act:2182951960, ac:0.950237, ytd:10590551802, ay:0.961076, aa:0.466334, gr:0.164835, gm:0.181061 }
+};
+
+// ═══════════ 유틸 ═══════════
+// 0-1 스케일(초기 하드코딩) → ×100, 이미 0-100 스케일(업로드 후)이면 그대로
+const _norm=v=>{if(v===null||v===undefined)return v;const n=Number(v);if(isNaN(n))return v;return Math.abs(n)<=2?n*100:n;};
+const F  = v => (v===null||v===undefined) ? '-' : Math.round(Number(v)/1000).toLocaleString('ko-KR');
+const P  = v => (v===null||v===undefined) ? '-' : _norm(v).toFixed(1)+'%';
+const PA = v => {
+  if(v===null||v===undefined) return '<td class="pct-n">-</td>';
+  const pn=_norm(v);
+  const em = pn>=100?'🟢':pn>=90?'🟡':'🔴';
+  return `<td style="color:#111;font-weight:600">${em} ${P(v)}</td>`;
+};
+const GA = v => {
+  if(v===null||v===undefined||isNaN(v)) return '<td class="pct-n">-</td>';
+  const p=_norm(v);
+  return `<td class="${p>=0?'gr-p':'gr-n'}">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}%</td>`;
+};
+// border 버전 (채널 상단/하단 구분선용)
+const PAb = (v,s) => {
+  if(v===null||v===undefined) return `<td class="pct-n" style="${s}">-</td>`;
+  const pn=_norm(v);
+  const em = pn>=100?'🟢':pn>=90?'🟡':'🔴';
+  return `<td style="color:#111;font-weight:600;${s}">${em} ${P(v)}</td>`;
+};
+const GAb = (v,s) => {
+  if(v===null||v===undefined||isNaN(v)) return `<td class="pct-n" style="${s}">-</td>`;
+  const p=_norm(v);
+  return `<td class="${p>=0?'gr-p':'gr-n'}" style="${s}">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}%</td>`;
+};
+
+// ═══════════ NAV ═══════════
+const secs = ['s1','s2','s3','s4'];
+const navLabels = {
+  s1: '',
+  s2: '',
+  s3: '',
+  s4: '5월 확정 | 2026-05-31 마감'
+};
+function showSec(id, btn){
+  secs.forEach(s=>{ document.getElementById(s).style.display = s===id?'':'none'; });
+  document.querySelectorAll('.hero-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('navRight').textContent = navLabels[id] || '';
+}
+
+// ═══════════ 전사요약 테이블 ═══════════
+// act÷tgt×100 직접 계산 헬퍼
+const _acPct = (r) => {
+  if(!r) return null;
+  if(r.tgt && r.tgt!==0 && r.act!=null) return r.act/r.tgt*100;
+  if(r.ac!=null) return _norm(r.ac);
+  return null;
+};
+// ay/aa는 항상 0~1 비율 스케일로 저장 → ×100해서 표시
+const _normAy = v => {
+  if(v===null||v===undefined) return v;
+  const n=Number(v); if(isNaN(n)) return v;
+  return n*100; // ay는 항상 비율값이므로 무조건 ×100
+};
+
+// 한 그룹(사업부/집계)의 시약/장비/합계 3행 렌더 (일반 행)
+function _sumNormalRows(name, color, dv){
+  let h='';
+  ['시약','장비','합계'].forEach((ty,ti)=>{
+    const r=dv[ty]||{}; const isSm=ty==='합계';
+    h+=`<tr class="${isSm?'tr-sum':''}">`;
+    if(ti===0) h+=`<td rowspan="3" style="text-align:left;font-weight:600;color:${color};padding-left:10px">${name}</td>`;
+    h+=`<td style="color:${isSm?color:'#9CA3AF'};font-weight:${isSm?600:400}">${ty}</td>`;
+    h+=`<td>${F(r.ta)}</td>`;
+    h+=GA(dv.gr_ann);
+    const acPct=_acPct(r), ayV=r.ay, aaV=r.aa;
+    if(isSm){
+      const emAc=acPct!=null&&acPct>=100?'🟢':acPct!=null&&acPct>=90?'🟡':'🔴';
+      const emAy=_normAy(ayV)>=100?'🟢':_normAy(ayV)>=90?'🟡':'🔴';
+      h+=`<td>${F(r.tgt)}</td><td>${F(r.act)}</td>`;
+      h+=`<td style="font-weight:600;color:#111">${acPct==null?'-':emAc+' '+acPct.toFixed(1)+'%'}</td>`;
+      h+=GA(r.gm);
+      h+=`<td>${F(r.ytd)}</td>`;
+      h+=`<td style="font-weight:600;color:#111">${ayV==null?'-':emAy+' '+_normAy(ayV).toFixed(1)+'%'}</td>`;
+      h+=GA(r.gr);
+    } else {
+      h+=`<td>${F(r.tgt)}</td><td>${F(r.act)}</td>`;
+      h+=`<td class="${acPct!=null&&acPct>=100?'pct-g':acPct!=null&&acPct>=90?'pct-y':'pct-r'}">${acPct==null?'-':acPct.toFixed(1)+'%'}</td>`;
+      h+=GA(r.gm);
+      h+=`<td>${F(r.ytd)}</td>`;
+      h+=`<td class="${_normAy(ayV)>=100?'pct-g':_normAy(ayV)>=90?'pct-y':'pct-r'}">${ayV==null?'-':_normAy(ayV).toFixed(1)+'%'}</td>`;
+      h+=GA(r.gr);
+    }
+    h+=`<td class="${_norm(aaV)>=100?'pct-g':_norm(aaV)>=90?'pct-y':'pct-r'}">${aaV==null?'-':P(aaV)}</td>`;
+    h+='</tr>';
+  });
+  return h;
+}
+
+// PK Grand Total 3행 렌더
+function _sumGrandRows(){
+  let h='';
+  ['시약','장비','합계'].forEach((ty,ti)=>{
+    const r=D.grand[ty]||{}; const isSm=ty==='합계';
+    h+=`<tr class="${isSm?'tr-grand':'tr-sum-dark'}">`;
+    if(ti===0) h+=`<td rowspan="3" style="text-align:left;font-weight:700;padding-left:10px;color:${isSm?'var(--sol)':'#13294B'}">PK Grand Total</td>`;
+    h+=`<td style="font-weight:${isSm?700:600};color:${isSm?'var(--sol)':'#374151'}">${ty}</td>`;
+    h+=`<td>${F(r.ta)}</td><td>▲ 11.9%</td>`;
+    const acPct2=_acPct(r), ayV=r.ay, aaV=r.aa;
+    if(isSm){
+      const emAc=acPct2!=null&&acPct2>=100?'🟢':acPct2!=null&&acPct2>=90?'🟡':'🔴';
+      const emAy=_normAy(ayV)>=100?'🟢':_normAy(ayV)>=90?'🟡':'🔴';
+      h+=`<td>${F(r.tgt)}</td><td>${F(r.act)}</td>`;
+      h+=`<td style="font-weight:700;color:#fff">${acPct2==null?'-':emAc+' '+acPct2.toFixed(1)+'%'}</td>`;
+      h+=`<td style="font-weight:700;color:#fff">${r.gm==null?'-':(r.gm>=0?'▲':'▼')+' '+Math.abs(_norm(r.gm)).toFixed(1)+'%'}</td>`;
+      h+=`<td>${F(r.ytd)}</td>`;
+      h+=`<td style="font-weight:700;color:#fff">${ayV==null?'-':emAy+' '+_normAy(ayV).toFixed(1)+'%'}</td>`;
+      h+=`<td style="font-weight:700;color:#fff">${r.gr==null?'-':(r.gr>=0?'▲':'▼')+' '+Math.abs(_norm(r.gr)).toFixed(1)+'%'}</td>`;
+      h+=`<td style="font-weight:700;color:#fff">${aaV==null?'-':P(aaV)}</td>`;
+    } else {
+      h+=`<td>${F(r.tgt)}</td><td>${F(r.act)}</td>`;
+      h+=`<td class="${acPct2!=null&&acPct2>=100?'pct-g':acPct2!=null&&acPct2>=90?'pct-y':'pct-r'}" style="font-weight:600">${acPct2==null?'-':acPct2.toFixed(1)+'%'}</td>`;
+      h+=`<td class="${r.gm>=0?'gr-p':'gr-n'}" style="font-weight:600">${r.gm==null?'-':(r.gm>=0?'▲':'▼')+' '+Math.abs(_norm(r.gm)).toFixed(1)+'%'}</td>`;
+      h+=`<td>${F(r.ytd)}</td>`;
+      h+=`<td class="${_normAy(ayV)>=100?'pct-g':_normAy(ayV)>=90?'pct-y':'pct-r'}" style="font-weight:600">${ayV==null?'-':_normAy(ayV).toFixed(1)+'%'}</td>`;
+      h+=`<td class="${r.gr>=0?'gr-p':'gr-n'}" style="font-weight:600">${r.gr==null?'-':(r.gr>=0?'▲':'▼')+' '+Math.abs(_norm(r.gr)).toFixed(1)+'%'}</td>`;
+      h+=`<td class="${_norm(aaV)>=100?'pct-g':_norm(aaV)>=90?'pct-y':'pct-r'}" style="font-weight:600">${aaV==null?'-':P(aaV)}</td>`;
+    }
+    h+='</tr>';
+  });
+  return h;
+}
+
+// 전사 요약 (섹션①) — National Sales / Strategic Forensic / PK Grand Total
+function buildSummary(){
+  let h='';
+  h+=_sumNormalRows('National Sales','#1C4E7A',NAT);
+  if(D.div['Strategic Forensic']) h+=_sumNormalRows('Strategic Forensic','#4A1C5E',D.div['Strategic Forensic']);
+  h+=_sumGrandRows();
+  document.getElementById('summaryTbody').innerHTML=h;
+}
+
+// 사업부 상세 요약표 (Capital/Local/CDx/Forensic + PK Grand Total) — 팀별 상세 '전체'에 표시
+function divSummaryTableHTML(){
+  const _divColorMap = {Capital:'#13294B','Strategic CDx':'#1C4E7A',Local:'#2E5E32','Strategic Forensic':'#4A1C5E'};
+  const divOrd = ['Capital','Local','Strategic CDx','Strategic Forensic'].filter(d=>D.div[d]);
+  let rows='';
+  divOrd.forEach(dn=>{ rows+=_sumNormalRows(dn,_divColorMap[dn]||'#13294B',D.div[dn]); });
+  rows+=_sumGrandRows();
+  return `<div class="ct-card">
+      <div class="ct-title">전사 요약 — 사업부 × 시약/장비/합계 (단위: 천원)</div>
+      <div style="overflow-x:auto">
+      <table class="data-table">
+        <colgroup>
+          <col style="width:115px"><col style="width:44px">
+          <col style="width:110px"><col style="width:58px">
+          <col style="width:100px"><col style="width:100px"><col style="width:56px"><col style="width:60px">
+          <col style="width:108px"><col style="width:60px"><col style="width:60px">
+          <col style="width:60px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" style="text-align:left">사업부</th>
+            <th rowspan="2">유형</th>
+            <th rowspan="2">연간 Target</th>
+            <th rowspan="2">목표 GR%</th>
+            <th colspan="4" class="cat" style="border-bottom:none">당월 실적 (6월)</th>
+            <th colspan="3" class="cat" style="border-bottom:none;background:#e8f0fb">YTD 누적 (1~6월)</th>
+            <th colspan="1" class="cat" style="border-bottom:none;background:#f3f4f6">달성률</th>
+          </tr>
+          <tr>
+            <th class="cat">당월 Target</th><th class="cat">당월 실적</th><th class="cat">Achv%</th><th class="cat">GR%</th>
+            <th class="cat" style="background:#e8f0fb">YTD 실적</th><th class="cat" style="background:#e8f0fb">YTD Achv%</th><th class="cat" style="background:#e8f0fb">GR%</th>
+            <th class="cat" style="background:#f3f4f6">연간 Achv%</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      </div>
+    </div>`;
+}
+
+// ═══════════ 차트 ═══════════
+let _charts={};
+function buildCharts(){
+  const divs=Object.keys(D.div).length?Object.keys(D.div):['Capital','Strategic CDx','Local','Strategic Forensic'];
+  const lbl=divs.map(d=>d.replace('Strategic ',''));
+  // 당월 달성율 차트: National Sales(Forensic 제외) — 순서 Capital→Local→CDx, 사업부별 색상 구분
+  const curOrder=['Capital','Local','Strategic CDx'];
+  const curDivs=curOrder.filter(d=>D.div[d]);
+  const curLbl=curDivs.map(d=>d.replace('Strategic ',''));
+  const DIV_COL={'Capital':'#13294B','Local':'#2E5E32','Strategic CDx':'#1C4E7A'};
+  const curBarCol=curDivs.map(d=>DIV_COL[d]||'#455DA0');
+  const curV=curDivs.map(d=>{
+    const r=D.div[d]&&D.div[d].합계;
+    if(!r) return 0;
+    if(!r.tgt||r.tgt===0) return r.act>0?999:0;
+    return r.act/r.tgt*100;
+  });
+  // YTD 달성율 차트도 동일 구성(Capital→Local→CDx, 사업부별 색상, Forensic 제외)
+  const ytdV=curDivs.map(d=>_normAy(D.div[d].합계.ay||0));
+  // National sales 그래프 위 전체 당월/YTD 달성율(%) 표기
+  const nat=_divAgg(['Capital','Strategic CDx','Local']);
+  const natc=v=>v>=100?'#166534':v>=90?'#92400E':'#991B1B';
+  const ne=document.getElementById('natCurKpi');
+  if(ne) ne.innerHTML=`National Sales 당월 달성율 <b style="color:${natc(nat.cur)}">${nat.cur.toFixed(1)}%</b>`;
+  const nye=document.getElementById('natYtdKpi');
+  if(nye) nye.innerHTML=`National Sales YTD 달성율 <b style="color:${natc(nat.ytd)}">${nat.ytd.toFixed(1)}%</b>`;
+  const col=v=>v>=100?'#166534':v>=90?'#92400E':'#991B1B';
+  const baseOpts={
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    layout:{padding:{right:48}},
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}},
+      datalabels:{
+        anchor:'end',align:'end',clamp:true,clip:false,offset:2,
+        color:c=>col(c.dataset.data[c.dataIndex]),
+        font:{size:10,weight:'bold'},
+        formatter:v=>v.toFixed(1)+'%'
+      }
+    },
+    scales:{
+      x:{min:0,max:130,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},
+      y:{ticks:{font:{size:11}},grid:{display:false}}
+    }
+  };
+  ['chartCur','chartYTD'].forEach(id=>{if(_charts[id])_charts[id].destroy();});
+  _charts.chartCur=new Chart(document.getElementById('chartCur'),{type:'bar',
+    data:{labels:curLbl,datasets:[{data:curV,backgroundColor:curBarCol,borderRadius:4,borderSkipped:false}]},
+    options:baseOpts,plugins:[ChartDataLabels]});
+  _charts.chartYTD=new Chart(document.getElementById('chartYTD'),{type:'bar',
+    data:{labels:curLbl,datasets:[{data:ytdV,backgroundColor:curBarCol,borderRadius:4,borderSkipped:false}]},
+    options:baseOpts,plugins:[ChartDataLabels]});
+}
+
+// 사업부 집합의 당월/YTD 달성율 집계 (당월=실적÷목표, YTD=실적÷누적목표[ay 역산])
+function _divAgg(names){
+  let tgt=0, act=0, ytd=0, cumtgt=0;
+  names.forEach(dn=>{
+    const r=D.div[dn]&&D.div[dn]['합계']; if(!r) return;
+    tgt+=r.tgt||0; act+=r.act||0; ytd+=r.ytd||0;
+    if(r.ay) cumtgt+=(r.ytd||0)/r.ay;
+  });
+  return {cur:tgt>0?act/tgt*100:0, ytd:cumtgt>0?ytd/cumtgt*100:0};
+}
+
+// ═══════════ PK 사업부별 (National Sales vs Forensic) 달성율 차트 ═══════════
+// 사업부별 차트(buildCharts)와 동일한 구성 — 가로 막대 2개(당월 / YTD)
+function buildNatForChart(){
+  const groups={
+    'National Sales':['Capital','Strategic CDx','Local'],
+    'Forensic':['Strategic Forensic']
+  };
+  const labels=Object.keys(groups);
+  const curV=[], ytdV=[];
+  labels.forEach(g=>{
+    const a=_divAgg(groups[g]);
+    curV.push(a.cur); ytdV.push(a.ytd);
+  });
+  // National Sales = 연한 초록색, Forensic = 연한 갈색
+  const CAT_COL={'National Sales':'#a3d3b1','Forensic':'#cbb389'};
+  const barCol=labels.map(g=>CAT_COL[g]);
+  // 그래프 위 PK 전체 달성율(%) 표기
+  const pk=_divAgg(Object.keys(D.div));
+  const pkc=v=>v>=100?'#166534':v>=90?'#92400E':'#991B1B';
+  const ce=document.getElementById('pkCurKpi'); if(ce) ce.innerHTML=`PK 전체 당월 달성율 <b style="color:${pkc(pk.cur)}">${pk.cur.toFixed(1)}%</b>`;
+  const ye=document.getElementById('pkYtdKpi'); if(ye) ye.innerHTML=`PK 전체 YTD 달성율 <b style="color:${pkc(pk.ytd)}">${pk.ytd.toFixed(1)}%</b>`;
+  const col=v=>v>=100?'#166534':v>=90?'#92400E':'#991B1B';
+  const baseOpts={
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    layout:{padding:{right:48}},
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}},
+      datalabels:{
+        anchor:'end',align:'end',clamp:true,clip:false,offset:2,
+        color:c=>col(c.dataset.data[c.dataIndex]),
+        font:{size:10,weight:'bold'},
+        formatter:v=>v.toFixed(1)+'%'
+      }
+    },
+    scales:{
+      x:{min:0,max:130,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},
+      y:{ticks:{font:{size:11}},grid:{display:false}}
+    }
+  };
+  ['chartNatForCur','chartNatForYTD'].forEach(id=>{if(_charts[id])_charts[id].destroy();});
+  _charts.chartNatForCur=new Chart(document.getElementById('chartNatForCur'),{type:'bar',
+    data:{labels,datasets:[{data:curV,backgroundColor:barCol,borderRadius:4,borderSkipped:false}]},
+    options:baseOpts,plugins:[ChartDataLabels]});
+  _charts.chartNatForYTD=new Chart(document.getElementById('chartNatForYTD'),{type:'bar',
+    data:{labels,datasets:[{data:ytdV,backgroundColor:barCol,borderRadius:4,borderSkipped:false}]},
+    options:baseOpts,plugins:[ChartDataLabels]});
+}
+
+// ═══════════ 팀별 상세 ═══════════
+let _divKey='all';
+let _memoMonth='2026-06';  // Sales High/Low light · 영업이슈 기록 월 (기본: 보고월 6월)
+function setDivF(k,btn){
+  _divKey=k;
+  document.querySelectorAll('#divFilter .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildDivTable();
+}
+function buildDivTable(){
+  const wrap=document.getElementById('divWrap');
+  let h='';
+  // '전체' 선택 시 사업부 상세 요약표만 표시 (Capital/CDx/Local/Forensic 상세 영역 제외)
+  if(_divKey==='all') h+=divSummaryTableHTML();
+  // Capital / CDx: 메모 기록 월 선택 + 저장 툴바
+  if(_divKey==='capital'||_divKey==='cdx') h+=memoToolbarHTML();
+  D.secs.forEach(sec=>{
+    if(_divKey==='all'||sec.key!==_divKey) return;
+    if(sec.key==='capital'||sec.key==='cdx'){ h+=groupDetailHTML(sec); return; }
+    h+=`<div class="ct-card" style="margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+
+        <div style="font-size:12px;font-weight:700;color:${sec.bg}">${sec.area}<span style="font-size:10px;font-weight:400;color:#999;margin-left:6px">(단위: 천원)</span></div>
+      </div>
+      <div style="overflow-x:auto">
+      <table class="data-table">
+        <colgroup>
+          <col style="width:155px"><col style="width:44px">
+          <col style="width:108px"><col style="width:58px">
+          <col style="width:92px"><col style="width:92px"><col style="width:56px"><col style="width:60px">
+          <col style="width:100px"><col style="width:60px"><col style="width:60px"><col style="width:60px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th style="text-align:left" rowspan="2">섹션</th>
+            <th rowspan="2">유형</th>
+            <th rowspan="2">연간 Target</th>
+            <th rowspan="2">목표 GR%</th>
+            <th colspan="4" class="cat" style="border-bottom:none">당월 실적 (6월)</th>
+            <th colspan="3" class="cat" style="border-bottom:none;background:#e8f0fb">YTD 누적</th>
+            <th colspan="1" class="cat" style="border-bottom:none;background:#f3f4f6">달성률</th>
+          </tr>
+          <tr>
+            <th class="cat">당월 Target</th><th class="cat">당월 실적</th><th class="cat">Achv%</th><th class="cat">GR%</th>
+            <th class="cat" style="background:#e8f0fb">YTD 실적</th><th class="cat" style="background:#e8f0fb">YTD Achv%</th><th class="cat" style="background:#e8f0fb">GR%</th>
+            <th class="cat" style="background:#f3f4f6">연간 Achv%</th>
+          </tr>
+        </thead><tbody>`;
+    sec.rows.forEach(row=>{
+      const isSR=row.isSum;
+      ['시약','장비','합계'].forEach((ty,ti)=>{
+        const r=row[ty]; const isTot=ty==='합계';
+        let cls='';
+        if(isSR&&isTot)       cls='tr-grand';
+        else if(isSR&&!isTot) cls='tr-sum-dark';
+        else if(!isSR&&isTot) cls='tr-sum';
+        const tcol=(isSR&&isTot)?'var(--sol)':isTot?sec.bg:'#9CA3AF';
+        const sc=ti===0
+          ?`<td rowspan="3" style="text-align:left;vertical-align:middle;font-weight:${isSR?700:500};color:${isSR?(isTot?'var(--sol)':'#1e3a5f'):'#333'};padding-left:10px;white-space:nowrap;">${row.lbl}</td>`
+          :``;
+        const acPct=_acPct(r), ayV=r.ay, aaV=r.aa;
+        const isGrand = cls==='tr-grand';
+        const isTotRow = isTot;
+        let acTd, ayTd, aaTd;
+        if(isTotRow){
+          const emAc=acPct!=null&&acPct>=100?'🟢':acPct!=null&&acPct>=90?'🟡':'🔴';
+          const emAy=_normAy(ayV)>=100?'🟢':_normAy(ayV)>=90?'🟡':'🔴';
+          const tcl = isGrand ? 'color:#fff;font-weight:700;' : isSR ? 'color:#fff;font-weight:700;' : 'color:#111;font-weight:600;';
+          acTd=`<td style="${tcl}">${acPct==null?'-':emAc+' '+acPct.toFixed(1)+'%'}</td>`;
+          ayTd=`<td style="${tcl}">${ayV==null?'-':emAy+' '+_normAy(ayV).toFixed(1)+'%'}</td>`;
+          aaTd=`<td style="${tcl}">${aaV==null?'-':P(aaV)}</td>`;
+        } else {
+          acTd=`<td class="${acPct!=null&&acPct>=100?'pct-g':acPct!=null&&acPct>=90?'pct-y':'pct-r'}">${acPct==null?'-':acPct.toFixed(1)+'%'}</td>`;
+          ayTd=`<td class="${_normAy(ayV)>=100?'pct-g':_normAy(ayV)>=90?'pct-y':'pct-r'}">${ayV==null?'-':_normAy(ayV).toFixed(1)+'%'}</td>`;
+          aaTd=`<td class="${_norm(aaV)>=100?'pct-g':_norm(aaV)>=90?'pct-y':'pct-r'}">${aaV==null?'-':P(aaV)}</td>`;
+        }
+        const numStyle = (isSR&&isTotRow) ? ' style="color:#fff;font-weight:700"' : '';
+        h+=`<tr class="${cls}">${sc}
+          <td style="color:${tcol};font-weight:${isTot?600:400}">${ty}</td>
+          <td${numStyle}>${F(r.ta)}</td>${GA(r.ga)}
+          <td${numStyle}>${F(r.tgt)}</td><td${numStyle}>${F(r.act)}</td>${acTd}${GA(r.gm)}
+          <td${numStyle}>${F(r.ytd)}</td>${ayTd}${GA(r.gr)}${aaTd}</tr>`;
+      });
+    });
+    h+=`</tbody></table></div></div>`;
+  });
+  wrap.innerHTML=h;
+  restoreMemos();
+}
+
+// ── 한 그룹(row)의 시약/장비/합계 3행 렌더 ──
+function _divRowsHTML(sec, row){
+  let h='';
+  const isSR=row.isSum;
+  ['시약','장비','합계'].forEach((ty,ti)=>{
+    const r=row[ty]; const isTot=ty==='합계';
+    let cls='';
+    if(isSR&&isTot)       cls='tr-grand';
+    else if(isSR&&!isTot) cls='tr-sum-dark';
+    else if(!isSR&&isTot) cls='tr-sum';
+    const tcol=(isSR&&isTot)?'var(--sol)':isTot?sec.bg:'#9CA3AF';
+    const sc=ti===0
+      ?`<td rowspan="3" style="text-align:left;vertical-align:middle;font-weight:${isSR?700:500};color:${isSR?(isTot?'var(--sol)':'#1e3a5f'):'#333'};padding-left:10px;white-space:nowrap;">${row.lbl}</td>`
+      :``;
+    const acPct=_acPct(r), ayV=r.ay, aaV=r.aa;
+    const isGrand = cls==='tr-grand';
+    const isTotRow = isTot;
+    let acTd, ayTd, aaTd;
+    if(isTotRow){
+      const emAc=acPct!=null&&acPct>=100?'🟢':acPct!=null&&acPct>=90?'🟡':'🔴';
+      const emAy=_normAy(ayV)>=100?'🟢':_normAy(ayV)>=90?'🟡':'🔴';
+      const tcl = isGrand ? 'color:#fff;font-weight:700;' : isSR ? 'color:#fff;font-weight:700;' : 'color:#111;font-weight:600;';
+      acTd=`<td style="${tcl}">${acPct==null?'-':emAc+' '+acPct.toFixed(1)+'%'}</td>`;
+      ayTd=`<td style="${tcl}">${ayV==null?'-':emAy+' '+_normAy(ayV).toFixed(1)+'%'}</td>`;
+      aaTd=`<td style="${tcl}">${aaV==null?'-':P(aaV)}</td>`;
+    } else {
+      acTd=`<td class="${acPct!=null&&acPct>=100?'pct-g':acPct!=null&&acPct>=90?'pct-y':'pct-r'}">${acPct==null?'-':acPct.toFixed(1)+'%'}</td>`;
+      ayTd=`<td class="${_normAy(ayV)>=100?'pct-g':_normAy(ayV)>=90?'pct-y':'pct-r'}">${ayV==null?'-':_normAy(ayV).toFixed(1)+'%'}</td>`;
+      aaTd=`<td class="${_norm(aaV)>=100?'pct-g':_norm(aaV)>=90?'pct-y':'pct-r'}">${aaV==null?'-':P(aaV)}</td>`;
+    }
+    const numStyle = (isSR&&isTotRow) ? ' style="color:#fff;font-weight:700"' : '';
+    h+=`<tr class="${cls}">${sc}
+      <td style="color:${tcol};font-weight:${isTot?600:400}">${ty}</td>
+      <td${numStyle}>${F(r.ta)}</td>${GA(r.ga)}
+      <td${numStyle}>${F(r.tgt)}</td><td${numStyle}>${F(r.act)}</td>${acTd}${GA(r.gm)}
+      <td${numStyle}>${F(r.ytd)}</td>${ayTd}${GA(r.gr)}${aaTd}</tr>`;
+  });
+  return h;
+}
+
+// ── 주어진 row들로 표(헤더 포함) 생성 ──
+function _divTableHTML(sec, rows){
+  let body=''; rows.forEach(row=>{ body+=_divRowsHTML(sec,row); });
+  return `<div style="overflow-x:auto">
+      <table class="data-table">
+        <colgroup>
+          <col style="width:155px"><col style="width:44px">
+          <col style="width:108px"><col style="width:58px">
+          <col style="width:92px"><col style="width:92px"><col style="width:56px"><col style="width:60px">
+          <col style="width:100px"><col style="width:60px"><col style="width:60px"><col style="width:60px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th style="text-align:left" rowspan="2">섹션</th>
+            <th rowspan="2">유형</th>
+            <th rowspan="2">연간 Target</th>
+            <th rowspan="2">목표 GR%</th>
+            <th colspan="4" class="cat" style="border-bottom:none">당월 실적 (6월)</th>
+            <th colspan="3" class="cat" style="border-bottom:none;background:#e8f0fb">YTD 누적</th>
+            <th colspan="1" class="cat" style="border-bottom:none;background:#f3f4f6">달성률</th>
+          </tr>
+          <tr>
+            <th class="cat">당월 Target</th><th class="cat">당월 실적</th><th class="cat">Achv%</th><th class="cat">GR%</th>
+            <th class="cat" style="background:#e8f0fb">YTD 실적</th><th class="cat" style="background:#e8f0fb">YTD Achv%</th><th class="cat" style="background:#e8f0fb">GR%</th>
+            <th class="cat" style="background:#f3f4f6">연간 Achv%</th>
+          </tr>
+        </thead><tbody>${body}</tbody>
+      </table>
+      </div>`;
+}
+
+// ── 메모 블록 (지정 필드만) ──
+function _memoBlock(prefix, color, title, fields){
+  const f=(id,label,ph)=>`
+    <div class="memo-field">
+      <label class="memo-label" for="${id}">${label}</label>
+      <textarea class="memo-area" id="${id}" rows="3" placeholder="${ph}"
+        oninput="autoGrow(this);saveMemo(this)"></textarea>
+    </div>`;
+  const inner=fields.map(fd=>f('memo-'+prefix+'-'+fd[0], fd[1], fd[2])).join('');
+  return `<div style="margin-top:12px">
+    <div class="ct-title" style="color:${color||'#13294B'};margin-bottom:8px">${title}</div>
+    <div class="memo-grid" style="grid-template-columns:repeat(${fields.length},minmax(0,1fr))">${inner}</div>
+    <div style="font-size:10px;color:#aaa;padding-top:6px">입력 내용은 이 브라우저에 자동 저장됩니다.</div>
+  </div>`;
+}
+
+// ── 사업부 상세(Capital · CDx): 그룹별(표 + 메모) 카드, 합계는 영업이슈만 ──
+function groupDetailHTML(sec){
+  const pfx = sec.key==='capital' ? 'cap' : sec.key;  // Capital은 기존 키(cap-) 유지
+  let h=`<div class="ct-card" style="margin-bottom:14px;padding-bottom:8px">
+    <div style="font-size:12px;font-weight:700;color:${sec.bg}">${sec.area}<span style="font-size:10px;font-weight:400;color:#999;margin-left:6px">(단위: 천원)</span></div>
+  </div>`;
+  sec.rows.forEach(row=>{
+    const slug=(row.lbl||'').replace(/[^a-zA-Z0-9]+/g,'_');
+    const memo = row.isSum
+      ? _memoBlock(pfx+'-'+slug, sec.bg, '■ '+row.lbl+' — 영업 이슈',
+          [['issue','영업 이슈','영업 이슈 / 특이사항을 입력하세요…']])
+      : _memoBlock(pfx+'-'+slug, sec.bg, '■ '+row.lbl+' — Sales High / Low light',
+          [['reagent','시약 (당월 매출)','시약 당월 매출 현황을 입력하세요…'],
+           ['equip','장비 (당월 매출)','장비 당월 매출 현황을 입력하세요…']]);
+    h+=`<div class="ct-card" style="margin-bottom:14px">
+      <div class="ct-title" style="color:${sec.bg}">▎ ${row.lbl}</div>
+      ${_divTableHTML(sec,[row])}
+      ${memo}
+    </div>`;
+  });
+  return h;
+}
+
+// ── 당월 매출 / 영업 이슈 메모 (시약 · 장비 · 영업 이슈) — CDx 전용 ──
+function memoCard(prefix, color){
+  const f=(id,label,ph)=>`
+    <div class="memo-field">
+      <label class="memo-label" for="${id}">${label}</label>
+      <textarea class="memo-area" id="${id}" rows="3" placeholder="${ph}"
+        oninput="autoGrow(this);saveMemo(this)"></textarea>
+    </div>`;
+  return `<div class="ct-card" style="margin-bottom:14px">
+    <div class="ct-title" style="color:${color||'#13294B'}">■ Sales High / Low light</div>
+    <div class="memo-grid">
+      ${f('memo-'+prefix+'-reagent','시약 (당월 매출)','시약 당월 매출 현황을 입력하세요…')}
+      ${f('memo-'+prefix+'-equip','장비 (당월 매출)','장비 당월 매출 현황을 입력하세요…')}
+      ${f('memo-'+prefix+'-issue','영업 이슈','영업 이슈 / 특이사항을 입력하세요…')}
+    </div>
+    <div style="font-size:10px;color:#aaa;padding-top:6px">입력 내용은 이 브라우저에 자동 저장됩니다.</div>
+  </div>`;
+}
+function autoGrow(el){ el.style.height='auto'; el.style.height=(el.scrollHeight+2)+'px'; }
+// 월별 저장 키: pkdash_<월>_<elementId>
+function _memoKey(id){ return 'pkdash_'+_memoMonth+'_'+id; }
+function saveMemo(el){ try{ localStorage.setItem(_memoKey(el.id), el.value); }catch(e){} }
+function restoreMemos(){
+  document.querySelectorAll('.memo-area').forEach(el=>{
+    let v=null;
+    try{ v=localStorage.getItem(_memoKey(el.id)); }catch(e){}
+    el.value = (v!=null) ? v : '';
+    autoGrow(el);
+  });
+}
+// 해당 월에 저장된 메모가 하나라도 있는지
+function _monthHasData(ym){
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k && k.indexOf('pkdash_'+ym+'_memo-')===0 && localStorage.getItem(k)) return true;
+    }
+  }catch(e){}
+  return false;
+}
+// 월 선택 드롭다운 ● 마커 갱신
+function _refreshMonthMarkers(){
+  const sel=document.getElementById('memoMonthSel'); if(!sel) return;
+  Array.from(sel.options).forEach(op=>{
+    const mo=parseInt(op.value.slice(5),10);
+    op.text=mo+'월'+(_monthHasData(op.value)?'  ●':'');
+  });
+}
+// 기록 월 변경 → 해당 월 내용 다시 불러오기
+function changeMemoMonth(val){
+  _memoMonth=val;
+  restoreMemos();
+  const s=document.getElementById('memoSaveStatus'); if(s) s.textContent='';
+}
+// [저장] 버튼: 현재 화면의 모든 메모를 선택 월로 저장 + 확인 메시지
+function saveAllMemos(btn){
+  let n=0;
+  document.querySelectorAll('.memo-area').forEach(el=>{ try{ localStorage.setItem(_memoKey(el.id), el.value); n++; }catch(e){} });
+  _refreshMonthMarkers();
+  const s=document.getElementById('memoSaveStatus');
+  if(s){
+    const t=new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const mo=parseInt(_memoMonth.slice(5),10);
+    s.textContent=`✓ ${mo}월 기록 ${n}개 항목 저장 완료 (${t})`;
+  }
+}
+// 메모 기록 월 선택 + 저장 툴바
+function memoToolbarHTML(){
+  let opts='';
+  for(let mo=1; mo<=12; mo++){
+    const ym='2026-'+String(mo).padStart(2,'0');
+    opts+=`<option value="${ym}"${ym===_memoMonth?' selected':''}>${mo}월${_monthHasData(ym)?'  ●':''}</option>`;
+  }
+  return `<div class="ct-card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <div style="font-size:12px;font-weight:700;color:#13294B">📝 Sales High/Low light · 영업이슈 — 월별 기록</div>
+    <label style="font-size:11.5px;color:#555">기록 월:
+      <select id="memoMonthSel" onchange="changeMemoMonth(this.value)" style="font-family:inherit;font-size:12px;padding:3px 8px;border:1px solid #ccc;border-radius:5px;margin-left:4px">${opts}</select>
+    </label>
+    <button onclick="saveAllMemos(this)" style="font-family:inherit;font-size:12px;font-weight:700;background:var(--dg);color:#fff;border:none;border-radius:5px;padding:5px 18px;cursor:pointer">저장</button>
+    <span id="memoSaveStatus" style="font-size:11px;color:#27ae60;font-weight:600"></span>
+    <span style="font-size:10.5px;color:#999;margin-left:auto">●&nbsp;= 기록이 저장된 월 · 입력 시 자동저장되며 [저장]으로 다시 확인할 수 있습니다.</span>
+  </div>`;
+}
+
+// ═══════════ 채널별 상세 ═══════════
+let _chA='all', _chG='all', _chC='all';
+
+function setChA(a, btn){
+  _chA=a; _chG='all'; _chC='all';
+  document.querySelectorAll('#chFilter .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // 2단계 그룹 버튼 생성
+  const grpBar=document.getElementById('chGrpBar');
+  const grpBtns=document.getElementById('chGrpBtns');
+  const chBar=document.getElementById('chChBar');
+  chBar.style.display='none';
+  if(a==='all'){
+    grpBar.style.display='none';
+  } else {
+    const grps=['all',...new Set(D.chs.filter(r=>r.a===a&&r.ty==='시약').map(r=>r.g))];
+    grpBtns.innerHTML=grps.map((g,i)=>
+      `<button class="filter-btn${i===0?' active':''}" onclick="setChG('${g}',this)">${g==='all'?'전체':g}</button>`
+    ).join('');
+    grpBar.style.display='flex';
+  }
+  buildChTable();
+}
+
+function setChG(g, btn){
+  _chG=g; _chC='all';
+  document.querySelectorAll('#chGrpBtns .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // 3단계 채널 버튼 생성
+  const chBar=document.getElementById('chChBar');
+  const chBtns=document.getElementById('chChBtns');
+  if(g==='all'){
+    chBar.style.display='none';
+  } else {
+    const chs=['all',...new Set(D.chs.filter(r=>r.a===_chA&&r.g===g&&r.ty==='시약').map(r=>r.ch))];
+    chBtns.innerHTML=chs.map((c,i)=>
+      `<button class="filter-btn${i===0?' active':''}" onclick="setChC('${c}',this)">${c==='all'?'전체':c}</button>`
+    ).join('');
+    chBar.style.display='flex';
+  }
+  buildChTable();
+}
+
+function setChC(c, btn){
+  _chC=c;
+  document.querySelectorAll('#chChBtns .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildChTable();
+}
+
+function buildChTable(){
+  const wrap=document.getElementById('chWrap');
+  const aInfo={
+    capital:{lbl:'Capital',bg:'#13294B',badge:'#e3f2fd',badgeTxt:'#1565c0'},
+    local:{lbl:'Local',bg:'#2E5E32',badge:'#e8f5e9',badgeTxt:'#2e7d32'},
+    cdx:{lbl:'Strategic CDx',bg:'#1C4E7A',badge:'#f3e5f5',badgeTxt:'#6a1b9a'},
+    forensic:{lbl:'Strategic Forensic',bg:'#4A1C5E',badge:'#ede7f6',badgeTxt:'#4a148c'}
+  };
+  const empty = {ta:null,tgt:null,act:null,ac:null,ytd:null,ay:null,aa:null,gr:null};
+
+  let h='';
+  ['capital','local','cdx','forensic'].forEach(area=>{
+    if(_chA!=='all'&&_chA!==area) return;
+    const ai=aInfo[area];
+    const rows=D.chs.filter(r=>r.a===area);
+    const grps=[...new Set(rows.map(r=>r.g))].filter(g=>_chG==='all'||g===_chG);
+    if(grps.length===0) return;
+
+    h+=`<div class="ct-card" style="margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="font-size:12px;font-weight:700;color:${ai.bg}">▎ ${ai.lbl}<span style="font-size:10px;font-weight:400;color:#999;margin-left:6px">(단위: 천원)</span></div>
+      </div>
+      <div style="overflow-x:auto">
+      <table class="data-table" style="font-size:11px">
+        <colgroup>
+          <col style="width:155px"><col style="width:42px">
+          <col style="width:108px">
+          <col style="width:92px"><col style="width:92px"><col style="width:56px"><col style="width:60px">
+          <col style="width:104px"><col style="width:60px"><col style="width:60px">
+          <col style="width:60px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th style="text-align:left" rowspan="2">채널</th>
+            <th rowspan="2">유형</th>
+            <th rowspan="2">연간 Target</th>
+            <th colspan="4" class="cat" style="border-bottom:none">당월 실적 (6월)</th>
+            <th colspan="3" class="cat" style="border-bottom:none;background:#e8f0fb">YTD 누적</th>
+            <th colspan="1" class="cat" style="border-bottom:none;background:#f3f4f6">달성률</th>
+          </tr>
+          <tr>
+            <th class="cat">당월 Target</th><th class="cat">당월 실적</th><th class="cat">Achv%</th><th class="cat">GR%</th>
+            <th class="cat" style="background:#e8f0fb">YTD 실적</th><th class="cat" style="background:#e8f0fb">YTD Achv%</th><th class="cat" style="background:#e8f0fb">GR%</th>
+            <th class="cat" style="background:#f3f4f6">연간 Achv%</th>
+          </tr>
+        </thead><tbody>`;
+
+    grps.forEach(g=>{
+      const grRows=rows.filter(r=>r.g===g);
+      // 채널 목록 (순서 유지, 중복 제거)
+      const channels=[...new Set(grRows.map(r=>r.ch))].filter(c=>_chC==='all'||c===_chC);
+
+      // 그룹 헤더 (채널 단독 필터 시 숨김)
+      if(_chC==='all') h+=`<tr style="background:#f7f8fc"><td colspan="11" style="text-align:left;font-weight:700;color:${ai.bg};font-size:10.5px;padding-left:10px;border-bottom:2px solid #dde3f0">${g}</td></tr>`;
+
+      channels.forEach(ch=>{
+        const sRow = grRows.find(r=>r.ch===ch && r.ty==='시약') || empty;
+        const jRow = grRows.find(r=>r.ch===ch && r.ty==='장비') || empty;
+        // Excel 합계행 데이터가 있으면 우선 사용, 없으면 자동 계산
+        const dbSum = grRows.find(r=>r.ch===ch && r.ty==='합계') || null;
+
+        // 합계 계산 (fallback용)
+        const sumTA  = (sRow.ta  ||0) + (jRow.ta  ||0);
+        const sumTGT = (sRow.tgt ||0) + (jRow.tgt ||0);
+        const sumACT = (sRow.act ||0) + (jRow.act ||0);
+        const sumYTD = (sRow.ytd ||0) + (jRow.ytd ||0);
+        const sumAC  = sumTGT > 0 ? sumACT / sumTGT : null;
+        const sumAA  = sumTA  > 0 ? sumYTD / sumTA : null;
+        const sPrevYTD = (sRow.gr != null && sRow.ytd != null) ? sRow.ytd / (1 + sRow.gr) : null;
+        const jPrevYTD = (jRow.gr != null && jRow.ytd != null) ? jRow.ytd / (1 + jRow.gr) : null;
+        const sumPrev  = (sPrevYTD || 0) + (jPrevYTD || 0);
+        const sumGR    = sumPrev > 0 ? sumYTD / sumPrev - 1 : null;
+
+        // 합계 행에 쓸 최종 값 — DB 있으면 DB 우선
+        const hTA  = dbSum ? dbSum.ta  : sumTA;
+        const hTGT = dbSum ? dbSum.tgt : sumTGT;
+        const hACT = dbSum ? dbSum.act : sumACT;
+        const hAC  = dbSum ? dbSum.ac  : sumAC;
+        const hYTD = dbSum ? dbSum.ytd : sumYTD;
+        const hAY  = dbSum ? dbSum.ay  : null;   // DB 없으면 표시 안 함
+        const hAA  = dbSum ? dbSum.aa  : sumAA;
+        const hGR  = dbSum ? dbSum.gr  : sumGR;
+        const hGM  = dbSum ? dbSum.gm  : null;   // 당월 GR% (전년동월비)
+
+        const tdCh=`<td rowspan="3" style="text-align:left;font-weight:500;vertical-align:middle">${ch}</td>`;
+
+        // 시약 행
+        const sAcPct = _acPct(sRow);
+        const jAcPct = _acPct(jRow);
+        const hAcPct = (hTGT && hTGT!==0 && hACT!=null) ? hACT/hTGT*100 : _acPct(dbSum);
+        const _pac = (v) => {
+          if(v===null||v===undefined) return '<td class="pct-n">-</td>';
+          const cls=v>=100?'pct-g':v>=90?'pct-y':'pct-r';
+          return `<td class="${cls}">${v.toFixed(1)}%</td>`;
+        };
+        const _pacb = (v,s) => {
+          if(v===null||v===undefined) return `<td class="pct-n" style="${s}">-</td>`;
+          const cls=v>=100?'pct-g':v>=90?'pct-y':'pct-r';
+          return `<td class="${cls}" style="${s}">${v.toFixed(1)}%</td>`;
+        };
+
+        h+=`<tr>${tdCh}
+          <td style="color:#9CA3AF">시약</td>
+          <td>${F(sRow.ta)}</td>
+          <td>${F(sRow.tgt)}</td><td>${F(sRow.act)}</td>${_pac(sAcPct)}${GA(sRow.gm)}
+          <td>${F(sRow.ytd)}</td>${sRow.ay==null?'<td class="pct-n">-</td>':'<td class="'+(_normAy(sRow.ay)>=100?'pct-g':_normAy(sRow.ay)>=90?'pct-y':'pct-r')+'">'+ _normAy(sRow.ay).toFixed(1)+'%</td>'}${GA(sRow.gr)}
+          <td class="${_norm(sRow.aa)>=100?'pct-g':_norm(sRow.aa)>=90?'pct-y':'pct-r'}">${sRow.aa===null||sRow.aa===undefined?'-':P(sRow.aa)}</td>
+        </tr>`;
+        // 장비 행
+        h+=`<tr style="background:#fafafa">
+          <td style="color:#9CA3AF">장비</td>
+          <td>${F(jRow.ta)}</td>
+          <td>${F(jRow.tgt)}</td><td>${F(jRow.act)}</td>${_pac(jAcPct)}${GA(jRow.gm)}
+          <td>${F(jRow.ytd)}</td>${jRow.ay==null?'<td class="pct-n">-</td>':'<td class="'+(_normAy(jRow.ay)>=100?'pct-g':_normAy(jRow.ay)>=90?'pct-y':'pct-r')+'">'+ _normAy(jRow.ay).toFixed(1)+'%</td>'}${GA(jRow.gr)}
+          <td class="${_norm(jRow.aa)>=100?'pct-g':_norm(jRow.aa)>=90?'pct-y':'pct-r'}">${jRow.aa===null||jRow.aa===undefined?'-':P(jRow.aa)}</td>
+        </tr>`;
+        // 합계 행
+        h+=`<tr class="tr-sum">
+          <td style="color:#374151;font-weight:600">합계${dbSum?'':' *'}</td>
+          <td style="font-weight:600">${F(hTA)}</td>
+          <td style="font-weight:600">${F(hTGT)}</td><td style="font-weight:600">${F(hACT)}</td>${_pacb(hAcPct,'font-weight:600')}${GAb(hGM,'font-weight:600')}
+          <td style="font-weight:600">${F(hYTD)}</td>${PAb(hAY,'font-weight:600')}${GAb(hGR,'font-weight:600')}
+          <td class="${_norm(hAA)>=100?'pct-g':_norm(hAA)>=90?'pct-y':'pct-r'}" style="font-weight:600">${hAA===null||hAA===undefined?'-':P(hAA)}</td>
+        </tr>`;
+      });
+    });
+
+    h+=`</tbody></table></div></div>`;
+  });
+  wrap.innerHTML=h;
+}
+
+// ── ChartDataLabels: 세일즈담당자 차트에만 적용 (전역 등록 안 함)
+// buildOwnerChart 내에서 inline plugin으로 처리
+
+// ═══════════════════════════════════════════════════
+// DATA — ★2026 Sales Target by Account Owner.xlsx
+// ═══════════════════════════════════════════════════
+const OD = {
+  summary: [
+    {owner:'🏢 전사 합계', team:'National Sales',      ta:22710208000, q1:4875520116, q2:3532079726, q3:0, q4:0, ytd:8407599842, achv:0.3702, noDetail:true},
+    {owner:'Capital 공통', team:'Capital All',          ta:1345866000,  q1:230168615,  q2:125835660,  q3:0, q4:0, ytd:356004275,  achv:0.2645, noDetail:true},
+    {owner:'Chang-Seok Kong', team:'Capital + Local',   ta:5013377000,  q1:1352560695, q2:783399204,  q3:0, q4:0, ytd:2135959899, achv:0.4261, key:'Kong'},
+    {owner:'Capital팀 매출',  team:'Capital',            ta:4023194000,  q1:1038818155, q2:616519224,  q3:0, q4:0, ytd:null,       achv:null,   noDetail:true, isSub:true},
+    {owner:'Local팀 매출',    team:'Local',              ta:990183000,   q1:313742540,  q2:166879980,  q3:0, q4:0, ytd:null,       achv:null,   noDetail:true, isSub:true},
+    {owner:'Junseong Yun',    team:'Capital + CDx',     ta:3789572000,  q1:865236519,  q2:689189424,  q3:0, q4:0, ytd:1554425943, achv:0.4102, key:'Yun'},
+    {owner:'Capital팀 매출',  team:'Capital',            ta:3751166000,  q1:857473519,  q2:688411424,  q3:0, q4:0, ytd:null,       achv:null,   noDetail:true, isSub:true},
+    {owner:'CDx팀 매출',      team:'CDx',                ta:38406000,    q1:7763000,    q2:778000,     q3:0, q4:0, ytd:null,       achv:null,   noDetail:true, isSub:true},
+    {owner:'Kyung-Hyun Pyun', team:'Capital + CDx',     ta:4197040000,  q1:825762278,  q2:620455250,  q3:0, q4:0, ytd:1446217528, achv:0.3446, key:'Pyun'},
+    {owner:'Capital팀 매출',  team:'Capital',            ta:3254107000,  q1:620379974,  q2:526494094,  q3:0, q4:0, ytd:null,       achv:null,   noDetail:true, isSub:true},
+    {owner:'CDx팀 매출',      team:'CDx',                ta:942933000,   q1:205382304,  q2:93961156,   q3:0, q4:0, ytd:null,       achv:null,   noDetail:true, isSub:true},
+    {owner:'Hyeong-Joon Kim', team:'Capital',            ta:2859976000,  q1:536578399,  q2:428303358,  q3:0, q4:0, ytd:964881757,  achv:0.3374, key:'Kim_HJ'},
+    {owner:'Ho-Young Kim',    team:'Local',               ta:5504377000,  q1:1065213610, q2:884896830,  q3:0, q4:0, ytd:1950110440, achv:0.3543, key:'Kim_HY'},
+    {owner:'🏢 전사 합계',    team:'Strategic Forensic',  ta:6300000000,  q1:4360130396, q2:1011236850, q3:0, q4:0, ytd:5371367246, achv:0.8526, noDetail:true},
+    {owner:'Jung-Ah Kim',     team:'Strategic Forensic',  ta:6300000000,  q1:4360130396, q2:1011236850, q3:0, q4:0, ytd:5371367246, achv:0.8526, key:'Kim_JA', noDetail:true}
+  ],
+  segs: {
+    Kong: [
+      {seg:'Academic',       ta:191974000,   q1:38129711,   q2:33995990,  ytd:72125701,   achv:0.3757},
+      {seg:'Government',     ta:21865000,    q1:0,          q2:0,         ytd:0,          achv:null},
+      {seg:'Pharm/Biotech',  ta:4682556000,  q1:1310536704, q2:735630774, ytd:2046167478, achv:0.4370},
+      {seg:'Biochem.Mfg',   ta:0,           q1:0,          q2:0,         ytd:0,          achv:null},
+      {seg:'CDx',            ta:977000,      q1:0,          q2:0,         ytd:0,          achv:null},
+      {seg:'Applied Market', ta:52501000,    q1:3483280,    q2:13569940,  ytd:17053220,   achv:0.3248},
+      {seg:'Forensic',       ta:63504000,    q1:411000,     q2:202500,    ytd:613500,     achv:0.0097}
+    ],
+    Yun: [
+      {seg:'Academic',       ta:517805000,  q1:112660560, q2:80965650,  ytd:193626210, achv:0.3739},
+      {seg:'Government',     ta:290058000,  q1:119614820, q2:76226930,  ytd:195841750, achv:0.6752},
+      {seg:'Pharm/Biotech',  ta:2686366000, q1:594444829, q2:445181914, ytd:1039626743,achv:0.3870},
+      {seg:'Biochem.Mfg',   ta:0,          q1:0,         q2:0,         ytd:0,         achv:null},
+      {seg:'CDx',            ta:274926000,  q1:34364250,  q2:86541450,  ytd:120905700, achv:0.4398},
+      {seg:'Applied Market', ta:20173000,   q1:4152060,   q2:273480,    ytd:4425540,   achv:0.2194},
+      {seg:'Forensic',       ta:244000,     q1:0,         q2:0,         ytd:0,         achv:null}
+    ],
+    Pyun: [
+      {seg:'Academic',       ta:404235000,  q1:10991290,  q2:27424620,  ytd:38415910,  achv:0.0950},
+      {seg:'Government',     ta:0,          q1:0,         q2:0,         ytd:0,         achv:null},
+      {seg:'Pharm/Biotech',  ta:2383900000, q1:448365492, q2:336444082, ytd:784809574, achv:0.3292},
+      {seg:'Biochem.Mfg',   ta:45328000,   q1:8067900,   q2:1147900,   ytd:9215800,   achv:0.2033},
+      {seg:'CDx',            ta:1363577000, q1:358237096, q2:254997648, ytd:613234744, achv:0.4497},
+      {seg:'Applied Market', ta:0,          q1:100500,    q2:0,         ytd:100500,    achv:null},
+      {seg:'Forensic',       ta:0,          q1:0,         q2:441000,    ytd:441000,    achv:null}
+    ],
+    Kim_HJ: [
+      {seg:'Academic',       ta:1867891000, q1:289585030, q2:278129740, ytd:567714770, achv:0.3039},
+      {seg:'Government',     ta:364220000,  q1:90981360,  q2:33788434,  ytd:124769794, achv:0.3426},
+      {seg:'Pharm/Biotech',  ta:377192000,  q1:95389008,  q2:89726324,  ytd:185115332, achv:0.4908},
+      {seg:'Biochem.Mfg',   ta:0,          q1:0,         q2:0,         ytd:0,         achv:null},
+      {seg:'CDx',            ta:170682000,  q1:46969740,  q2:10868300,  ytd:57838040,  achv:0.3389},
+      {seg:'Applied Market', ta:9442000,    q1:4290870,   q2:1472310,   ytd:5763180,   achv:0.6104},
+      {seg:'Forensic',       ta:70549000,   q1:9362391,   q2:14318250,  ytd:23680641,  achv:0.3357}
+    ],
+    Kim_HY: [
+      {seg:'Academic',       ta:2503967000, q1:268825220, q2:171887140, ytd:440712360, achv:0.1760},
+      {seg:'Government',     ta:2701034000, q1:566578690, q2:516693790, ytd:1083272480,achv:0.4011},
+      {seg:'Pharm/Biotech',  ta:154346000,  q1:25212050,  q2:19302640,  ytd:44514690,  achv:0.2884},
+      {seg:'Biochem.Mfg',   ta:12350000,   q1:0,         q2:0,         ytd:0,         achv:null},
+      {seg:'CDx',            ta:110284000,  q1:3049500,   q2:503200,    ytd:3552700,   achv:0.0322},
+      {seg:'Applied Market', ta:18662000,   q1:2242860,   q2:2128500,   ytd:4371360,   achv:0.2342},
+      {seg:'Forensic',       ta:3734000,    q1:81600,     q2:352800,    ytd:434400,    achv:0.1163}
+    ]
+  },
+  custs: {
+    Kong: {
+      'Academic':       [{cust:'Academic',ta:191974000,q1:38129711,q2:33995990,ytd:72125701,achv:0.3757},{cust:'Distributor/Reseller',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Government':     [{cust:'Govt. Resr.',ta:20888000,q1:0,q2:0,ytd:0,achv:null},{cust:'Govt. AT',ta:977000,q1:0,q2:0,ytd:0,achv:null}],
+      'Pharm/Biotech':  [{cust:'Biotechnology(Cap)',ta:852287000,q1:230702770,q2:196666230,ytd:427369000,achv:0.5014},{cust:'ContractResearch Org(Cap)',ta:580975000,q1:188034000,q2:118832854,ytd:306866854,achv:0.5282},{cust:'Pharmaceutical(Cap)',ta:2259111000,q1:578057394,q2:253251710,ytd:831309104,achv:0.3680},{cust:'Biotechnology(Loc)',ta:832227000,q1:280756740,q2:140918990,ytd:421675730,achv:0.5067},{cust:'ContractResearch Org(Loc)',ta:142445000,q1:31898760,q2:20506590,ytd:52405350,achv:0.3679},{cust:'Pharmaceutical(Loc)',ta:15511000,q1:1087040,q2:5454400,ytd:6541440,achv:0.4217}],
+      'Biochem.Mfg':   [{cust:'Life Science',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'CDx':            [{cust:'Hospital',ta:977000,q1:0,q2:0,ytd:0,achv:null},{cust:'Diagnostics Mfg',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Ref & Testing Lab',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Applied Market': [{cust:'Personal Care',ta:2424000,q1:250500,q2:3407120,ytd:3657620,achv:1.5089},{cust:'Veterinary Sciences',ta:34273000,q1:1044000,q2:282750,ytd:1326750,achv:0.0387},{cust:'Agri/Food Sciences',ta:15804000,q1:2188780,q2:9880070,ytd:12068850,achv:0.7637},{cust:'Enviro Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Forensic':       [{cust:'Forensic & Paternity',ta:63504000,q1:411000,q2:202500,ytd:613500,achv:0.0097}]
+    },
+    Yun: {
+      'Academic':       [{cust:'Academic',ta:517805000,q1:112660560,q2:80965650,ytd:193626210,achv:0.3739},{cust:'Distributor/Reseller',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Government':     [{cust:'Govt. Resr.',ta:129638000,q1:119614820,q2:76226930,ytd:195841750,achv:1.5107},{cust:'Govt. AT',ta:160420000,q1:0,q2:0,ytd:0,achv:null}],
+      'Pharm/Biotech':  [{cust:'Biotechnology',ta:1587952000,q1:363075389,q2:249049084,ytd:612124473,achv:0.3855},{cust:'ContractResearch Org',ta:29756000,q1:5848560,q2:2907660,ytd:8756220,achv:0.2943},{cust:'Pharmaceutical',ta:1068658000,q1:225520880,q2:193225170,ytd:418746050,achv:0.3918}],
+      'Biochem.Mfg':   [{cust:'Life Science',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'CDx':            [{cust:'Hospital',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Diagnostics Mfg',ta:236520000,q1:26601250,q2:85763450,ytd:112364700,achv:0.4751},{cust:'Ref & Testing Lab(CDx전략)',ta:38406000,q1:7763000,q2:778000,ytd:8541000,achv:0.2224}],
+      'Applied Market': [{cust:'Personal Care',ta:1142000,q1:316500,q2:0,ytd:316500,achv:0.2771},{cust:'Veterinary Sciences',ta:1082000,q1:0,q2:0,ytd:0,achv:null},{cust:'Agri/Food Sciences',ta:17949000,q1:3835560,q2:273480,ytd:4109040,achv:0.2289},{cust:'Enviro Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Forensic':       [{cust:'Forensic & Paternity',ta:244000,q1:0,q2:0,ytd:0,achv:null}]
+    },
+    Pyun: {
+      'Academic':       [{cust:'Academic',ta:404235000,q1:10991290,q2:27424620,ytd:38415910,achv:0.0950},{cust:'Distributor/Reseller',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Government':     [{cust:'Govt. Resr.',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Govt. AT',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Pharm/Biotech':  [{cust:'Biotechnology',ta:853848000,q1:216678502,q2:109899302,ytd:326577804,achv:0.3825},{cust:'ContractResearch Org',ta:0,q1:0,q2:2647040,ytd:2647040,achv:null},{cust:'Pharmaceutical',ta:1530052000,q1:231239870,q2:223897740,ytd:455137610,achv:0.2975}],
+      'Biochem.Mfg':   [{cust:'Life Science',ta:45328000,q1:8067900,q2:1147900,ytd:9215800,achv:0.2033}],
+      'CDx':            [{cust:'Hospital(Cap)',ta:258716000,q1:59552534,q2:79537642,ytd:139090176,achv:0.5376},{cust:'Ref & Testing Lab(Cap)',ta:161928000,q1:93749378,q2:81498850,ytd:175248228,achv:1.0823},{cust:'Hospital(CDx전략)',ta:367245000,q1:122121934,q2:92775216,ytd:214897150,achv:0.5852},{cust:'Diagnostics Mfg(CDx전략)',ta:575688000,q1:82813250,q2:1185940,ytd:83999190,achv:0.1459}],
+      'Applied Market': [{cust:'Personal Care',ta:0,q1:100500,q2:0,ytd:100500,achv:null},{cust:'Veterinary Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Agri/Food Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Enviro Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Forensic':       [{cust:'Forensic & Paternity',ta:0,q1:0,q2:441000,ytd:441000,achv:null}]
+    },
+    Kim_HJ: {
+      'Academic':       [{cust:'Academic',ta:1887891000,q1:289585030,q2:278129740,ytd:567714770,achv:0.3007},{cust:'Distributor/Reseller',ta:-20000000,q1:0,q2:0,ytd:0,achv:null}],
+      'Government':     [{cust:'Govt. Resr.',ta:163533000,q1:90981360,q2:33788434,ytd:124769794,achv:0.7630},{cust:'Govt. AT',ta:200687000,q1:0,q2:0,ytd:0,achv:null}],
+      'Pharm/Biotech':  [{cust:'Biotechnology',ta:367833000,q1:95389008,q2:89444324,ytd:184833332,achv:0.5025},{cust:'ContractResearch Org',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Pharmaceutical',ta:9359000,q1:0,q2:282000,ytd:282000,achv:0.0301}],
+      'Biochem.Mfg':   [{cust:'Life Science',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'CDx':            [{cust:'Hospital',ta:74558000,q1:7215200,q2:7215200,ytd:14430400,achv:0.1935},{cust:'Diagnostics Mfg',ta:9181000,q1:81600,q2:1482750,ytd:1564350,achv:0.1704},{cust:'Ref & Testing Lab',ta:86943000,q1:39672940,q2:2170350,ytd:41843290,achv:0.4813}],
+      'Applied Market': [{cust:'Personal Care',ta:308000,q1:0,q2:0,ytd:0,achv:null},{cust:'Veterinary Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Agri/Food Sciences',ta:3634000,q1:2944620,q2:1472310,ytd:4416930,achv:1.2154},{cust:'Enviro Sciences',ta:5500000,q1:1346250,q2:0,ytd:1346250,achv:0.2448}],
+      'Forensic':       [{cust:'Forensic & Paternity',ta:70549000,q1:9362391,q2:14318250,ytd:23680641,achv:0.3357}]
+    },
+    Kim_HY: {
+      'Academic':       [{cust:'Academic',ta:1352675000,q1:268825220,q2:171887140,ytd:440712360,achv:0.3258},{cust:'Distributor/Reseller',ta:1151292000,q1:199223690,q2:174028760,ytd:373252450,achv:0.3242}],
+      'Government':     [{cust:'Govt. Resr.',ta:901026000,q1:566578690,q2:516693790,ytd:1083272480,achv:1.2023},{cust:'Govt. AT',ta:1800008000,q1:0,q2:0,ytd:0,achv:null}],
+      'Pharm/Biotech':  [{cust:'Biotechnology',ta:33172000,q1:7245300,q2:6352840,ytd:13598140,achv:0.4099},{cust:'ContractResearch Org',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Pharmaceutical',ta:121174000,q1:17966750,q2:12949800,ytd:30916550,achv:0.2551}],
+      'Biochem.Mfg':   [{cust:'Life Science',ta:12350000,q1:0,q2:0,ytd:0,achv:null}],
+      'CDx':            [{cust:'Hospital',ta:5014000,q1:3049500,q2:503200,ytd:3552700,achv:0.7086},{cust:'Diagnostics Mfg',ta:105270000,q1:0,q2:0,ytd:0,achv:null},{cust:'Ref & Testing Lab',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Applied Market': [{cust:'Personal Care',ta:1452000,q1:0,q2:0,ytd:0,achv:null},{cust:'Veterinary Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null},{cust:'Agri/Food Sciences',ta:17210000,q1:2242860,q2:2128500,ytd:4371360,achv:0.2540},{cust:'Enviro Sciences',ta:0,q1:0,q2:0,ytd:0,achv:null}],
+      'Forensic':       [{cust:'Forensic & Paternity',ta:3734000,q1:81600,q2:352800,ytd:434400,achv:0.1163}]
+    }
+  }
+}
+
+// ── 세일즈담당자 유틸
+const OAchv = (v, noEmoji) => {
+  if(v===null||v===undefined) return '<td class="pct-n">-</td>';
+  const pn=_norm(v);
+  const em = pn>=100?'🟢':pn>=80?'🟡':'🔴';
+  const cls = pn>=100?'pct-g':pn>=80?'pct-y':'pct-r';
+  const txt = pn.toFixed(1)+'%';
+  return noEmoji
+    ? `<td class="${cls}">${txt}</td>`
+    : `<td class="${cls}" style="font-weight:600">${em} ${txt}</td>`;
+};
+let curOwnerKey = null;
+let curSegName  = null;
+let chartOwner  = null;
+
+// ── 차트: 담당자별 목표/YTD 매출 + 달성율 Combi
+function buildOwnerChart() {
+  const reps      = OD.summary.filter(r => r.key && !r.isSub);
+  const labels    = reps.map(r => r.owner);
+  const taVals    = reps.map(r => Math.round((r.ta   || 0)/1000));
+  const ytdVals   = reps.map(r => Math.round((r.ytd  || 0)/1000));
+  const achvVals  = reps.map(r => r.achv!=null ? +_norm(r.achv).toFixed(1) : 0);
+  const achvColors= achvVals.map(v => v>=100?'#166534':v>=80?'#92400E':'#991B1B');
+
+  const ctx = document.getElementById('chartOwnerAchv').getContext('2d');
+  if(chartOwner) chartOwner.destroy();
+
+  // 입력값은 천원 단위. 축 라벨은 M(백만 천원)/K(천 천원)로 약식 표기
+  const fmtBil = v => {
+    if(v>=1e6) return (v/1e6).toFixed(1)+'M';
+    if(v>=1e3) return (v/1e3).toFixed(0)+'K';
+    return Math.round(v).toLocaleString();
+  };
+
+  chartOwner = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: '연간목표',
+          data: taVals,
+          backgroundColor: 'rgba(69,93,160,0.25)',
+          borderColor: 'rgba(69,93,160,0.6)',
+          borderWidth: 1,
+          borderRadius: 3,
+          yAxisID: 'yLeft',
+          order: 2
+        },
+        {
+          type: 'bar',
+          label: 'YTD 실적',
+          data: ytdVals,
+          backgroundColor: reps.map(r => {
+            const pn=r.achv!=null?_norm(r.achv):0;
+            return pn>=100?'rgba(22,101,52,0.75)':pn>=80?'rgba(146,64,14,0.75)':'rgba(153,27,27,0.75)';
+          }),
+          borderRadius: 3,
+          yAxisID: 'yLeft',
+          order: 3
+        },
+        {
+          type: 'line',
+          label: 'YTD 달성율 (%)',
+          data: achvVals,
+          borderColor: '#FDB813',
+          backgroundColor: 'rgba(253,184,19,0.15)',
+          pointBackgroundColor: achvColors,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          borderWidth: 2.5,
+          tension: 0.3,
+          yAxisID: 'yRight',
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: { font:{size:11}, boxWidth:12, padding:14 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if(ctx.dataset.yAxisID==='yRight') return ` 달성율: ${ctx.parsed.y.toFixed(1)}%`;
+              return ` ${ctx.dataset.label}: ${Math.round(ctx.parsed.y).toLocaleString()} 천원`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display:false },
+          ticks: { font:{size:10.5}, maxRotation:0 }
+        },
+        yLeft: {
+          type: 'linear',
+          position: 'left',
+          beginAtZero: true,
+          ticks: {
+            callback: v => fmtBil(v),
+            font: { size:10 }
+          },
+          grid: { color:'rgba(0,0,0,0.05)' },
+          title: { display:true, text:'매출 (천원)', font:{size:10}, color:'#888' }
+        },
+        yRight: {
+          type: 'linear',
+          position: 'right',
+          beginAtZero: true,
+          max: Math.max(...achvVals, 100) + 25,
+          ticks: {
+            callback: v => v+'%',
+            font: { size:10 }
+          },
+          grid: { drawOnChartArea:false },
+          title: { display:true, text:'달성율 (%)', font:{size:10}, color:'#888' }
+        }
+      }
+    },
+    plugins: [{
+        id: 'ownerDatalabels',
+        afterDatasetsDraw(chart) {
+          const ds = chart.data.datasets[2]; // line dataset
+          if(!ds) return;
+          const meta = chart.getDatasetMeta(2);
+          const ctx2 = chart.ctx;
+          ctx2.save();
+          meta.data.forEach((pt, i) => {
+            const v = ds.data[i];
+            if(v===null || v===undefined) return;
+            const txt = v.toFixed(1)+'%';
+            const color = achvColors[i];
+            ctx2.font = 'bold 11px Arial';
+            ctx2.fillStyle = color;
+            ctx2.textAlign = 'center';
+            ctx2.textBaseline = 'bottom';
+            ctx2.fillText(txt, pt.x, pt.y - 8);
+          });
+          ctx2.restore();
+        }
+      },
+      {
+      id: 'line100',
+      afterDraw(chart) {
+        const yR = chart.scales.yRight;
+        const xS = chart.scales.x;
+        if(!yR) return;
+        const y = yR.getPixelForValue(100);
+        const ctx2 = chart.ctx;
+        ctx2.save();
+        ctx2.beginPath();
+        ctx2.moveTo(xS.left, y);
+        ctx2.lineTo(xS.right, y);
+        ctx2.strokeStyle = 'rgba(253,184,19,0.7)';
+        ctx2.lineWidth = 1.5;
+        ctx2.setLineDash([5,3]);
+        ctx2.stroke();
+        ctx2.fillStyle = '#e65100';
+        ctx2.font = 'bold 9px Arial';
+        ctx2.fillText('100%', xS.right+4, y+4);
+        ctx2.restore();
+      }
+    }]
+  });
+}
+
+// ── 1단계: 전체 요약 테이블
+function buildOwnerSummary() {
+  let h = '';
+  OD.summary.forEach(r => {
+    const isGrand  = r.owner.includes('전사 합계');
+    const isCommon = r.owner === 'Capital 공통';
+    const isSub    = !!r.isSub;
+    const cls      = isGrand ? 'tr-grand' : isCommon ? 'tr-sum' : '';
+    const clickable = !r.noDetail && !isSub;
+    const rowStyle  = isSub
+      ? 'background:#f7f8fc;'
+      : (clickable ? 'cursor:pointer;' : '');
+    const hoverOn  = clickable ? "this.style.background='#f0f4ff'" : '';
+    const hoverOff = clickable ? "this.style.background=''" : '';
+    const onclick  = clickable ? `onclick="showOwnerDetail('${r.key}')"` : '';
+    const ownerTxt = isSub
+      ? `<span style="color:#888;padding-left:16px;font-size:10.5px">${r.owner}</span>`
+      : (clickable
+        ? `<span style="color:var(--sw);text-decoration:underline;text-underline-offset:2px">${r.owner} ›</span>`
+        : r.owner);
+    const achvTd = isSub
+      ? `<td class="pct-n" style="font-size:10.5px">-</td>`
+      : isGrand
+        ? (() => {
+            if(r.achv===null||r.achv===undefined) return '<td style="color:#fff;font-weight:700">-</td>';
+            const pn=_norm(r.achv);
+            const em = pn>=100?'🟢':pn>=80?'🟡':'🔴';
+            return `<td style="color:#fff;font-weight:700">${em} ${pn.toFixed(1)}%</td>`;
+          })()
+        : OAchv(r.achv);
+    h += `<tr class="${cls}" style="${rowStyle}" onmouseover="${hoverOn}" onmouseout="${hoverOff}" ${onclick}>
+      <td class="lbl" style="font-weight:${isGrand?700:isSub?400:600};color:${isSub?'#888':''};">${ownerTxt}</td>
+      <td style="font-size:${isSub?'10.5px':'11px'};color:${isSub?'#aaa':''}">${r.team}</td>
+      <td style="font-size:${isSub?'10.5px':'11px'};color:${isSub?'#aaa':''}">${r.ta?F(r.ta):'-'}</td>
+      <td style="font-size:${isSub?'10.5px':'11px'};color:${isSub?'#aaa':''}">${F(r.q1)}</td>
+      <td style="font-size:${isSub?'10.5px':'11px'};color:${isSub?'#aaa':''}">${F(r.q2)}</td>
+      <td class="pct-n" style="font-size:10.5px">-</td>
+      <td class="pct-n" style="font-size:10.5px">-</td>
+      <td style="font-weight:${isSub?400:600};font-size:${isSub?'10.5px':'11px'};color:${isSub?'#aaa':''}">${r.ytd?F(r.ytd):'-'}</td>
+      ${achvTd}
+    </tr>`;
+  });
+  document.getElementById('ownerSummaryBody').innerHTML = h;
+}
+
+// ── 2단계: Market Segment 상세 (ZEUC accordion 포함)
+function showOwnerDetail(key) {
+  curOwnerKey = key;
+  curSegName  = null;
+  const owner = OD.summary.find(r => r.key === key);
+  document.getElementById('ownerDetailTitle').textContent = owner.owner + ' — Market Segment 상세';
+  document.getElementById('ownerDetailNote').textContent  = '연간목표: ' + Math.round(Number(owner.ta)/1000).toLocaleString('ko-KR') + '천원';
+  document.getElementById('ownerSegTitle').textContent    = 'Market Segment별 요약';
+  const segs = OD.segs[key] || [];
+  let h = '';
+  segs.forEach(s => {
+    const hasCust = OD.custs[key] && OD.custs[key][s.seg] && OD.custs[key][s.seg].length > 0;
+    const segId   = 'cust_' + key + '_' + s.seg.replace(/[^a-zA-Z0-9]/g,'_');
+    const segTxt  = hasCust
+      ? `<span style="display:flex;align-items:center;gap:6px">
+           <span id="${segId}_icon" style="font-size:11px;color:var(--sw);transition:transform .2s">▶</span>
+           <span style="color:var(--sw)">${s.seg}</span>
+         </span>`
+      : s.seg;
+    const trAttr = hasCust
+      ? `style="cursor:pointer" onmouseover="this.style.background='#f0f4ff'" onmouseout="var rows=document.querySelectorAll('.cust-row-${segId}');if(!rows.length||rows[0].style.display==='none')this.style.background=''" onclick="toggleCustSeg('${key}','${s.seg.replace(/'/g,"\\'")}','${segId}',this)"`
+      : '';
+    h += `<tr ${trAttr} id="${segId}_row">
+      <td class="lbl">${segTxt}</td>
+      <td>${F(s.ta)}</td>
+      <td>${F(s.q1)}</td>
+      <td>${F(s.q2)}</td>
+      <td style="font-weight:600">${F(s.ytd)}</td>
+      ${OAchv(s.achv)}
+    </tr>`;
+    // ZEUC CustSeg 행들 (숨김 상태로 미리 렌더)
+    if(hasCust) {
+      const custs = OD.custs[key][s.seg];
+      custs.forEach(c => {
+        const achvPn  = c.achv===null||c.achv===undefined ? null : _norm(c.achv);
+        const achvCls = achvPn===null ? 'pct-n' : achvPn>=100?'pct-g':achvPn>=80?'pct-y':'pct-r';
+        const achvTxt = achvPn===null ? '-' : achvPn.toFixed(1)+'%';
+        h += `<tr class="cust-row-${segId}" style="display:none;background:#f7fbff">
+          <td class="lbl" style="padding-left:32px;font-size:10.5px;color:#555;font-weight:400">
+            <span style="color:#bbb;margin-right:6px">└</span>${c.cust}
+          </td>
+          <td style="font-size:10.5px;color:#777;text-align:center">${F(c.ta)}</td>
+          <td style="font-size:10.5px;color:#777;text-align:center">${F(c.q1)}</td>
+          <td style="font-size:10.5px;color:#777;text-align:center">${F(c.q2)}</td>
+          <td style="font-size:10.5px;color:#777;text-align:center;font-weight:500">${F(c.ytd)}</td>
+          <td class="${achvCls}" style="font-size:10.5px;text-align:center">${achvTxt}</td>
+        </tr>`;
+      });
+    }
+  });
+  document.getElementById('ownerSegBody').innerHTML = h;
+  document.getElementById('custSegWrap').style.display = 'none';
+  document.getElementById('ownerDetailWrap').style.display = '';
+  document.getElementById('ownerDetailWrap').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function toggleCustSeg(key, seg, segId, rowEl) {
+  const icon   = document.getElementById(segId+'_icon');
+  const rows   = document.querySelectorAll('.cust-row-'+segId);
+  if(!rows.length) return;
+  const isOpen = rows[0].style.display !== 'none';
+  rows.forEach(r => r.style.display = isOpen ? 'none' : '');
+  if(icon) icon.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(90deg)';
+  rowEl.style.background = isOpen ? '' : '#eef2ff';
+}
+
+function closeOwnerDetail() {
+  document.getElementById('ownerDetailWrap').style.display = 'none';
+  curOwnerKey = null;
+}
+
+// ── 3단계 함수 (하위 호환용 — accordion으로 대체됨)
+function showCustSeg(seg) {}
+function closeCustSeg() {
+  document.getElementById('custSegWrap').style.display = 'none';
+  curSegName = null;
+}
+
+// ═══════════ INIT ═══════════
+document.addEventListener('DOMContentLoaded',()=>{
+  buildSummary();
+  buildCharts();
+  buildNatForChart();
+  buildDivTable();
+  buildChTable();
+  buildOwnerSummary();
+  buildOwnerChart();
+});
+</script>
+</body>
+</html>
