@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Promega Sales Dashboard 2026</title>
+  <title>Promega Sales Dashboard 2026 – 6월 Fcst</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -64,7 +64,7 @@
       flex-wrap: wrap;
     }
     .filter-bar label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
-    .filter-bar select, .filter-bar input[type="range"] {
+    .filter-bar select {
       padding: 6px 10px;
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -81,6 +81,11 @@
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 20px;
+    }
+    .data-note {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-left: auto;
     }
 
     /* ── KPI Cards ── */
@@ -223,31 +228,32 @@
 <body>
 
 <header>
-  <h1>Promega Sales Dashboard 2026</h1>
-  <span id="updated">기준일: 2026-06-29</span>
+  <h1>Promega Sales Dashboard 2026 – 6월 Fcst</h1>
+  <span id="updated">기준일: 2026-06-29 | 환율: 1,300원/USD</span>
 </header>
 
 <main>
 
   <!-- Filter bar -->
   <div class="filter-bar">
-    <label>지역</label>
-    <select id="regionFilter" onchange="applyFilter()">
-      <option value="all">전체</option>
-      <option value="서울/경기">서울/경기</option>
-      <option value="중부">중부</option>
-      <option value="영남">영남</option>
-      <option value="호남">호남</option>
+    <label>팀</label>
+    <select id="teamFilter" onchange="applyFilter()">
+      <option value="all">전체 (PK Grand Total)</option>
+      <option value="수도권 1팀">수도권 1팀</option>
+      <option value="대전/충청 3팀">대전/충청 3팀</option>
+      <option value="제주/전라 4팀">제주/전라 4팀</option>
+      <option value="경상 5팀">경상 5팀</option>
+      <option value="CDx 6팀">CDx 6팀</option>
+      <option value="Strategic/Forensic">Strategic/Forensic</option>
     </select>
-    <label>제품군</label>
-    <select id="catFilter" onchange="applyFilter()">
+    <label>매출유형</label>
+    <select id="typeFilter" onchange="applyFilter()">
       <option value="all">전체</option>
-      <option value="Cell Biology">Cell Biology</option>
-      <option value="Nucleic Acid">Nucleic Acid</option>
-      <option value="Protein">Protein</option>
-      <option value="Detection">Detection</option>
+      <option value="시약">시약</option>
+      <option value="장비">장비</option>
     </select>
     <span class="badge" id="filterBadge">전체 데이터</span>
+    <span class="data-note">출처: 8. 2026' Target(CUSD 1,300원)_v6.xlsx</span>
   </div>
 
   <!-- KPI Cards -->
@@ -257,11 +263,11 @@
   <div class="section-title">월별 매출 추이</div>
   <div class="chart-grid">
     <div class="chart-card">
-      <h3>월별 실적 vs 목표 (단위: 백만원)</h3>
+      <h3>월별 실적 vs 목표 (단위: 억원)</h3>
       <div class="chart-wrap tall"><canvas id="barChart"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>제품군별 매출 비중</h3>
+      <h3>팀별 H1 매출 비중</h3>
       <div class="chart-wrap tall"><canvas id="donutChart"></canvas></div>
     </div>
   </div>
@@ -273,28 +279,27 @@
       <thead>
         <tr>
           <th>월</th>
-          <th class="num">목표 (M원)</th>
-          <th class="num">실적 (M원)</th>
+          <th class="num">목표 (억원)</th>
+          <th class="num">실적 (억원)</th>
           <th class="num">달성률</th>
           <th>달성 현황</th>
-          <th class="num">전년 대비</th>
         </tr>
       </thead>
       <tbody id="monthlyTableBody"></tbody>
     </table>
-    <p class="fcst-note">* 7월~12월은 Forecast 값 (음영 처리). 실적은 확정 기준.</p>
+    <p class="fcst-note">* 1월–3월은 Q1 합계(92.4억 실적 / 95.3억 목표)를 3등분한 추정치. &nbsp;* 7월–12월은 연간 목표 기반 Forecast. &nbsp;* PK Grand Total 기준.</p>
   </div>
 
   <!-- Bottom charts -->
-  <div class="section-title">지역 · 담당자별 현황</div>
+  <div class="section-title">팀 · 채널별 현황</div>
   <div class="bottom-grid">
     <div class="chart-card">
-      <h3>지역별 H1 달성률 (%)</h3>
-      <div class="chart-wrap med"><canvas id="regionChart"></canvas></div>
+      <h3>팀별 H1 달성률 (%)</h3>
+      <div class="chart-wrap med"><canvas id="teamChart"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>담당자별 H1 실적 순위 (M원)</h3>
-      <div class="chart-wrap med"><canvas id="repChart"></canvas></div>
+      <h3>주요 채널별 H1 실적 순위 (억원)</h3>
+      <div class="chart-wrap med"><canvas id="channelChart"></canvas></div>
     </div>
   </div>
 
@@ -302,88 +307,141 @@
 
 <script>
 /* ═══════════════════════════════════════════════
-   SAMPLE DATA — 실제 데이터로 교체하세요
+   DATA — 8. 2026' Target(CUSD 1,300원)_v6.xlsx
+   단위: 억원 (= 100,000,000원)
    ═══════════════════════════════════════════════ */
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const FCST_START = 6; // 7월부터 Forecast
 
+// PK Grand Total 월별 (억원)
+// 1~3월: Q1 합계를 3등분한 추정치
 const rawData = {
   all: {
-    target:  [320, 310, 380, 370, 400, 410, 420, 430, 450, 460, 470, 480],
-    actual:  [335, 298, 392, 382, 415, 423,   0,   0,   0,   0,   0,   0],
-    fcst:    [  0,   0,   0,   0,   0,   0, 418, 440, 458, 465, 480, 510],
-    yoy:     [5.2, -3.1, 6.4, 4.8, 7.3, 8.1, null, null, null, null, null, null],
-    prevYear:[318, 308, 368, 364, 387, 391, 405, 418, 432, 445, 460, 472],
+    target:  [31.8, 31.8, 31.8, 25.3, 18.0, 27.8, 21.3, 19.0, 22.2, 19.6, 21.9, 19.8],
+    actual:  [30.8, 30.8, 30.8, 25.2, 20.2, 23.2,    0,    0,    0,    0,    0,    0],
+    fcst:    [   0,    0,    0,    0,    0,    0, 21.3, 19.0, 22.2, 19.6, 21.9, 19.8],
   }
 };
 
-// 지역별 H1 데이터
-const regionData = {
-  labels: ['서울/경기','중부','영남','호남'],
-  target: [820, 580, 640, 405],
-  actual: [856, 571, 652, 386],
+// 팀별 H1/FY 실적 (KPI 카드용)
+const teamKPI = {
+  'all':               { h1Act: 161.0, h1Tgt: 166.3, h2Tgt: 123.8, fyTgt: 290.1 },
+  '수도권 1팀':        { h1Act:  69.9, h1Tgt:  73.1, h2Tgt:  79.2, fyTgt: 152.3 },
+  '대전/충청 3팀':     { h1Act:  16.0, h1Tgt:  16.2, h2Tgt:  16.7, fyTgt:  32.9 },
+  '제주/전라 4팀':     { h1Act:   4.7, h1Tgt:   5.3, h2Tgt:   5.3, fyTgt:  10.6 },
+  '경상 5팀':          { h1Act:  10.7, h1Tgt:  11.2, h2Tgt:  10.3, fyTgt:  21.4 },
+  'CDx 6팀':           { h1Act:   4.5, h1Tgt:   4.4, h2Tgt:   5.4, fyTgt:   9.8 },
+  'Strategic/Forensic':{ h1Act:  55.1, h1Tgt:  56.2, h2Tgt:   6.9, fyTgt:  63.0 },
 };
 
-// 담당자별
-const repData = {
-  labels: ['김지수','이민준','박수연','최동훈','정아름','한승우'],
-  actual: [285, 262, 248, 231, 215, 204],
-  target: [270, 270, 240, 240, 210, 210],
+// 시약/장비 비중 (필터용 보정 계수)
+const typeFactors = {
+  'all':  { a: 1.000, t: 1.000 },
+  '시약': { a: 0.954, t: 0.939 },
+  '장비': { a: 0.046, t: 0.061 },
 };
 
-// 제품군별 H1 실적
-const catData = {
-  labels: ['Cell Biology','Nucleic Acid','Protein','Detection'],
-  values: [765, 618, 432, 430],
-  colors: ['#0057A8','#1976D2','#42A5F5','#90CAF9'],
+// 팀별 월별 비중 (필터용 보정 계수)
+const teamFactors = {
+  'all':               { a: 1.000, t: 1.000 },
+  '수도권 1팀':        { a: 0.434, t: 0.440 },
+  '대전/충청 3팀':     { a: 0.099, t: 0.097 },
+  '제주/전라 4팀':     { a: 0.029, t: 0.032 },
+  '경상 5팀':          { a: 0.066, t: 0.067 },
+  'CDx 6팀':           { a: 0.028, t: 0.027 },
+  'Strategic/Forensic':{ a: 0.342, t: 0.338 },
+};
+
+// 팀별 H1 실적 (달성률 차트)
+const teamPerfData = {
+  labels: ['수도권 1팀', '대전/충청 3팀', '제주/전라 4팀', '경상 5팀', 'CDx 6팀', 'Strategic'],
+  target: [73.1, 16.2, 5.3, 11.2, 4.4, 56.2],
+  actual: [69.9, 16.0, 4.7, 10.7, 4.5, 55.1],
+};
+
+// 주요 채널/거래처별 H1 실적
+const channelData = {
+  labels: ['Strategic/Forensic', '아이셀', '드림셀', 'PB Direct', '나노바이오', '퍼블릭바이오'],
+  actual: [55.1, 26.7, 20.1, 19.5, 12.9, 5.1],
+  target: [56.2, 27.2, 20.2, 22.1, 12.1, 4.5],
+};
+
+// 팀별 H1 매출 비중 (도넛)
+const pieData = {
+  labels: ['수도권 1팀', 'Strategic/Forensic', '대전/충청 3팀', '경상 5팀', '제주/전라 4팀', 'CDx 6팀'],
+  values: [69.9, 55.1, 16.0, 10.7, 4.7, 4.5],
+  colors: ['#0057A8', '#1976D2', '#42A5F5', '#1B8A4E', '#E67E22', '#9AA3AF'],
 };
 
 /* ═══════════════════════════════════════════════
    HELPERS
    ═══════════════════════════════════════════════ */
-const fmt = (n) => n == null ? '-' : n.toLocaleString('ko-KR', {maximumFractionDigits:0});
+const fmt1 = (n) => n == null ? '-' : n.toFixed(1);
 const fmtPct = (n) => n == null ? '-' : n.toFixed(1) + '%';
 const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 
-function getDisplayData(region, cat) {
-  // For demo: modify values by region/category filter
-  const base = rawData.all;
-  const factors = { 'all':1, '서울/경기':1.05, '중부':0.72, '영남':0.80, '호남':0.50 };
-  const catF    = { 'all':1, 'Cell Biology':0.33, 'Nucleic Acid':0.27, 'Protein':0.19, 'Detection':0.19 };
-  const f = factors[region] * (cat === 'all' ? 1 : catF[cat] / catF['all']);
-
+function getDisplayData(team, type) {
+  const tf  = teamFactors[team] || teamFactors['all'];
+  const tpf = typeFactors[type] || typeFactors['all'];
+  const fa  = tf.a * tpf.a;
+  const ft  = tf.t * tpf.t;
   return {
-    target:   base.target.map(v => Math.round(v * f)),
-    actual:   base.actual.map(v => v ? Math.round(v * f) : 0),
-    fcst:     base.fcst.map(v => v ? Math.round(v * f) : 0),
-    yoy:      base.yoy,
-    prevYear: base.prevYear.map(v => Math.round(v * f)),
+    target: rawData.all.target.map(v => +(v * ft).toFixed(1)),
+    actual: rawData.all.actual.map(v => v ? +(v * fa).toFixed(1) : 0),
+    fcst:   rawData.all.fcst.map(v => v ? +(v * ft).toFixed(1) : 0),
   };
 }
 
 /* ═══════════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════════ */
-let barChartInst, donutChartInst, regionChartInst, repChartInst;
+let barChartInst, donutChartInst, teamChartInst, channelChartInst;
 
 /* ═══════════════════════════════════════════════
    KPI
    ═══════════════════════════════════════════════ */
-function renderKPI(d) {
-  const h1Actual = d.actual.slice(0,6).reduce((a,b)=>a+b,0);
-  const h1Target = d.target.slice(0,6).reduce((a,b)=>a+b,0);
-  const h1Rate   = h1Actual / h1Target * 100;
-  const fullYearFcst = d.actual.slice(0,6).reduce((a,b)=>a+b,0) +
-                       d.fcst.slice(6).reduce((a,b)=>a+b,0);
-  const fullYearTarget = d.target.reduce((a,b)=>a+b,0);
-  const fyRate = fullYearFcst / fullYearTarget * 100;
-  const yoyAvg = d.yoy.filter(v=>v!=null).reduce((a,b)=>a+b,0)/6;
+function renderKPI(team, type) {
+  const kpi = teamKPI[team] || teamKPI['all'];
+  const tpf = typeFactors[type] || typeFactors['all'];
+
+  let h1Act = +(kpi.h1Act * tpf.a).toFixed(1);
+  let h1Tgt = +(kpi.h1Tgt * tpf.t).toFixed(1);
+  let h2Tgt = +(kpi.h2Tgt * tpf.t).toFixed(1);
+  let fyTgt = +(kpi.fyTgt * tpf.t).toFixed(1);
+
+  const h1Rate = h1Act / h1Tgt * 100;
+  const fyFcst = +(h1Act + h2Tgt).toFixed(1);
+  const fyRate = fyFcst / fyTgt * 100;
 
   const cards = [
-    { label: 'H1 누계 실적', value: `${fmt(h1Actual)}M`, sub: `목표 ${fmt(h1Target)}M`, subClass: h1Rate>=100?'up':'down', color:'', icon:'📊' },
-    { label: 'H1 달성률',    value: fmtPct(h1Rate),     sub: h1Rate>=100?'목표 초과 달성':'목표 미달', subClass: h1Rate>=100?'up':'down', color: h1Rate>=100?'green':'red' },
-    { label: '연간 Forecast', value: `${fmt(fullYearFcst)}M`, sub: `연간 목표 ${fmt(fullYearTarget)}M (${fmtPct(fyRate)})`, subClass: fyRate>=100?'up':'warn', color:'orange' },
-    { label: '전년 대비 (YoY)', value: fmtPct(yoyAvg), sub: 'H1 평균 성장률', subClass: yoyAvg>=0?'up':'down', color: yoyAvg>=0?'green':'red' },
+    {
+      label: 'H1 누계 실적',
+      value: `${fmt1(h1Act)}억`,
+      sub: `목표 ${fmt1(h1Tgt)}억`,
+      subClass: 'neutral',
+      color: '',
+    },
+    {
+      label: 'H1 달성률',
+      value: fmtPct(h1Rate),
+      sub: h1Rate >= 100 ? '목표 초과 달성' : '목표 미달',
+      subClass: h1Rate >= 100 ? 'up' : 'down',
+      color: h1Rate >= 100 ? 'green' : 'red',
+    },
+    {
+      label: '연간 Forecast',
+      value: `${fmt1(fyFcst)}억`,
+      sub: `연간 목표 ${fmt1(fyTgt)}억 (${fmtPct(fyRate)})`,
+      subClass: fyRate >= 100 ? 'up' : 'neutral',
+      color: 'orange',
+    },
+    {
+      label: 'H2 잔여 목표',
+      value: `${fmt1(h2Tgt)}억`,
+      sub: `H1 ${fmtPct(h1Rate)} → FY ${fmtPct(fyRate)} 전망`,
+      subClass: fyRate >= 98 ? 'up' : 'down',
+      color: fyRate >= 98 ? 'green' : 'red',
+    },
   ];
 
   const grid = document.getElementById('kpiGrid');
@@ -401,23 +459,26 @@ function renderKPI(d) {
 function renderTable(d) {
   const tbody = document.getElementById('monthlyTableBody');
   tbody.innerHTML = MONTHS.map((m, i) => {
-    const isFcst = i >= FCST_START;
-    const tgt    = d.target[i];
-    const act    = isFcst ? d.fcst[i] : d.actual[i];
-    const rate   = act ? act / tgt * 100 : null;
-    const yoy    = d.yoy[i];
+    const isFcst  = i >= FCST_START;
+    const isEst   = i < 3; // Q1 estimate
+    const tgt     = d.target[i];
+    const act     = isFcst ? d.fcst[i] : d.actual[i];
+    const rate    = act ? act / tgt * 100 : null;
     const rateStr = rate != null ? fmtPct(rate) : '—';
     const pillClass = rate == null ? '' : rate >= 100 ? 'over' : rate >= 90 ? 'warn' : 'under';
     const pillLabel = rate == null ? '—' : rate >= 100 ? '초과' : rate >= 90 ? '근접' : '미달';
-    const barPct = rate ? clamp(rate, 0, 130) : 0;
-    const barClass = rate >= 100 ? 'over' : rate < 90 ? 'danger' : '';
-    const yoyStr = yoy != null ? (yoy >= 0 ? `+${yoy}%` : `${yoy}%`) : isFcst ? '<span style="color:var(--gray-400)">Fcst</span>' : '—';
-    const rowStyle = isFcst ? 'background:#FAFBFC;color:#6B7280;' : '';
+    const barPct    = rate ? clamp(rate, 0, 130) : 0;
+    const barClass  = rate >= 100 ? 'over' : rate < 90 ? 'danger' : '';
+    const rowStyle  = isFcst ? 'background:#FAFBFC;color:#6B7280;' : '';
 
     return `<tr style="${rowStyle}">
-      <td><strong>${m}</strong>${isFcst ? ' <small style="color:var(--orange);font-size:10px">FCST</small>' : ''}</td>
-      <td class="num">${fmt(tgt)}</td>
-      <td class="num">${act ? fmt(act) : '—'}</td>
+      <td>
+        <strong>${m}</strong>
+        ${isFcst ? ' <small style="color:var(--orange);font-size:10px">FCST</small>' : ''}
+        ${isEst  ? ' <small style="color:var(--gray-400);font-size:10px">추정</small>' : ''}
+      </td>
+      <td class="num">${fmt1(tgt)}</td>
+      <td class="num">${act ? fmt1(act) : '—'}</td>
       <td class="num">${rateStr}</td>
       <td style="min-width:160px">
         ${rate != null ? `<div class="progress-bar-wrap">
@@ -426,7 +487,6 @@ function renderTable(d) {
           <span class="pill ${pillClass}">${pillLabel}</span>
         </div>` : '—'}
       </td>
-      <td class="num">${yoyStr}</td>
     </tr>`;
   }).join('');
 }
@@ -437,8 +497,6 @@ function renderTable(d) {
 function renderBarChart(d) {
   const ctx = document.getElementById('barChart').getContext('2d');
   if (barChartInst) barChartInst.destroy();
-
-  const combined = d.actual.map((v,i) => i < FCST_START ? v : d.fcst[i]);
 
   barChartInst = new Chart(ctx, {
     type: 'bar',
@@ -451,7 +509,7 @@ function renderBarChart(d) {
           backgroundColor: 'transparent',
           borderColor: '#9AA3AF',
           borderWidth: 2,
-          borderDash: [4,3],
+          borderDash: [4, 3],
           type: 'line',
           pointRadius: 3,
           pointBackgroundColor: '#9AA3AF',
@@ -459,14 +517,14 @@ function renderBarChart(d) {
         },
         {
           label: '실적',
-          data: d.actual.map((v,i) => i < FCST_START ? v : null),
+          data: d.actual.map((v, i) => i < FCST_START ? v : null),
           backgroundColor: '#0057A8',
           borderRadius: 4,
           order: 1,
         },
         {
           label: 'Forecast',
-          data: d.fcst.map((v,i) => i >= FCST_START ? v : null),
+          data: d.fcst.map((v, i) => i >= FCST_START ? v : null),
           backgroundColor: '#90CAF9',
           borderRadius: 4,
           order: 2,
@@ -481,7 +539,7 @@ function renderBarChart(d) {
         legend: { position: 'bottom', labels: { font: { size: 12 }, boxWidth: 14 } },
         tooltip: {
           callbacks: {
-            label: (ctx) => ` ${ctx.dataset.label}: ${fmt(ctx.raw)}M원`
+            label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw != null ? fmt1(ctx.raw) + '억원' : '-'}`
           }
         }
       },
@@ -489,10 +547,7 @@ function renderBarChart(d) {
         x: { grid: { display: false }, ticks: { font: { size: 11 } } },
         y: {
           grid: { color: '#EAECF0' },
-          ticks: {
-            font: { size: 11 },
-            callback: (v) => v + 'M'
-          }
+          ticks: { font: { size: 11 }, callback: (v) => v + '억' }
         }
       }
     }
@@ -500,7 +555,7 @@ function renderBarChart(d) {
 }
 
 /* ═══════════════════════════════════════════════
-   DONUT CHART
+   DONUT CHART (팀별 H1 비중)
    ═══════════════════════════════════════════════ */
 function renderDonutChart() {
   const ctx = document.getElementById('donutChart').getContext('2d');
@@ -509,10 +564,10 @@ function renderDonutChart() {
   donutChartInst = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: catData.labels,
+      labels: pieData.labels,
       datasets: [{
-        data: catData.values,
-        backgroundColor: catData.colors,
+        data: pieData.values,
+        backgroundColor: pieData.colors,
         borderWidth: 0,
         hoverOffset: 6,
       }]
@@ -526,9 +581,9 @@ function renderDonutChart() {
         tooltip: {
           callbacks: {
             label: (ctx) => {
-              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-              const pct = (ctx.raw/total*100).toFixed(1);
-              return ` ${ctx.label}: ${fmt(ctx.raw)}M원 (${pct}%)`;
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = (ctx.raw / total * 100).toFixed(1);
+              return ` ${ctx.label}: ${fmt1(ctx.raw)}억원 (${pct}%)`;
             }
           }
         }
@@ -538,22 +593,22 @@ function renderDonutChart() {
 }
 
 /* ═══════════════════════════════════════════════
-   REGION CHART
+   TEAM 달성률 CHART
    ═══════════════════════════════════════════════ */
-function renderRegionChart() {
-  const ctx = document.getElementById('regionChart').getContext('2d');
-  if (regionChartInst) regionChartInst.destroy();
+function renderTeamChart() {
+  const ctx = document.getElementById('teamChart').getContext('2d');
+  if (teamChartInst) teamChartInst.destroy();
 
-  const rates = regionData.target.map((t,i) => +(regionData.actual[i]/t*100).toFixed(1));
+  const rates = teamPerfData.target.map((t, i) => +(teamPerfData.actual[i] / t * 100).toFixed(1));
 
-  regionChartInst = new Chart(ctx, {
+  teamChartInst = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: regionData.labels,
+      labels: teamPerfData.labels,
       datasets: [{
-        label: '달성률 (%)',
+        label: 'H1 달성률 (%)',
         data: rates,
-        backgroundColor: rates.map(r => r>=100?'#1B8A4E': r>=90?'#E67E22':'#C0392B'),
+        backgroundColor: rates.map(r => r >= 100 ? '#1B8A4E' : r >= 90 ? '#E67E22' : '#C0392B'),
         borderRadius: 6,
       }]
     },
@@ -564,12 +619,17 @@ function renderRegionChart() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          callbacks: { label: (ctx) => ` ${ctx.raw}%` }
+          callbacks: {
+            label: (ctx) => {
+              const i = ctx.dataIndex;
+              return ` ${ctx.raw}% (실적 ${fmt1(teamPerfData.actual[i])}억 / 목표 ${fmt1(teamPerfData.target[i])}억)`;
+            }
+          }
         }
       },
       scales: {
         x: {
-          min: 80, max: 115,
+          min: 80, max: 105,
           grid: { color: '#EAECF0' },
           ticks: { font: { size: 11 }, callback: v => v + '%' }
         },
@@ -580,30 +640,30 @@ function renderRegionChart() {
 }
 
 /* ═══════════════════════════════════════════════
-   REP CHART
+   CHANNEL CHART
    ═══════════════════════════════════════════════ */
-function renderRepChart() {
-  const ctx = document.getElementById('repChart').getContext('2d');
-  if (repChartInst) repChartInst.destroy();
+function renderChannelChart() {
+  const ctx = document.getElementById('channelChart').getContext('2d');
+  if (channelChartInst) channelChartInst.destroy();
 
-  repChartInst = new Chart(ctx, {
+  channelChartInst = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: repData.labels,
+      labels: channelData.labels,
       datasets: [
         {
           label: '실적',
-          data: repData.actual,
+          data: channelData.actual,
           backgroundColor: '#0057A8',
           borderRadius: 4,
         },
         {
-          label: '목표',
-          data: repData.target,
+          label: 'H1 목표',
+          data: channelData.target,
           backgroundColor: 'transparent',
           borderColor: '#9AA3AF',
           borderWidth: 2,
-          borderDash: [4,3],
+          borderDash: [4, 3],
           type: 'line',
           pointRadius: 3,
           pointBackgroundColor: '#9AA3AF',
@@ -616,14 +676,14 @@ function renderRepChart() {
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 12 }, boxWidth: 14 } },
         tooltip: {
-          callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt(ctx.raw)}M원` }
+          callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt1(ctx.raw)}억원` }
         }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
         y: {
           grid: { color: '#EAECF0' },
-          ticks: { font: { size: 11 }, callback: v => v + 'M' }
+          ticks: { font: { size: 11 }, callback: v => v + '억' }
         }
       }
     }
@@ -634,17 +694,17 @@ function renderRepChart() {
    APPLY FILTER
    ═══════════════════════════════════════════════ */
 function applyFilter() {
-  const region = document.getElementById('regionFilter').value;
-  const cat    = document.getElementById('catFilter').value;
-  const badge  = document.getElementById('filterBadge');
+  const team  = document.getElementById('teamFilter').value;
+  const type  = document.getElementById('typeFilter').value;
+  const badge = document.getElementById('filterBadge');
 
   const parts = [];
-  if (region !== 'all') parts.push(region);
-  if (cat    !== 'all') parts.push(cat);
+  if (team !== 'all') parts.push(team);
+  if (type !== 'all') parts.push(type);
   badge.textContent = parts.length ? parts.join(' · ') : '전체 데이터';
 
-  const d = getDisplayData(region, cat);
-  renderKPI(d);
+  const d = getDisplayData(team, type);
+  renderKPI(team, type);
   renderTable(d);
   renderBarChart(d);
 }
@@ -653,13 +713,13 @@ function applyFilter() {
    INIT
    ═══════════════════════════════════════════════ */
 function init() {
-  const d = getDisplayData('all','all');
-  renderKPI(d);
+  const d = getDisplayData('all', 'all');
+  renderKPI('all', 'all');
   renderTable(d);
   renderBarChart(d);
   renderDonutChart();
-  renderRegionChart();
-  renderRepChart();
+  renderTeamChart();
+  renderChannelChart();
 }
 
 init();
