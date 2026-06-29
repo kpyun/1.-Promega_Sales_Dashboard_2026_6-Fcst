@@ -318,17 +318,17 @@ const FCST_START = 6; // 7월부터 Forecast
 const rawData = {
   all: {
     target:  [31.8, 31.8, 31.8, 25.3, 18.0, 27.8, 21.3, 19.0, 22.2, 19.6, 21.9, 19.8],
-    actual:  [30.8, 30.8, 30.8, 25.2, 20.2, 23.2,    0,    0,    0,    0,    0,    0],
+    actual:  [30.8, 30.8, 30.8, 25.2, 20.2, 23.4,    0,    0,    0,    0,    0,    0],
     fcst:    [   0,    0,    0,    0,    0,    0, 21.3, 19.0, 22.2, 19.6, 21.9, 19.8],
   }
 };
 
 // 팀별 H1/FY 실적 (KPI 카드용)
 const teamKPI = {
-  'all':               { h1Act: 161.0, h1Tgt: 166.3, h2Tgt: 123.8, fyTgt: 290.1 },
-  '수도권 1팀':        { h1Act:  69.9, h1Tgt:  73.1, h2Tgt:  79.2, fyTgt: 152.3 },
+  'all':               { h1Act: 161.2, h1Tgt: 166.3, h2Tgt: 123.8, fyTgt: 290.1 },
+  '수도권 1팀':        { h1Act:  70.0, h1Tgt:  73.1, h2Tgt:  79.2, fyTgt: 152.3 },
   '대전/충청 3팀':     { h1Act:  16.0, h1Tgt:  16.2, h2Tgt:  16.7, fyTgt:  32.9 },
-  '제주/전라 4팀':     { h1Act:   4.7, h1Tgt:   5.3, h2Tgt:   5.3, fyTgt:  10.6 },
+  '제주/전라 4팀':     { h1Act:   4.8, h1Tgt:   5.3, h2Tgt:   5.3, fyTgt:  10.6 },
   '경상 5팀':          { h1Act:  10.7, h1Tgt:  11.2, h2Tgt:  10.3, fyTgt:  21.4 },
   'CDx 6팀':           { h1Act:   4.5, h1Tgt:   4.4, h2Tgt:   5.4, fyTgt:   9.8 },
   'Strategic/Forensic':{ h1Act:  55.1, h1Tgt:  56.2, h2Tgt:   6.9, fyTgt:  63.0 },
@@ -356,20 +356,20 @@ const teamFactors = {
 const teamPerfData = {
   labels: ['수도권 1팀', '대전/충청 3팀', '제주/전라 4팀', '경상 5팀', 'CDx 6팀', 'Strategic'],
   target: [73.1, 16.2, 5.3, 11.2, 4.4, 56.2],
-  actual: [69.9, 16.0, 4.7, 10.7, 4.5, 55.1],
+  actual: [70.0, 16.0, 4.8, 10.7, 4.5, 55.1],
 };
 
 // 주요 채널/거래처별 H1 실적
 const channelData = {
   labels: ['Strategic/Forensic', '아이셀', '드림셀', 'PB Direct', '나노바이오', '퍼블릭바이오'],
-  actual: [55.1, 26.7, 20.1, 19.5, 12.9, 5.1],
+  actual: [55.1, 26.7, 20.2, 19.5, 12.9, 5.2],
   target: [56.2, 27.2, 20.2, 22.1, 12.1, 4.5],
 };
 
 // 팀별 H1 매출 비중 (도넛)
 const pieData = {
   labels: ['수도권 1팀', 'Strategic/Forensic', '대전/충청 3팀', '경상 5팀', '제주/전라 4팀', 'CDx 6팀'],
-  values: [69.9, 55.1, 16.0, 10.7, 4.7, 4.5],
+  values: [70.0, 55.1, 16.0, 10.7, 4.8, 4.5],
   colors: ['#0057A8', '#1976D2', '#42A5F5', '#1B8A4E', '#E67E22', '#9AA3AF'],
 };
 
