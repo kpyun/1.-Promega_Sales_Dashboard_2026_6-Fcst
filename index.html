@@ -218,6 +218,137 @@
       padding-top: 12px;
       border-top: 1px solid var(--gray-200);
     }
+
+    /* ── View nav (대시보드 / 팀별 상세) ── */
+    .view-nav {
+      background: #fff;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+    }
+    .view-nav-btn {
+      background: transparent;
+      border: none;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-400);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .view-nav-btn:hover { color: var(--blue-light); }
+    .view-nav-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* ── Sales activity section ── */
+    .activity-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .activity-toolbar label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+    .activity-toolbar select {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 13px;
+    }
+    .market-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .market-tab-btn {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--gray-700);
+    }
+    .market-tab-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .activity-toolbar .spacer { flex: 1; }
+    .save-btn, .export-btn, .import-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .save-btn { background: var(--blue); color: #fff; }
+    .export-btn, .import-btn { background: #fff; color: var(--blue); display: inline-flex; align-items: center; }
+
+    .activity-input-row {
+      display: grid;
+      grid-template-columns: 120px 140px 160px 160px 1fr 88px;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 900px) { .activity-input-row { grid-template-columns: 1fr 1fr; } }
+    .activity-input-row select,
+    .activity-input-row input,
+    .activity-input-row textarea {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .add-btn { background: var(--green); color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+    .activity-table { width: 100%; border-collapse: collapse; }
+    .activity-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+    .activity-table td { padding: 8px 10px; font-size: 12.5px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+    .del-btn { background: transparent; border: 1px solid var(--red); color: var(--red); border-radius: 6px; font-size: 11px; padding: 3px 8px; cursor: pointer; }
+
+    /* ── Team detail / Capital ── */
+    .biz-tabs { display: flex; gap: 8px; }
+    .biz-tab-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: default;
+    }
+
+    .rep-card { border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .rep-card-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; background: var(--gray-100); }
+    .rep-card-header:hover { background: var(--gray-200); }
+    .rep-toggle-icon { display: inline-block; transition: transform .15s; font-size: 11px; color: var(--gray-400); }
+    .rep-toggle-icon.open { transform: rotate(90deg); }
+    .rep-name { font-size: 13.5px; font-weight: 700; color: var(--text); }
+    .rep-count { margin-left: auto; font-size: 11px; color: var(--gray-400); font-weight: 600; }
+    .rep-card-body { padding: 14px 16px; }
+
+    .client-box { border: 1px solid var(--gray-200); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; background: #fff; }
+    .client-box:last-child { margin-bottom: 0; }
+    .client-box-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .tag-pill { background: var(--blue-pale); color: var(--blue); font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .client-month { margin-left: auto; font-size: 11px; color: var(--gray-400); }
+    .client-info { font-size: 12.5px; color: var(--gray-700); margin-bottom: 4px; }
+    .client-info b { color: var(--gray-400); font-weight: 700; margin-right: 6px; }
+    .client-content-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--blue); font-weight: 700; cursor: pointer; margin-top: 6px; }
+    .content-arrow { display: inline-block; transition: transform .15s; font-size: 10px; }
+    .content-arrow.open { transform: rotate(90deg); }
+    .client-content-body { font-size: 12.5px; color: var(--text); margin-top: 6px; padding: 8px 10px; background: var(--gray-100); border-radius: 6px; white-space: pre-wrap; }
+    .empty-note { font-size: 12.5px; color: var(--gray-400); }
   </style>
 </head>
 <body>
@@ -227,7 +358,14 @@
   <span id="updated">기준일: 2026-06-29</span>
 </header>
 
+<nav class="view-nav">
+  <button class="view-nav-btn active" id="navDashboardBtn" onclick="showView('dashboard')">대시보드</button>
+  <button class="view-nav-btn" id="navTeamBtn" onclick="showView('teamDetail')">팀별 상세</button>
+</nav>
+
 <main>
+
+<div id="dashboardView">
 
   <!-- Filter bar -->
   <div class="filter-bar">
@@ -248,6 +386,46 @@
       <option value="Detection">Detection</option>
     </select>
     <span class="badge" id="filterBadge">전체 데이터</span>
+  </div>
+
+  <!-- Sales Activity -->
+  <div class="section-title">⑤ 세일즈 활동 기록</div>
+  <div class="chart-card" style="margin-bottom:28px;">
+    <div class="activity-toolbar">
+      <label>월</label>
+      <select id="activityMonthSelect" onchange="onActivityMonthChange()"></select>
+      <div class="market-tabs" id="marketTabs"></div>
+      <div class="spacer"></div>
+      <button class="save-btn" id="activitySaveBtn" onclick="saveActivityToStorage()">💾 저장</button>
+      <button class="export-btn" onclick="exportActivityJSON()">내보내기</button>
+      <label class="import-btn">
+        불러오기
+        <input type="file" accept="application/json" onchange="importActivityJSON(event)" style="display:none">
+      </label>
+    </div>
+
+    <div class="activity-input-row">
+      <select id="activityRepSelect"></select>
+      <input type="text" id="activityOrgInput" placeholder="기관명">
+      <input type="text" id="activityCustomerInput" placeholder="고객 정보">
+      <input type="text" id="activityPurposeInput" placeholder="방문목적">
+      <textarea id="activityContentInput" placeholder="상담 내용" rows="1"></textarea>
+      <button class="add-btn" onclick="addActivityEntry()">+ 추가</button>
+    </div>
+
+    <table class="activity-table">
+      <thead>
+        <tr>
+          <th>담당자</th>
+          <th>기관명</th>
+          <th>고객 정보</th>
+          <th>방문목적</th>
+          <th>상담 내용</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="activityTableBody"></tbody>
+    </table>
   </div>
 
   <!-- KPI Cards -->
@@ -298,6 +476,34 @@
     </div>
   </div>
 
+</div>
+<!-- /dashboardView -->
+
+<div id="teamDetailView" style="display:none;">
+
+  <div class="section-title">팀별 상세</div>
+  <div class="chart-card" style="margin-bottom:20px;">
+    <div class="biz-tabs">
+      <button class="biz-tab-btn">사업부 : Capital</button>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:20px;">
+    <h3>영업 이슈</h3>
+    <p class="empty-note">※ 영업 이슈 내용은 별도 입력 예정입니다.</p>
+  </div>
+
+  <div class="chart-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="margin-bottom:0;">담당자별 영업 활동</h3>
+      <select id="summaryMonthSelect" onchange="renderRepSummary()"></select>
+    </div>
+    <div id="repSummaryContainer"></div>
+  </div>
+
+</div>
+<!-- /teamDetailView -->
+
 </main>
 
 <script>
@@ -344,6 +550,252 @@ const catData = {
 const fmt = (n) => n == null ? '-' : n.toLocaleString('ko-KR', {maximumFractionDigits:0});
 const fmtPct = (n) => n == null ? '-' : n.toFixed(1) + '%';
 const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+const escapeHtml = (str) => str == null ? '' : String(str).replace(/[&<>"']/g, c => (
+  { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+));
+
+/* ═══════════════════════════════════════════════
+   SALES ACTIVITY (세일즈 활동 기록)
+   ═══════════════════════════════════════════════ */
+const ACTIVITY_STORAGE_KEY = 'promega_sales_activity_v1';
+const ACTIVITY_REPS = ['편경현 책임', '윤준성 책임', '김형준 책임'];
+const ACTIVITY_MARKETS = ['Pharm/Biotech', 'Academic', 'Clinical', 'AM'];
+const ACTIVITY_MONTHS = MONTHS.map((label, i) => ({ key: `2026-${String(i + 1).padStart(2, '0')}`, label }));
+
+let activityData = loadActivityData();
+let currentActivityMonth = '2026-07';
+let currentActivityMarket = ACTIVITY_MARKETS[0];
+let expandedReps = new Set();
+let expandedEntries = new Set();
+
+function loadActivityData() {
+  try {
+    const raw = localStorage.getItem(ACTIVITY_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function activityMonthLabel(key) {
+  const found = ACTIVITY_MONTHS.find(m => m.key === key);
+  return found ? found.label : key;
+}
+
+function renderActivityMonthOptions() {
+  const sel = document.getElementById('activityMonthSelect');
+  sel.innerHTML = ACTIVITY_MONTHS.map(m =>
+    `<option value="${m.key}" ${m.key === currentActivityMonth ? 'selected' : ''}>${m.label}</option>`
+  ).join('');
+}
+
+function renderActivityRepOptions() {
+  const sel = document.getElementById('activityRepSelect');
+  sel.innerHTML = ACTIVITY_REPS.map(r => `<option value="${r}">${r}</option>`).join('');
+}
+
+function renderMarketTabs() {
+  const wrap = document.getElementById('marketTabs');
+  wrap.innerHTML = ACTIVITY_MARKETS.map(m =>
+    `<button class="market-tab-btn ${m === currentActivityMarket ? 'active' : ''}" onclick="switchActivityMarket('${m}')">${m}</button>`
+  ).join('');
+}
+
+function switchActivityMarket(market) {
+  currentActivityMarket = market;
+  renderMarketTabs();
+  renderActivityTable();
+}
+
+function onActivityMonthChange() {
+  currentActivityMonth = document.getElementById('activityMonthSelect').value;
+  renderActivityTable();
+}
+
+function addActivityEntry() {
+  const rep = document.getElementById('activityRepSelect').value;
+  const org = document.getElementById('activityOrgInput').value.trim();
+  const customerInfo = document.getElementById('activityCustomerInput').value.trim();
+  const purpose = document.getElementById('activityPurposeInput').value.trim();
+  const content = document.getElementById('activityContentInput').value.trim();
+
+  if (!org) {
+    alert('기관명을 입력하세요.');
+    return;
+  }
+
+  if (!activityData[currentActivityMonth]) activityData[currentActivityMonth] = {};
+  if (!activityData[currentActivityMonth][currentActivityMarket]) activityData[currentActivityMonth][currentActivityMarket] = [];
+
+  activityData[currentActivityMonth][currentActivityMarket].push({
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    rep, org, customerInfo, purpose, content,
+  });
+
+  ['activityOrgInput', 'activityCustomerInput', 'activityPurposeInput', 'activityContentInput'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  renderActivityTable();
+}
+
+function deleteActivityEntry(id) {
+  const list = (activityData[currentActivityMonth] || {})[currentActivityMarket] || [];
+  activityData[currentActivityMonth][currentActivityMarket] = list.filter(e => e.id !== id);
+  renderActivityTable();
+}
+
+function renderActivityTable() {
+  const tbody = document.getElementById('activityTableBody');
+  const list = (activityData[currentActivityMonth] || {})[currentActivityMarket] || [];
+
+  tbody.innerHTML = list.length ? list.map(e => `
+    <tr>
+      <td>${escapeHtml(e.rep)}</td>
+      <td>${escapeHtml(e.org)}</td>
+      <td>${escapeHtml(e.customerInfo)}</td>
+      <td>${escapeHtml(e.purpose)}</td>
+      <td>${escapeHtml(e.content)}</td>
+      <td><button class="del-btn" onclick="deleteActivityEntry('${e.id}')">삭제</button></td>
+    </tr>`).join('') : `
+    <tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:20px;">등록된 활동이 없습니다.</td></tr>`;
+}
+
+function saveActivityToStorage() {
+  try {
+    localStorage.setItem(ACTIVITY_STORAGE_KEY, JSON.stringify(activityData));
+  } catch (e) {
+    alert('저장에 실패했습니다.');
+    return;
+  }
+  renderSummaryMonthOptions();
+  renderRepSummary();
+  const btn = document.getElementById('activitySaveBtn');
+  const orig = btn.textContent;
+  btn.textContent = '저장됨 ✓';
+  setTimeout(() => { btn.textContent = orig; }, 1500);
+}
+
+function exportActivityJSON() {
+  const blob = new Blob([JSON.stringify(activityData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `promega_sales_activity_${currentActivityMonth}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function importActivityJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      activityData = JSON.parse(e.target.result);
+      saveActivityToStorage();
+      renderActivityTable();
+      alert('불러오기가 완료되었습니다.');
+    } catch (err) {
+      alert('올바른 JSON 파일이 아닙니다.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* ═══════════════════════════════════════════════
+   TEAM DETAIL > 사업부: Capital — 담당자별 영업 활동 요약
+   ═══════════════════════════════════════════════ */
+function renderSummaryMonthOptions() {
+  const sel = document.getElementById('summaryMonthSelect');
+  const prevValue = sel.value || 'all';
+  const months = Object.keys(activityData).sort();
+  sel.innerHTML = `<option value="all">전체 월</option>` +
+    months.map(m => `<option value="${m}">${activityMonthLabel(m)}</option>`).join('');
+  sel.value = months.includes(prevValue) || prevValue === 'all' ? prevValue : 'all';
+}
+
+function collectEntriesForRep(rep, monthFilter) {
+  const result = [];
+  const months = monthFilter === 'all' ? Object.keys(activityData) : [monthFilter];
+  months.forEach(m => {
+    const marketMap = activityData[m] || {};
+    ACTIVITY_MARKETS.forEach(market => {
+      (marketMap[market] || []).forEach(e => {
+        if (e.rep === rep) result.push({ ...e, month: m, market });
+      });
+    });
+  });
+  return result;
+}
+
+function renderClientBox(e) {
+  const entryKey = `${e.month}_${e.market}_${e.id}`;
+  const open = expandedEntries.has(entryKey);
+  return `
+    <div class="client-box">
+      <div class="client-box-head">
+        <span class="tag-pill">${escapeHtml(e.market)}</span>
+        <strong>${escapeHtml(e.org)}</strong>
+        <span class="client-month">${activityMonthLabel(e.month)}</span>
+      </div>
+      <div class="client-info"><b>고객 정보</b>${escapeHtml(e.customerInfo) || '-'}</div>
+      <div class="client-info"><b>방문목적</b>${escapeHtml(e.purpose) || '-'}</div>
+      <div class="client-content-toggle" onclick="toggleClientContent('${entryKey}')">
+        <span class="content-arrow ${open ? 'open' : ''}">▶</span> 상담 내용 ${open ? '숨기기' : '보기'}
+      </div>
+      <div class="client-content-body" style="display:${open ? 'block' : 'none'}">${escapeHtml(e.content) || '-'}</div>
+    </div>`;
+}
+
+function renderRepSummary() {
+  const sel = document.getElementById('summaryMonthSelect');
+  const monthFilter = sel ? sel.value : 'all';
+  const container = document.getElementById('repSummaryContainer');
+
+  container.innerHTML = ACTIVITY_REPS.map(rep => {
+    const entries = collectEntriesForRep(rep, monthFilter);
+    const isOpen = expandedReps.has(rep);
+    return `
+      <div class="rep-card">
+        <div class="rep-card-header" onclick="toggleRepCard('${rep}')">
+          <span class="rep-toggle-icon ${isOpen ? 'open' : ''}">▶</span>
+          <span class="rep-name">${rep} 영업 활동</span>
+          <span class="rep-count">${entries.length}건</span>
+        </div>
+        <div class="rep-card-body" style="display:${isOpen ? 'block' : 'none'}">
+          ${entries.length ? entries.map(renderClientBox).join('') : '<p class="empty-note">등록된 영업 활동이 없습니다.</p>'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleRepCard(rep) {
+  if (expandedReps.has(rep)) expandedReps.delete(rep); else expandedReps.add(rep);
+  renderRepSummary();
+}
+
+function toggleClientContent(key) {
+  if (expandedEntries.has(key)) expandedEntries.delete(key); else expandedEntries.add(key);
+  renderRepSummary();
+}
+
+/* ═══════════════════════════════════════════════
+   VIEW NAV (대시보드 / 팀별 상세)
+   ═══════════════════════════════════════════════ */
+function showView(view) {
+  document.getElementById('dashboardView').style.display = view === 'dashboard' ? '' : 'none';
+  document.getElementById('teamDetailView').style.display = view === 'teamDetail' ? '' : 'none';
+  document.getElementById('navDashboardBtn').classList.toggle('active', view === 'dashboard');
+  document.getElementById('navTeamBtn').classList.toggle('active', view === 'teamDetail');
+  if (view === 'teamDetail') {
+    renderSummaryMonthOptions();
+    renderRepSummary();
+  }
+}
 
 function getDisplayData(region, cat) {
   // For demo: modify values by region/category filter
@@ -660,6 +1112,13 @@ function init() {
   renderDonutChart();
   renderRegionChart();
   renderRepChart();
+
+  renderActivityMonthOptions();
+  renderActivityRepOptions();
+  renderMarketTabs();
+  renderActivityTable();
+  renderSummaryMonthOptions();
+  renderRepSummary();
 }
 
 init();
