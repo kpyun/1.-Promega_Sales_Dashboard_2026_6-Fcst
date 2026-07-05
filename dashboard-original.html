@@ -230,6 +230,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',Aria
     <button class="hero-tab" onclick="showSec('s4',this)">④ 세일즈담당자</button>
     <button class="hero-tab" onclick="showSec('s5',this)">⑤ 세일즈 활동</button>
     <button class="hero-tab" onclick="showSec('s6',this)" style="border-left:1px solid rgba(255,255,255,0.1)">⑥ 편경현 고객사</button>
+    <button class="hero-tab" onclick="showSec('s7',this)">⑦ Key Account</button>
   </div>
 </div>
 
@@ -594,10 +595,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',Aria
         <thead>
           <tr>
             <th style="text-align:left;min-width:50px">구분</th>
+            <th style="text-align:left;min-width:100px">고객세그먼트</th>
             <th style="text-align:left;min-width:140px">EndUser Address 1</th>
             <th style="text-align:left;min-width:160px">EndUser Customer Name 2</th>
             <th style="min-width:100px">YTD Net Sales</th>
             <th style="min-width:60px">제품수</th>
+            <th style="min-width:70px">Key Account</th>
             <th style="min-width:50px">상세</th>
           </tr>
         </thead>
@@ -634,6 +637,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',Aria
 
   </div>
 </div><!-- /s6 -->
+
+<!-- ══════════════════════════════════════
+  SECTION 7: Key Account 관리
+══════════════════════════════════════ -->
+<div id="s7" class="container" style="display:none">
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-badge" style="background:#fff3e0;color:#e65100">⑦</div>
+      <div class="sec-title">Key Account 관리</div>
+      <div class="sec-note">선택된 고객사 상세 정보 | 담당자: Kyung-Hyun Pyun</div>
+    </div>
+    <div id="keyAccountContent"></div>
+  </div>
+</div><!-- /s7 -->
 
 
 <div class="footer">
@@ -2383,7 +2400,7 @@ function renderPyunTable() {
   if (pyunCurrentFilter === 'all' || pyunCurrentFilter === 'cap') clients = clients.concat(PYUN.cap_clients);
   if (pyunCurrentFilter === 'all' || pyunCurrentFilter === 'cdx') clients = clients.concat(PYUN.cdx_clients);
   clients.sort((a, b) => b.total_sales - a.total_sales);
-  
+
   const tbody = document.getElementById('pyunTbody');
   let html = '';
   let runTotal = 0;
@@ -2391,23 +2408,25 @@ function renderPyunTable() {
     runTotal += c.total_sales;
     const catBg = c.category === 'Capital' ? '#e3f2fd' : '#f3e5f5';
     const catColor = c.category === 'Capital' ? '#1565c0' : '#6a1b9a';
-    html += `<tr>
+    html += `<tr ${c.is_key_account ? 'style="background:#fffbf0"' : ''}>
       <td><span style="background:${catBg};color:${catColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${c.category}</span></td>
+      <td class="lbl">${c.segment || '일반'}</td>
       <td class="lbl">${c.addr}</td>
       <td class="lbl">${c.name}</td>
       <td style="text-align:right;font-weight:600">${c.total_sales.toLocaleString()}</td>
       <td>${c.product_count}</td>
+      <td style="text-align:center"><input type="checkbox" ${c.is_key_account ? 'checked' : ''} onchange="toggleKeyAccount('${pyunCurrentFilter}', ${i})" style="cursor:pointer"></td>
       <td><button onclick="showPyunDetail(${i},'${pyunCurrentFilter}')" class="act-edit-btn" style="font-size:10px;padding:2px 8px">▶</button></td>
     </tr>`;
   });
-  
+
   // Grand total row
   html += `<tr class="tr-grand">
-    <td class="lbl" colspan="3" style="text-align:right">합계</td>
+    <td class="lbl" colspan="4" style="text-align:right">합계</td>
     <td style="text-align:right">${runTotal.toLocaleString()}</td>
-    <td></td><td></td>
+    <td></td><td></td><td></td>
   </tr>`;
-  
+
   tbody.innerHTML = html;
 }
 
@@ -2446,6 +2465,153 @@ function showPyunDetail(idx, filter) {
 
 function closePyunDetail() {
   document.getElementById('pyunProdDetail').style.display = 'none';
+}
+
+// Key Account Toggle
+function toggleKeyAccount(filter, idx) {
+  let clients = [];
+  if (filter === 'all' || filter === 'cap') clients = clients.concat(PYUN.cap_clients);
+  if (filter === 'all' || filter === 'cdx') clients = clients.concat(PYUN.cdx_clients);
+  clients.sort((a, b) => b.total_sales - a.total_sales);
+
+  if (clients[idx]) {
+    clients[idx].is_key_account = !clients[idx].is_key_account;
+    renderPyunTable();
+    renderKeyAccountSection();
+  }
+}
+
+// Render Key Account Section
+function renderKeyAccountSection() {
+  let keyAccounts = [];
+
+  // Collect all key accounts
+  PYUN.cap_clients.forEach(c => {
+    if (c.is_key_account) keyAccounts.push({...c, type: 'Capital'});
+  });
+  PYUN.cdx_clients.forEach(c => {
+    if (c.is_key_account) keyAccounts.push({...c, type: 'CDx'});
+  });
+
+  keyAccounts.sort((a, b) => b.total_sales - a.total_sales);
+
+  const container = document.getElementById('keyAccountContent');
+  if (!container) return;
+
+  if (keyAccounts.length === 0) {
+    container.innerHTML = '<div style="padding:30px;text-align:center;color:#999">선택된 Key Account가 없습니다.<br>섹션 ⑥에서 고객사를 체크하여 Key Account로 등록하세요.</div>';
+    return;
+  }
+
+  // Calculate KPI
+  const capitalCount = keyAccounts.filter(c => c.type === 'Capital').length;
+  const cdxCount = keyAccounts.filter(c => c.type === 'CDx').length;
+  const totalSales = keyAccounts.reduce((sum, c) => sum + c.total_sales, 0);
+
+  // Generate KPI HTML
+  const kpiHtml = `
+    <div class="kpi-row" style="margin-bottom:16px">
+      <div class="kpi" style="border-color:#e65100;background:rgba(230, 90, 0, 0.04)">
+        <div class="kpi-label">선택된 Key Account</div>
+        <div class="kpi-grid">
+          <div class="kpi-cell"><span class="kc-lbl">총 고객사</span><span class="kc-val">${keyAccounts.length}<span class="kc-unit">개</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">Capital</span><span class="kc-val">${capitalCount}<span class="kc-unit">개</span></span></div>
+          <div class="kpi-cell"><span class="kc-lbl">CDx</span><span class="kc-val">${cdxCount}<span class="kc-unit">개</span></span></div>
+        </div>
+      </div>
+      <div class="kpi" style="border-color:#e65100;background:rgba(230, 90, 0, 0.04)">
+        <div class="kpi-label">YTD 누적 매출</div>
+        <div class="kpi-grid">
+          <div class="kpi-cell"><span class="kc-lbl">총 매출액</span><span class="kc-val" style="color:#e65100;font-size:22px;font-weight:bold">${totalSales.toLocaleString()}<span class="kc-unit" style="font-size:12px">원</span></span></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Generate Table HTML
+  const tableRows = keyAccounts.map((c, i) => `
+    <tr style="background:${c.type === 'Capital' ? '#e3f2fd' : '#f3e5f5'}20">
+      <td><span style="background:${c.type === 'Capital' ? '#e3f2fd' : '#f3e5f5'};color:${c.type === 'Capital' ? '#1565c0' : '#6a1b9a'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${c.type}</span></td>
+      <td>${c.segment || '일반'}</td>
+      <td>${c.addr}</td>
+      <td class="lbl">${c.name}</td>
+      <td style="text-align:right;font-weight:600">${c.total_sales.toLocaleString()}</td>
+      <td>${c.product_count}</td>
+      <td style="text-align:center"><a href="javascript:void(0)" onclick="showKeyAccountProducts('${c.name}')" style="color:#0057A8;text-decoration:none;cursor:pointer">[제품]</a>${c.contacts && c.contacts.length > 0 ? ' <a href="javascript:void(0)" onclick="showKeyAccountContacts(\'' + c.name + '\')" style="color:#0057A8;text-decoration:none;cursor:pointer">[연락처]</a>' : ''}</td>
+    </tr>
+  `).join('');
+
+  const tableHtml = `
+    <div class="ct-card">
+      <div class="ct-title">Key Account 고객사 목록 (2026 YTD, 단위: 원)</div>
+      <div style="overflow-x:auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="min-width:50px">구분</th>
+            <th style="min-width:100px">세그먼트</th>
+            <th style="min-width:140px">주소</th>
+            <th style="min-width:160px">고객사명</th>
+            <th style="min-width:100px">YTD 매출</th>
+            <th style="min-width:50px">제품수</th>
+            <th style="min-width:100px">상세정보</th>
+          </tr>
+        </thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = kpiHtml + tableHtml;
+}
+
+// Show Key Account Products
+function showKeyAccountProducts(customerName) {
+  const allClients = [...PYUN.cap_clients, ...PYUN.cdx_clients];
+  const client = allClients.find(c => c.name === customerName);
+
+  if (!client || !client.products || client.products.length === 0) {
+    alert('제품 정보가 없습니다.');
+    return;
+  }
+
+  let html = '<table class="data-table" style="width:100%;margin-top:12px">' +
+    '<thead><tr><th>Product Number</th><th>Product Name</th><th>Sales (원)</th></tr></thead><tbody>';
+
+  client.products.forEach(p => {
+    html += `<tr><td style="font-weight:600">${p.pn}</td><td>${p.pname}</td><td style="text-align:right">${p.sales.toLocaleString()}</td></tr>`;
+  });
+
+  if (client.products.length < client.product_count) {
+    html += `<tr><td colspan="3" style="text-align:center;color:#999;font-size:11px">... 외 ${client.product_count - client.products.length}개 제품 (상위 10개만 표시)</td></tr>`;
+  }
+
+  html += '</tbody></table>';
+
+  alert(`${client.name} - 상위 10개 제품\n\n${html}`);
+}
+
+// Show Key Account Contacts
+function showKeyAccountContacts(customerName) {
+  const allClients = [...PYUN.cap_clients, ...PYUN.cdx_clients];
+  const client = allClients.find(c => c.name === customerName);
+
+  if (!client || !client.contacts || client.contacts.length === 0) {
+    alert('연락처 정보가 없습니다.\n(Contacts.xlsx 파일과 CRM 매칭이 필요합니다)');
+    return;
+  }
+
+  let html = '<table class="data-table" style="width:100%;margin-top:12px">' +
+    '<thead><tr><th>이름</th><th>직책</th><th>이메일</th><th>연락처</th></tr></thead><tbody>';
+
+  client.contacts.forEach(c => {
+    html += `<tr><td>${c.name || '-'}</td><td>${c.department || '-'}</td><td><a href="mailto:${c.email}">${c.email || '-'}</a></td><td>${c.phone || '-'}</td></tr>`;
+  });
+
+  html += '</tbody></table>';
+
+  alert(`${client.name} - 연락처\n\n${html}`);
 }
 
 // Initialize on load
