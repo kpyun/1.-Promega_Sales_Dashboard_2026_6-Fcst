@@ -137,6 +137,173 @@ class DashboardUpdater:
         print(f"✓ Saved to {output_path}")
 
 
+class ContactMatcher:
+    """Match CRM contacts with customer sales data."""
+
+    @staticmethod
+    def match_contacts(pyun_data: Dict[str, Any], contacts_excel: Path) -> Dict[str, Any]:
+        """
+        Enrich PYUN customer data with CRM contact information.
+
+        Matches Company Name (CRM) with EndUser Customer Name (Sales).
+        Adds contact info to each customer record.
+
+        Args:
+            pyun_data: PYUN sales data with customers
+            contacts_excel: Path to CRM Excel file
+
+        Returns:
+            Enhanced PYUN data with contact information
+        """
+        print(f"\n📇 Matching contacts from: {contacts_excel.name}")
+
+        if not contacts_excel.exists():
+            print(f"  ⚠ Contacts file not found: {contacts_excel}")
+            return pyun_data
+
+        try:
+            df = pd.read_excel(contacts_excel, sheet_name=0)
+        except Exception as e:
+            print(f"  ❌ Error reading contacts: {e}")
+            return pyun_data
+
+        print(f"  Loaded {len(df)} contacts")
+
+        # Build contact map by Company Name
+        contact_map = ContactMatcher._build_contact_map(df)
+        print(f"  Indexed {len(contact_map)} unique companies")
+
+        # Enrich capital clients
+        if "cap_clients" in pyun_data:
+            for client in pyun_data["cap_clients"]:
+                contacts = ContactMatcher._find_contacts(
+                    client.get("name", ""), contact_map, df
+                )
+                if contacts:
+                    client["contacts"] = contacts
+                    print(f"  ✓ {client['name']}: {len(contacts)} contacts")
+
+        # Enrich CDx clients
+        if "cdx_clients" in pyun_data:
+            for client in pyun_data["cdx_clients"]:
+                contacts = ContactMatcher._find_contacts(
+                    client.get("name", ""), contact_map, df
+                )
+                if contacts:
+                    client["contacts"] = contacts
+                    print(f"  ✓ {client['name']}: {len(contacts)} contacts")
+
+        print("  ✓ Contact matching complete")
+        return pyun_data
+
+    @staticmethod
+    def _build_contact_map(df: pd.DataFrame) -> Dict[str, list]:
+        """Build map of company names to contact records."""
+        contact_map = {}
+
+        # Find Company Name column
+        company_col = None
+        for col in df.columns:
+            if "company" in col.lower() or "회사" in col:
+                company_col = col
+                break
+
+        if not company_col:
+            return contact_map
+
+        for _, row in df.iterrows():
+            company = row.get(company_col, "")
+            if pd.isna(company):
+                continue
+
+            company = str(company).strip()
+            if company not in contact_map:
+                contact_map[company] = []
+
+            contact_map[company].append(row.to_dict())
+
+        return contact_map
+
+    @staticmethod
+    def _find_contacts(
+        customer_name: str, contact_map: Dict[str, list], df: pd.DataFrame
+    ) -> List[Dict[str, Any]]:
+        """
+        Find contacts for a customer using fuzzy matching.
+
+        Tries:
+        1. Exact match
+        2. Partial match (either direction)
+        3. Similar names (Levenshtein distance)
+        """
+        if not customer_name:
+            return []
+
+        # Try exact match first
+        if customer_name in contact_map:
+            return ContactMatcher._format_contacts(contact_map[customer_name])
+
+        # Try partial matches
+        for company_name, contacts in contact_map.items():
+            if customer_name.lower() in company_name.lower() or \
+               company_name.lower() in customer_name.lower():
+                return ContactMatcher._format_contacts(contacts)
+
+        # Try fuzzy matching (simple approach: common substrings)
+        for company_name, contacts in contact_map.items():
+            if ContactMatcher._similarity(customer_name, company_name) > 0.7:
+                return ContactMatcher._format_contacts(contacts)
+
+        return []
+
+    @staticmethod
+    def _format_contacts(contact_rows: List[dict]) -> List[Dict[str, Any]]:
+        """Format contact rows into standardized structure."""
+        formatted = []
+
+        for row in contact_rows:
+            contact = {}
+
+            # Extract standard fields
+            for col in row.keys():
+                col_lower = col.lower()
+
+                if "first" in col_lower or "name" in col_lower and len(contact.get("name", "")) < 5:
+                    contact["name"] = str(row[col]).strip() if pd.notna(row[col]) else ""
+                elif "last" in col_lower:
+                    if "name" not in contact:
+                        contact["name"] = ""
+                    contact["name"] = str(row[col]).strip() + " " + contact.get("name", "")
+                elif "email" in col_lower or "mail" in col_lower:
+                    contact["email"] = str(row[col]).strip() if pd.notna(row[col]) else ""
+                elif "phone" in col_lower or "mobile" in col_lower or "연락처" in col:
+                    contact["phone"] = str(row[col]).strip() if pd.notna(row[col]) else ""
+                elif "department" in col_lower or "부서" in col:
+                    contact["department"] = str(row[col]).strip() if pd.notna(row[col]) else ""
+                elif "tip" in col_lower or "메모" in col:
+                    contact["notes"] = str(row[col]).strip() if pd.notna(row[col]) else ""
+                elif "owner" in col_lower or "담당자" in col:
+                    contact["owner"] = str(row[col]).strip() if pd.notna(row[col]) else ""
+
+            if contact:
+                formatted.append(contact)
+
+        return formatted
+
+    @staticmethod
+    def _similarity(s1: str, s2: str) -> float:
+        """Simple string similarity metric (0-1)."""
+        s1, s2 = s1.lower(), s2.lower()
+
+        # Check common substrings
+        common = 0
+        for i in range(min(len(s1), len(s2))):
+            if s1[i] == s2[i]:
+                common += 1
+
+        return common / max(len(s1), len(s2)) if max(len(s1), len(s2)) > 0 else 0
+
+
 class ExcelDataExtractor:
     """Extract sales data from Excel files."""
 
@@ -452,6 +619,7 @@ def main():
     parser = argparse.ArgumentParser(description='Update PK Sales Dashboard with monthly data')
     parser.add_argument('--target', type=Path, help='Path to Target Excel file')
     parser.add_argument('--sales', type=Path, help='Path to Sales history Excel file')
+    parser.add_argument('--contacts', type=Path, help='Path to CRM Contacts Excel file (optional)')
     parser.add_argument('--output', type=Path, help='Output HTML file path')
     parser.add_argument('--month', type=int, default=datetime.now().month, help='Report month (default: current)')
     parser.add_argument('--year', type=int, default=2026, help='Report year (default: 2026)')
@@ -463,6 +631,7 @@ def main():
 
     target_path = args.target or (script_dir / "Target.xlsx")
     sales_path = args.sales or (script_dir / "Sales.xlsx")
+    contacts_path = args.contacts or (script_dir / "Contacts.xlsx")
     output_path = args.output or (script_dir / "index.html")
 
     html_path = script_dir / "dashboard-original.html"
@@ -478,7 +647,7 @@ def main():
 
     updater = DashboardUpdater(html_path)
 
-    # Extract data
+    # Extract business division data (const D)
     if target_path.exists():
         try:
             target_data = ExcelDataExtractor.extract_target_data(target_path)
@@ -488,9 +657,18 @@ def main():
     else:
         print(f"⚠ Target file not found: {target_path}")
 
+    # Extract customer sales data (const PYUN)
+    pyun_data = None
     if sales_path.exists():
         try:
             pyun_data = ExcelDataExtractor.extract_pyun_data(sales_path)
+
+            # Enrich with CRM contacts if available
+            if contacts_path.exists():
+                pyun_data = ContactMatcher.match_contacts(pyun_data, contacts_path)
+            else:
+                print(f"ℹ Contacts file not found (optional): {contacts_path}")
+
             updater.update_const_pyun(pyun_data)
         except Exception as e:
             print(f"Error extracting Pyun data: {e}")
