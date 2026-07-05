@@ -524,21 +524,29 @@ class ExcelDataExtractor:
         Aggregate sales data by customer.
 
         Groups by customer name and sums by product.
+        Extracts: customer name, address, segment, products, sales.
         """
         # Find relevant columns
         customer_col = None
+        address_col = None
+        segment_col = None
         product_col = None
         product_name_col = None
         sales_col = None
 
         for col in df.columns:
-            if 'customer' in col.lower() or '고객' in col or 'enduser' in col.lower():
+            col_lower = col.lower()
+            if 'customer' in col_lower and 'name' in col_lower and 'enduser' in col_lower:
                 customer_col = col
-            elif 'product' in col.lower() and 'number' in col.lower():
+            elif 'address' in col_lower and 'enduser' in col_lower:
+                address_col = col
+            elif 'segment' in col_lower or '세그먼트' in col or '고객세그' in col:
+                segment_col = col
+            elif 'product' in col_lower and 'number' in col_lower:
                 product_col = col
-            elif 'product' in col.lower() and 'name' in col.lower():
+            elif 'product' in col_lower and 'name' in col_lower:
                 product_name_col = col
-            elif 'sales' in col.lower() or 'amount' in col.lower():
+            elif 'sales' in col_lower or 'amount' in col_lower or '매출' in col:
                 sales_col = col
 
         if not customer_col or not sales_col:
@@ -553,11 +561,27 @@ class ExcelDataExtractor:
 
             customer = str(customer).strip()
             if customer not in customers:
+                # Extract address
+                addr = customer
+                if address_col:
+                    addr_val = row.get(address_col)
+                    if pd.notna(addr_val):
+                        addr = str(addr_val).strip()
+
+                # Extract segment
+                segment = "일반"
+                if segment_col:
+                    seg_val = row.get(segment_col)
+                    if pd.notna(seg_val):
+                        segment = str(seg_val).strip()
+
                 customers[customer] = {
-                    "addr": customer,
+                    "addr": addr,
                     "name": customer,
+                    "segment": segment,
                     "category": category,
                     "total_sales": 0,
+                    "is_key_account": False,
                     "products": {}
                 }
 
@@ -593,10 +617,13 @@ class ExcelDataExtractor:
             result.append({
                 "addr": data["addr"],
                 "name": data["name"],
+                "segment": data["segment"],
                 "category": data["category"],
                 "total_sales": int(data["total_sales"]),
                 "product_count": len(data["products"]),
-                "products": products
+                "is_key_account": data["is_key_account"],
+                "products": products,
+                "contacts": []
             })
 
         return result
