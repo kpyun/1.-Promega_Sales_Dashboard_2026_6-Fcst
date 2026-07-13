@@ -643,7 +643,7 @@ const chgSign = (v) => v > 0 ? '+' : '';
 
 // ===== STATE =====
 let currentSlide = 0;
-const totalSlides = 12;
+const totalSlides = 10;
 let editData = {};
 let saveTimers = {};
 let tableRows = {};
@@ -713,8 +713,6 @@ function render() {
   const slides = [
     renderCover(),
     renderSalesOverview(),
-    renderSegmentTable(),
-    renderProductTable(),
     renderSegmentHighlight('academic', 'Academic/Government', '#3A7BD5'),
     renderSegmentHighlight('pharma', 'Pharma/Biotech', '#00B894'),
     renderSegmentHighlight('clinical', 'Clinical', '#E74C3C'),
@@ -747,8 +745,6 @@ function renderTopbar() {
   const titles = [
     'Cover',
     '01 Sales Overview',
-    '01-A Segment Analysis',
-    '01-B Product Family',
     '02 Academic/Government',
     '02 Pharma/Biotech',
     '02 Clinical',
