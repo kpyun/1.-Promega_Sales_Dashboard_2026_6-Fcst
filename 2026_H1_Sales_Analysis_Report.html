@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 H1 Sales Analysis Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --navy: #0B1D3A;
+    --blue: #1B4F9B;
+    --blue-light: #3A7BD5;
+    --accent: #00B894;
+    --accent2: #FF6B6B;
+    --gray-50: #F8F9FB;
+    --gray-100: #EEF1F5;
+    --gray-200: #D8DDE6;
+    --gray-300: #B0B8C8;
+    --gray-500: #6B7A90;
+    --gray-700: #3D4A5C;
+    --gray-900: #1A2332;
+    --white: #FFFFFF;
+    --green: #00B894;
+    --red: #E74C3C;
+    --orange: #F39C12;
+    --shadow: 0 2px 12px rgba(11,29,58,0.08);
+    --shadow-lg: 0 8px 32px rgba(11,29,58,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top bar */
+  .topbar {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  .topbar-brand {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+  .topbar-info {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+  .topbar-page {
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.1);
+    padding: 4px 14px;
+    border-radius: 20px;
+  }
+
+  /* Slide area */
+  .slide-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 40px 100px;
+    scroll-behavior: smooth;
+  }
+
+  .slide {
+    display: none;
+    animation: fadeIn 0.35s ease;
+  }
+  .slide.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Cover slide */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 180px);
+    text-align: center;
+  }
+  .cover-badge {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: rgba(27,79,155,0.08);
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .cover h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .cover .subtitle {
+    font-size: 16px;
+    color: var(--gray-500);
+    margin-bottom: 40px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    font-size: 14px;
+    color: var(--gray-500);
+  }
+  .cover-meta span { font-weight: 600; color: var(--gray-700); }
+
+  /* Section headers */
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--blue);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 8px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-left: 44px;
+    margin-bottom: 24px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-200);
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Summary boxes */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .summary-box {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+  }
+  .summary-box .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    margin-bottom: 12px;
+  }
+  .summary-box .value {
+    font-size: 56px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .summary-box .unit {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-500);
+    margin-top: 6px;
+  }
+  .summary-box.positive .value { color: var(--green); }
+  .summary-box.negative .value { color: var(--red); }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12px;
+  }
+  .data-table thead th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 12px;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+  .data-table thead th:first-child {
+    text-align: left;
+    border-radius: 8px 0 0 0;
+  }
+  .data-table thead th:last-child {
+    border-radius: 0 8px 0 0;
+  }
+  .data-table tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+  }
+  .data-table tbody td:first-child {
+    text-align: left;
+    font-weight: 500;
+  }
+  .data-table tbody tr:hover {
+    background: rgba(27,79,155,0.03);
+  }
+  .data-table tbody tr.market-row td {
+    font-weight: 700;
+    background: var(--gray-50);
+    border-top: 2px solid var(--gray-200);
+  }
+  .data-table tbody tr.child-row td:first-child {
+    padding-left: 30px;
+    font-weight: 400;
+    color: var(--gray-700);
+    font-size: 11px;
+  }
+  .data-table tbody tr.total-row td {
+    font-weight: 800;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+  }
+  .val-pos { color: var(--green); font-weight: 600; }
+  .val-neg { color: var(--red); font-weight: 600; }
+
+  /* Two column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .col-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-200);
+  }
+  .col-card .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  /* Edit groups */
+  .edit-group {
+    margin-bottom: 16px;
+  }
+  .edit-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray-500);
+    margin-bottom: 8px;
+  }
+  .edit-label.hl-label { color: var(--green); }
+  .edit-label.ll-label { color: var(--red); }
+  .edit-label.summary-label { color: var(--blue); }
+
+  .editable {
+    width: 100%;
+    min-height: 60px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gray-900);
+    resize: none;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--gray-50);
+  }
+  .editable:focus {
+    outline: none;
+    border-color: var(--blue-light);
+    box-shadow: 0 0 0 3px rgba(58,123,213,0.12);
+    background: var(--white);
+  }
+
+  /* Edit table */
+  .edit-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 10px;
+  }
+  .edit-table th {
+    background: var(--gray-100);
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .edit-table td {
+    padding: 4px;
+  }
+  .edit-table .cell-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    resize: none;
+    overflow: hidden;
+    min-height: 36px;
+    background: var(--gray-50);
+  }
+  .edit-table .cell-input:focus {
+    outline: none;
+    border-color: var(--blue-light);
+    background: var(--white);
+  }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-save, .btn-cancel, .btn-add, .btn-del {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s;
+  }
+  .btn-save {
+    background: var(--blue);
+    color: var(--white);
+  }
+  .btn-save:hover { background: var(--navy); }
+  .btn-cancel {
+    background: var(--gray-200);
+    color: var(--gray-700);
+  }
+  .btn-cancel:hover { background: var(--gray-300); }
+  .btn-add {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border: 1px dashed var(--gray-300);
+  }
+  .btn-add:hover { background: var(--gray-200); }
+  .btn-del {
+    background: none;
+    border: none;
+    color: var(--gray-300);
+    font-size: 16px;
+    padding: 4px;
+  }
+  .btn-del:hover { color: var(--red); }
+
+  .save-indicator {
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    margin-left: 8px;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--gray-200);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+  .nav-btn {
+    padding: 8px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-btn.prev {
+    background: var(--gray-100);
+    color: var(--gray-700);
+  }
+  .nav-btn.prev:hover { background: var(--gray-200); }
+  .nav-btn.next {
+    background: var(--blue);
+    color: var(--white);
+  }
+  .nav-btn.next:hover { background: var(--navy); }
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .page-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .page-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .page-dot.active {
+    background: var(--blue);
+    width: 24px;
+    border-radius: 4px;
+  }
+  .page-dot:hover:not(.active) {
+    background: var(--gray-300);
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+
+<script>
+// ===== DATA =====
+const DATA = {
+  total: { py: 2374208140, cy: 2950503958 },
+  monthly: {
+    py: [479125030, 425092300, 285818490, 331784970, 384653560, 467733790],
+    cy: [504538723, 348174816, 510898423, 484721118, 452398350, 649772528]
+  },
+  segments: [
+    {
+      name: "Academic/Government", py: 225990200, cy: 69653630,
+      children: [
+        { name: "Academic", py: 223546700, cy: 68258630 },
+        { name: "Government", py: 2443500, cy: 1395000 }
+      ]
+    },
+    {
+      name: "Pharma/Biotech", py: 1684364900, cy: 2078194146,
+      children: [
+        { name: "Pharmaceutical", py: 1150580500, cy: 1314493190 },
+        { name: "Biotechnology", py: 329219020, cy: 387203512 },
+        { name: "ContractResearch Org", py: 204565380, cy: 376497444 }
+      ]
+    },
+    {
+      name: "Clinical", py: 454041280, cy: 790413742,
+      children: [
+        { name: "Hospital", py: 225343140, cy: 398137188 },
+        { name: "Ref & Testing Lab", py: 71135960, cy: 237066864 },
+        { name: "Diagnostics Mfg", py: 157562180, cy: 155209690 }
+      ]
+    },
+    { name: "BiochemReagent Mfgrs", py: 6378900, cy: 10363700, children: [] },
+    { name: "Applied Markets", py: 3432860, cy: 1878740, children: [] }
+  ],
+  products: [
+    { name: "Cell Analysis", py: 1461305590, cy: 1842571532 },
+    { name: "Sample Prep", py: 373123520, cy: 606027134 },
+    { name: "Sample Analysis", py: 235555690, cy: 239159694 },
+    { name: "Protein Analysis", py: 228070220, cy: 186330952 },
+    { name: "Genetic Identity", py: 76153120, cy: 76414646 }
+  ],
+  segmentDetails: ["Academic", "Pharmaceutical", "Biotechnology", "CRO", "Clinical"]
+};
+
+const fmt = (v) => {
+  if (v === 0) return '0';
+  const m = v / 1000000;
+  if (Math.abs(m) >= 1000) return (m / 1000).toFixed(1) + 'B';
+  return m.toFixed(1) + 'M';
+};
+const fmtFull = (v) => v.toLocaleString('ko-KR');
+const fmtPct = (py, cy) => py === 0 ? '-' : (cy / py * 100).toFixed(1) + '%';
+const chgClass = (v) => v > 0 ? 'val-pos' : v < 0 ? 'val-neg' : '';
+const chgSign = (v) => v > 0 ? '+' : '';
+
+// ===== STATE =====
+let currentSlide = 0;
+const totalSlides = 12;
+let editData = {};
+let saveTimers = {};
+let tableRows = {};
+let editingSection = null;
+
+function saveField(key, value) {
+  editData[key] = value;
+  showSaveIndicator(key);
+}
+
+function showSaveIndicator(key) {
+  const el = document.querySelector(`.save-ind-${CSS.escape(key)}`);
+  if (el) {
+    el.classList.add('show');
+    clearTimeout(saveTimers[key]);
+    saveTimers[key] = setTimeout(() => el.classList.remove('show'), 1500);
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function getTableRows(tableId, defaultCols) {
+  if (!tableRows[tableId]) {
+    tableRows[tableId] = [defaultCols.map(() => '')];
+  }
+  return tableRows[tableId];
+}
+
+function addTableRow(tableId, numCols) {
+  if (!tableRows[tableId]) tableRows[tableId] = [];
+  tableRows[tableId].push(new Array(numCols).fill(''));
+  render();
+}
+
+function removeTableRow(tableId, idx) {
+  if (tableRows[tableId] && tableRows[tableId].length > 1) {
+    tableRows[tableId].splice(idx, 1);
+    render();
+  }
+}
+
+function updateTableCell(tableId, rowIdx, colIdx, value) {
+  if (tableRows[tableId] && tableRows[tableId][rowIdx]) {
+    tableRows[tableId][rowIdx][colIdx] = value;
+  }
+}
+
+function startEdit(sectionId) {
+  editingSection = sectionId;
+  render();
+}
+
+function saveEdit(sectionId) {
+  showSaveIndicator(sectionId);
+  editingSection = null;
+  render();
+}
+
+// ===== RENDER =====
+function render() {
+  const app = document.getElementById('app');
+  const slides = [
+    renderCover(),
+    renderSalesOverview(),
+    renderSegmentTable(),
+    renderProductTable(),
+    renderSegmentHighlight('academic', 'Academic/Government', '#3A7BD5'),
+    renderSegmentHighlight('pharma', 'Pharma/Biotech', '#00B894'),
+    renderSegmentHighlight('clinical', 'Clinical', '#E74C3C'),
+    renderForecastAndIssues(),
+    renderExecutiveSummary(),
+    renderIssuesRisk(),
+    renderAdditionalSlides1(),
+    renderAdditionalSlides2()
+  ];
+
+  app.innerHTML = `
+    ${renderTopbar()}
+    <div class="slide-container">
+      ${slides.map((content, idx) => renderSlide(idx, content)).join('')}
+    </div>
+    ${renderBottomNav()}
+  `;
+
+  document.querySelectorAll('textarea').forEach(el => {
+    autoResize(el);
+    el.addEventListener('input', () => autoResize(el));
+  });
+}
+
+function renderSlide(idx, content) {
+  return `<div class="slide ${idx === currentSlide ? 'active' : ''}">${content}</div>`;
+}
+
+function renderTopbar() {
+  const titles = [
+    'Cover',
+    '01 Sales Overview',
+    '01-A Segment Analysis',
+    '01-B Product Family',
+    '02 Academic/Government',
+    '02 Pharma/Biotech',
+    '02 Clinical',
+    '03 Q2 Forecast',
+    '04 Executive Summary',
+    '05 Issues & Risk',
+    'Additional 1',
+    'Additional 2'
+  ];
+  return `<div class="topbar">
+    <div class="topbar-brand">Promega Korea</div>
+    <div class="topbar-page">${titles[currentSlide]}</div>
+    <div class="topbar-info">Invoice 기준 · ZEUC Segment</div>
+  </div>`;
+}
+
+function renderBottomNav() {
+  return `<div class="bottom-nav">
+    <button class="nav-btn prev" ${currentSlide === 0 ? 'disabled' : ''} onclick="goToSlide(${currentSlide - 1})">← Previous</button>
+    <div class="page-dots">
+      ${Array.from({length: totalSlides}, (_, i) =>
+        `<div class="page-dot ${i === currentSlide ? 'active' : ''}" onclick="goToSlide(${i})"></div>`
+      ).join('')}
+    </div>
+    <button class="nav-btn next" ${currentSlide === totalSlides - 1 ? 'disabled' : ''} onclick="goToSlide(${currentSlide + 1})">Next →</button>
+  </div>`;
+}
+
+function goToSlide(n) {
+  if (n >= 0 && n < totalSlides) {
+    currentSlide = n;
+    render();
+    document.querySelector('.slide-container').scrollTop = 0;
+  }
+}
+
+function renderCover() {
+  return `<div class="cover">
+    <div class="cover-badge">Promega Korea · Sales Division</div>
+    <h1>2026 H1 Sales Analysis Report</h1>
+    <div class="subtitle">인보이스 매출 기준 · ZEUC Market/Customer Segment 분류</div>
+    <div class="cover-meta">
+      <div>담당자 <span>편경현</span></div>
+      <div>보고 기간 <span>2026년 H1 (1월 – 6월)</span></div>
+      <div>작성일 <span>2026년 7월</span></div>
+    </div>
+  </div>`;
+}
+
+function renderSalesOverview() {
+  const py = DATA.total.py;
+  const cy = DATA.total.cy;
+  const chg = cy - py;
+  const gr = (cy / py * 100).toFixed(1);
+
+  return `
+    <div class="section-title"><span class="section-num">01</span> Sales Revenue Analysis</div>
+    <div class="section-sub">Executive Summary 수준의 매출 현황</div>
+
+    <div class="summary-row">
+      <div class="summary-box">
+        <div class="label">PY Rev. (2025 H1)</div>
+        <div class="value">${fmtFull(py)}</div>
+        <div class="unit">KRW</div>
+      </div>
+      <div class="summary-box">
+        <div class="label">CY Rev. (2026 H1)</div>
+        <div class="value">${fmtFull(cy)}</div>
+        <div class="unit">KRW</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="col-card">
+        <div class="card-title">Sales Result by Market & Customer Segment</div>
+        ${renderSegmentTableCompact()}
+      </div>
+      <div class="col-card">
+        <div class="card-title">Sales Result by Product Family</div>
+        ${renderProductTableCompact()}
+      </div>
+    </div>
+  `;
+}
+
+function renderSegmentTableCompact() {
+  const py = DATA.total.py;
+  const cy = DATA.total.cy;
+  const chg = cy - py;
+
+  let rows = '';
+  DATA.segments.forEach(seg => {
+    const sc = seg.cy - seg.py;
+    rows += `<tr class="market-row">
+      <td>${seg.name}</td>
+      <td>${fmtFull(seg.py)}</td>
+      <td>${fmtFull(seg.cy)}</td>
+      <td class="${chgClass(sc)}">${chgSign(sc)}${fmtFull(sc)}</td>
+      <td>${fmtPct(seg.py, seg.cy)}</td>
+    </tr>`;
+    if (seg.children && seg.children.length > 0) {
+      seg.children.forEach(ch => {
+        const cc = ch.cy - ch.py;
+        rows += `<tr class="child-row">
+          <td>└ ${ch.name}</td>
+          <td>${fmtFull(ch.py)}</td>
+          <td>${fmtFull(ch.cy)}</td>
+          <td class="${chgClass(cc)}">${chgSign(cc)}${fmtFull(cc)}</td>
+          <td>${fmtPct(ch.py, ch.cy)}</td>
+        </tr>`;
+      });
+    }
+  });
+
+  return `<table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:35%">Segment</th>
+        <th>PY</th>
+        <th>CY</th>
+        <th>Change</th>
+        <th>GR%</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows}
+      <tr class="total-row">
+        <td>Total</td>
+        <td>${fmtFull(py)}</td>
+        <td>${fmtFull(cy)}</td>
+        <td>${chgSign(chg)}${fmtFull(chg)}</td>
+        <td>${fmtPct(py, cy)}</td>
+      </tr>
+    </tbody>
+  </table>`;
+}
+
+function renderSegmentTable() {
+  return `
+    <div class="section-title"><span class="section-num">A</span> Sales Result by Market & Customer Segment</div>
+    <div class="section-sub">ZEUC 기준 · Market Segment & Customer Segment별 매출 분석</div>
+    <div class="card">
+      ${renderSegmentTableCompact()}
+    </div>
+  `;
+}
+
+function renderProductTableCompact() {
+  const cy = DATA.total.cy;
+  const py = DATA.total.py;
+  const chg = cy - py;
+
+  let rows = DATA.products.map(p => {
+    const pc = p.cy - p.py;
+    return `<tr>
+      <td style="font-weight:600">${p.name}</td>
+      <td>${fmtFull(p.py)}</td>
+      <td>${fmtFull(p.cy)}</td>
+      <td class="${chgClass(pc)}">${chgSign(pc)}${fmtFull(pc)}</td>
+      <td>${fmtPct(p.py, p.cy)}</td>
+    </tr>`;
+  }).join('');
+
+  return `<table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:35%">Product</th>
+        <th>PY</th>
+        <th>CY</th>
+        <th>Change</th>
+        <th>GR%</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows}
+      <tr class="total-row">
+        <td>Total</td>
+        <td>${fmtFull(py)}</td>
+        <td>${fmtFull(cy)}</td>
+        <td>${chgSign(chg)}${fmtFull(chg)}</td>
+        <td>${fmtPct(py, cy)}</td>
+      </tr>
+    </tbody>
+  </table>`;
+}
+
+function renderProductTable() {
+  return `
+    <div class="section-title"><span class="section-num">B</span> Sales Result by Product Family</div>
+    <div class="section-sub">Product Family별 매출 분석</div>
+    <div class="card">
+      ${renderProductTableCompact()}
+    </div>
+  `;
+}
+
+function renderSegmentHighlight(id, label, color) {
+  const hlTableId = `${id}_hl`;
+  const llTableId = `${id}_ll`;
+  const hlCols = ['거래처 / 이슈', '배경', '성과', '기여 요인'];
+  const llCols = ['거래처 / 이슈', '배경', '영향', '대응 방향'];
+  const hlRows = getTableRows(hlTableId, hlCols);
+  const llRows = getTableRows(llTableId, llCols);
+  const isEditing = editingSection === id;
+
+  return `
+    <div style="border-left:4px solid ${color}; padding-left:20px">
+      <div class="section-title"><span class="section-num">02</span> ${label} Segment</div>
+      <div class="section-sub">Segment별 Highlights & Lowlights · Summary</div>
+    </div>
+
+    <div class="card">
+      <div class="edit-group">
+        <div class="edit-label hl-label">▸ Highlights</div>
+        ${renderEditTable(hlTableId, hlCols, hlRows)}
+        <div class="btn-row">
+          <button class="btn-add" onclick="addTableRow('${hlTableId}', ${hlCols.length})">+ 행 추가</button>
+        </div>
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label ll-label">▸ Lowlights</div>
+        ${renderEditTable(llTableId, llCols, llRows)}
+        <div class="btn-row">
+          <button class="btn-add" onclick="addTableRow('${llTableId}', ${llCols.length})">+ 행 추가</button>
+        </div>
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label summary-label">▸ Summary & 다음 분기 포커스</div>
+        ${isEditing ? `
+          <textarea class="editable" placeholder="Segment 총평 및 다음 분기 포커스 내용을 작성하세요..." id="edit_${id}_summary" style="min-height:80px">${editData[`${id}_summary`] || ''}</textarea>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn-save" onclick="saveEdit('${id}')">✓ 저장</button>
+            <button class="btn-cancel" onclick="editingSection=null; render()">✕ 취소</button>
+            <span class="save-indicator save-ind-${id}_summary"></span>
+          </div>
+        ` : `
+          <div style="padding:12px; background:var(--gray-50); border-radius:8px; border:1px solid var(--gray-200); min-height:80px; display:flex; align-items:center; justify-content:space-between;">
+            <span style="color:var(--gray-500); font-size:13px;">${editData[`${id}_summary`] || '작성된 내용 없음'}</span>
+            <button class="btn-save" onclick="startEdit('${id}')">수정</button>
+          </div>
+        `}
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label" style="color:var(--navy)">▸ 핵심 전략 & 향후 계획</div>
+        ${isEditing ? `
+          <textarea class="editable" placeholder="2026 Segment Plan 핵심 전략과 향후 계획을 작성하세요..." id="edit_${id}_plan" style="min-height:80px">${editData[`${id}_plan`] || ''}</textarea>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn-save" onclick="saveEdit('${id}')">✓ 저장</button>
+            <button class="btn-cancel" onclick="editingSection=null; render()">✕ 취소</button>
+            <span class="save-indicator save-ind-${id}_plan"></span>
+          </div>
+        ` : `
+          <div style="padding:12px; background:var(--gray-50); border-radius:8px; border:1px solid var(--gray-200); min-height:80px; display:flex; align-items:center; justify-content:space-between;">
+            <span style="color:var(--gray-500); font-size:13px;">${editData[`${id}_plan`] || '작성된 내용 없음'}</span>
+            <button class="btn-save" onclick="startEdit('${id}')">수정</button>
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+function renderEditTable(tableId, cols, rows) {
+  return `<table class="edit-table">
+    <thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}<th style="width:30px"></th></tr></thead>
+    <tbody>
+      ${rows.map((row, ri) => `<tr>
+        ${row.map((cell, ci) => `<td>
+          <textarea class="cell-input" placeholder="${cols[ci]}..." oninput="updateTableCell('${tableId}', ${ri}, ${ci}, this.value); autoResize(this)">${cell}</textarea>
+        </td>`).join('')}
+        <td><button class="btn-del" onclick="removeTableRow('${tableId}', ${ri})" title="삭제">×</button></td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+function renderForecastAndIssues() {
+  const fcstId = 'q2_forecast';
+  const fcstCols = ['Key Account', 'Segment', 'Q2 Forecast', '주요 제품', 'Forecast 근거', '리스크'];
+  const fcstRows = getTableRows(fcstId, fcstCols);
+  const isEditing = editingSection === 'forecast';
+
+  return `
+    <div class="section-title"><span class="section-num">03</span> Q2 Key Account Forecast</div>
+    <div class="section-sub">Q2에 매출이 예상되는 거래처 기재</div>
+
+    <div class="card">
+      ${renderEditTable(fcstId, fcstCols, fcstRows)}
+      <div class="btn-row">
+        <button class="btn-add" onclick="addTableRow('${fcstId}', ${fcstCols.length})">+ 행 추가</button>
+        ${isEditing ? `
+          <button class="btn-save" onclick="saveEdit('forecast')">✓ 저장</button>
+          <button class="btn-cancel" onclick="editingSection=null; render()">✕ 취소</button>
+        ` : `
+          <button class="btn-save" onclick="startEdit('forecast')" style="background:var(--gray-200); color:var(--gray-700)">수정</button>
+        `}
+        <span class="save-indicator save-ind-${fcstId}"></span>
+      </div>
+    </div>
+  `;
+}
+
+function renderExecutiveSummary() {
+  const isEditing = editingSection === 'exec';
+
+  return `
+    <div class="section-title"><span class="section-num">04</span> Executive Summary by SBU</div>
+    <div class="section-sub">담당 Customer Account 매출에 영향을 준 시장 분석 및 영업전략 핵심 요약</div>
+
+    <div class="card">
+      <div class="edit-group">
+        <div class="edit-label" style="color:var(--navy)">▸ 시장 환경 및 전반적 동향</div>
+        <textarea class="editable" placeholder="시장 환경 및 전반적 동향을 작성하세요..." oninput="saveField('exec_market', this.value); showSaveIndicator('exec_market')" style="min-height:80px">${editData['exec_market'] || ''}</textarea>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn-save" onclick="alert('자동 저장됨')">✓ 저장됨</button>
+          <span class="save-indicator save-ind-exec_market"></span>
+        </div>
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label hl-label">▸ 매출 성장 요인</div>
+        <textarea class="editable" placeholder="매출 성장에 기여한 핵심 요인을 작성하세요..." oninput="saveField('exec_growth', this.value); showSaveIndicator('exec_growth')" style="min-height:80px">${editData['exec_growth'] || ''}</textarea>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn-save" onclick="alert('자동 저장됨')">✓ 저장됨</button>
+          <span class="save-indicator save-ind-exec_growth"></span>
+        </div>
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label ll-label">▸ 매출 감소 요인</div>
+        <textarea class="editable" placeholder="매출 감소 요인을 작성하세요..." oninput="saveField('exec_decline', this.value); showSaveIndicator('exec_decline')" style="min-height:80px">${editData['exec_decline'] || ''}</textarea>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn-save" onclick="alert('자동 저장됨')">✓ 저장됨</button>
+          <span class="save-indicator save-ind-exec_decline"></span>
+        </div>
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label summary-label">▸ H1 핵심 영업전략 실행 성과</div>
+        <textarea class="editable" placeholder="핵심 영업전략 실행 성과를 작성하세요..." oninput="saveField('exec_strategy', this.value); showSaveIndicator('exec_strategy')" style="min-height:80px">${editData['exec_strategy'] || ''}</textarea>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn-save" onclick="alert('자동 저장됨')">✓ 저장됨</button>
+          <span class="save-indicator save-ind-exec_strategy"></span>
+        </div>
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label" style="color:var(--orange)">▸ H2 전망 및 주요 리스크</div>
+        <textarea class="editable" placeholder="하반기 전망 및 주요 리스크를 작성하세요..." oninput="saveField('exec_outlook', this.value); showSaveIndicator('exec_outlook')" style="min-height:80px">${editData['exec_outlook'] || ''}</textarea>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn-save" onclick="alert('자동 저장됨')">✓ 저장됨</button>
+          <span class="save-indicator save-ind-exec_outlook"></span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderIssuesRisk() {
+  const isEditing = editingSection === 'issues';
+
+  return `
+    <div class="section-title"><span class="section-num">05</span> Issues & Risk / Support Request</div>
+    <div class="section-sub">현재 진행 중인 이슈와 필요한 지원 사항</div>
+
+    <div class="card">
+      <div class="edit-group">
+        <div class="edit-label ll-label">▸ 이슈 & 리스크</div>
+        ${isEditing ? `
+          <textarea class="editable" placeholder="현재 진행 중인 이슈와 리스크를 작성하세요..." id="edit_issues_risk" style="min-height:100px">${editData['issues_risk'] || ''}</textarea>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn-save" onclick="editData['issues_risk'] = document.getElementById('edit_issues_risk').value; saveEdit('issues')">✓ 저장</button>
+            <button class="btn-cancel" onclick="editingSection=null; render()">✕ 취소</button>
+            <span class="save-indicator save-ind-issues_risk"></span>
+          </div>
+        ` : `
+          <div style="padding:12px; background:var(--gray-50); border-radius:8px; border:1px solid var(--gray-200); min-height:100px; display:flex; align-items:center; justify-content:space-between;">
+            <span style="color:var(--gray-500); font-size:13px; white-space:pre-wrap;">${editData['issues_risk'] || '작성된 내용 없음'}</span>
+            <button class="btn-save" onclick="startEdit('issues')">수정</button>
+          </div>
+        `}
+      </div>
+
+      <div class="edit-group" style="margin-top:20px">
+        <div class="edit-label summary-label">▸ 지원 요청 사항</div>
+        ${isEditing ? `
+          <textarea class="editable" placeholder="HQ 또는 내부 지원이 필요한 사항을 작성하세요..." id="edit_issues_support" style="min-height:100px">${editData['issues_support'] || ''}</textarea>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn-save" onclick="editData['issues_support'] = document.getElementById('edit_issues_support').value; saveEdit('issues')">✓ 저장</button>
+            <button class="btn-cancel" onclick="editingSection=null; render()">✕ 취소</button>
+            <span class="save-indicator save-ind-issues_support"></span>
+          </div>
+        ` : `
+          <div style="padding:12px; background:var(--gray-50); border-radius:8px; border:1px solid var(--gray-200); min-height:100px; display:flex; align-items:center; justify-content:space-between;">
+            <span style="color:var(--gray-500); font-size:13px; white-space:pre-wrap;">${editData['issues_support'] || '작성된 내용 없음'}</span>
+            <button class="btn-save" onclick="startEdit('issues')">수정</button>
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+function renderAdditionalSlides1() {
+  return `<div class="card"><p style="color:var(--gray-500)">추가 슬라이드 영역 1 - 필요시 콘텐츠 추가</p></div>`;
+}
+
+function renderAdditionalSlides2() {
+  return `<div class="card"><p style="color:var(--gray-500)">추가 슬라이드 영역 2 - 필요시 콘텐츠 추가</p></div>`;
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
