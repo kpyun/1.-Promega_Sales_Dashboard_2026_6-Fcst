@@ -713,6 +713,87 @@ const khpyunCustomers = {
   ]
 };
 
+const customerComparisonData = {
+  "Clinical": {
+    customer_segments: {
+      "Diagnostics Mfg": {
+        customers: [
+          { name: "맥스웰_CDx Mfg", py: 42320000, cy: 42320000, change: 0, gr: "0.0%" },
+          { name: "씨젠", py: 115242180, cy: 83446040, change: -31796140, gr: "-27.6%" },
+          { name: "제이바이오텍", py: 0, cy: 1993650, change: 1993650, gr: "-" },
+          { name: "진스랩", py: 0, cy: 27450000, change: 27450000, gr: "-" }
+        ],
+        py_total: 157562180,
+        cy_total: 155209690,
+        change_total: -2352490,
+        gr_total: "-1.5%"
+      },
+      "Hospital": {
+        customers: [
+          { name: "가톨릭대학교 서울성모병원", py: 12054000, cy: 22179800, change: 10125800, gr: "84.0%" },
+          { name: "가톨릭대학교 성빈센트병원", py: 0, cy: 546800, change: 546800, gr: "-" },
+          { name: "가톨릭대학교 여의도성모병원", py: 0, cy: 1349310, change: 1349310, gr: "-" },
+          { name: "가톨릭대학교 은평성모병원", py: 1080000, cy: 105950, change: -974050, gr: "-90.2%" },
+          { name: "강릉아산병원", py: 17150200, cy: 5289700, change: -11860500, gr: "-69.2%" },
+          { name: "강북삼성병원", py: 2940000, cy: 5226000, change: 2286000, gr: "77.8%" },
+          { name: "계명대학교 동산의료원", py: 1470000, cy: 3892800, change: 2422800, gr: "164.8%" },
+          { name: "고려대학교안암병원", py: 5305600, cy: 679200, change: -4626400, gr: "-87.2%" },
+          { name: "부산대학교병원", py: 300000, cy: 2881750, change: 2581750, gr: "860.6%" },
+          { name: "분당서울대병원", py: 2940000, cy: 7965650, change: 5025650, gr: "170.9%" },
+          { name: "서울아산병원", py: 0, cy: 3396000, change: 3396000, gr: "-" },
+          { name: "순천향대학교 부천병원", py: 6955600, cy: 9561270, change: 2605670, gr: "37.5%" },
+          { name: "신촌세브란스병원", py: 0, cy: 5721336, change: 5721336, gr: "-" },
+          { name: "양산부산대병원", py: 35200000, cy: 2688400, change: -32511600, gr: "-92.4%" },
+          { name: "양산부산대학교병원", py: 4835800, cy: 14522240, change: 9686440, gr: "200.3%" },
+          { name: "울산대학교병원", py: 0, cy: 44689408, change: 44689408, gr: "-" },
+          { name: "이대목동병원", py: 0, cy: 36291680, change: 36291680, gr: "-" },
+          { name: "인제대학교해운대백병원", py: 396500, cy: 1146250, change: 749750, gr: "189.1%" },
+          { name: "인천성모병원", py: 270000, cy: 1987030, change: 1717030, gr: "635.9%" },
+          { name: "전북대학교병원", py: 1945000, cy: 3053700, change: 1108700, gr: "57.0%" },
+          { name: "창원삼성서울병원", py: 0, cy: 38598440, change: 38598440, gr: "-" },
+          { name: "충북대학교병원", py: 270000, cy: 1848950, change: 1578950, gr: "584.8%" },
+          { name: "칠곡경북대학교병원", py: 0, cy: 12270960, change: 12270960, gr: "-" },
+          { name: "한림대학교 강남성심병원", py: 0, cy: 391680, change: 391680, gr: "-" },
+          { name: "한림대학교 평촌성심병원", py: 270000, cy: 35000000, change: 34730000, gr: "12863.0%" },
+          { name: "화순전남대학교병원", py: 29752060, cy: 13119160, change: -16632900, gr: "-55.9%" }
+        ],
+        py_total: 123134760,
+        cy_total: 274403464,
+        change_total: 151268704,
+        gr_total: "122.8%"
+      }
+    },
+    py_total: 280696940,
+    cy_total: 429613154,
+    change_total: 148916214,
+    gr_total: "53.1%"
+  },
+  "Pharma/Biotech": {
+    customer_segments: {
+      "Biotechnology": {
+        customers: [
+          { name: "바이오파크진단", py: 747000, cy: 447120, change: -299880, gr: "-40.1%" },
+          { name: "클리노믹스 바이오빅데이터센터", py: 2457600, cy: 0, change: -2457600, gr: "-100.0%" }
+        ],
+        py_total: 3204600,
+        cy_total: 447120,
+        change_total: -2757480,
+        gr_total: "-86.0%"
+      }
+    },
+    py_total: 3204600,
+    cy_total: 447120,
+    change_total: -2757480,
+    gr_total: "-86.0%"
+  },
+  "grand_total": {
+    py_total: 283901540,
+    cy_total: 430060274,
+    change_total: 146158734,
+    gr_total: "51.5%"
+  }
+};
+
 const fmt = (v) => {
   if (v === 0) return '0';
   const m = v / 1000000;
@@ -726,7 +807,7 @@ const chgSign = (v) => v > 0 ? '+' : '';
 
 // ===== STATE =====
 let currentSlide = 0;
-const totalSlides = 10;
+const totalSlides = 11;
 let editData = {};
 let saveTimers = {};
 let tableRows = {};
@@ -799,6 +880,7 @@ function render() {
     renderSegmentHighlight('academic', 'Academic/Government', '#3A7BD5'),
     renderSegmentHighlight('pharma', 'Pharma/Biotech', '#00B894'),
     renderSegmentHighlight('clinical', 'Clinical', '#E74C3C'),
+    renderCustomerComparison(),
     renderForecastAndIssues(),
     renderExecutiveSummary(),
     renderIssuesRisk(),
@@ -831,9 +913,10 @@ function renderTopbar() {
     '02 Academic/Government',
     '02 Pharma/Biotech',
     '02 Clinical',
-    '03 Q2 Forecast',
-    '04 Executive Summary',
-    '05 Issues & Risk',
+    '03 고객사 매출 비교 리스트',
+    '04 Q2 Forecast',
+    '05 Executive Summary',
+    '06 Issues & Risk',
     'Additional 1',
     'Additional 2'
   ];
@@ -1198,6 +1281,94 @@ function renderEditTable(tableId, cols, rows) {
       </tr>`).join('')}
     </tbody>
   </table>`;
+}
+
+function renderCustomerComparison() {
+  let html = `<div class="section-title"><span class="section-num">03</span> 고객사 매출 비교 리스트</div>
+    <div class="section-sub">KH.Pyun Account 고객사 매출 현황 (2025~2026 H1 기준)</div>
+    <div class="card">`;
+
+  // Iterate through market segments
+  for (const [marketSeg, marketData] of Object.entries(customerComparisonData)) {
+    if (marketSeg === 'grand_total') continue;
+
+    html += `<div style="margin-bottom: 30px;">
+      <div style="font-weight:bold; font-size:16px; margin-bottom:10px; color:#333">${marketSeg}</div>
+      <table class="data-table" style="width:100%">
+        <thead><tr>
+          <th style="width:40%">거래처</th>
+          <th>PY Rev.</th>
+          <th>CY Rev.</th>
+          <th>Rev. Change</th>
+          <th>GR%</th>
+          <th style="width:5%; text-align:center;">선택</th>
+        </tr></thead>
+        <tbody>`;
+
+    // Iterate through customer segments
+    for (const [custSeg, custData] of Object.entries(marketData.customer_segments)) {
+      // Customer segment row
+      html += `<tr style="background-color:#f8f8f8; font-weight:600">
+        <td colspan="5">${custSeg}</td>
+        <td></td>
+      </tr>`;
+
+      // Customer rows
+      for (const customer of custData.customers) {
+        const changeClass = chgClass(customer.change);
+        html += `<tr style="padding-left:20px">
+          <td style="padding-left:30px">${customer.name}</td>
+          <td>${fmtFull(customer.py)}</td>
+          <td>${fmtFull(customer.cy)}</td>
+          <td class="${changeClass}">${chgSign(customer.change)}${fmtFull(customer.change)}</td>
+          <td>${customer.gr}</td>
+          <td style="text-align:center"><input type="checkbox" style="cursor:pointer"/></td>
+        </tr>`;
+      }
+
+      // Customer segment subtotal
+      html += `<tr style="background-color:#e8f4f8; font-weight:600">
+        <td>${custSeg} 소계</td>
+        <td>${fmtFull(custData.py_total)}</td>
+        <td>${fmtFull(custData.cy_total)}</td>
+        <td class="${chgClass(custData.change_total)}">${chgSign(custData.change_total)}${fmtFull(custData.change_total)}</td>
+        <td>${custData.gr_total}</td>
+        <td></td>
+      </tr>`;
+    }
+
+    // Market segment total
+    html += `<tr style="background-color:#d0e8f2; font-weight:700">
+      <td>${marketSeg} 합계</td>
+      <td>${fmtFull(marketData.py_total)}</td>
+      <td>${fmtFull(marketData.cy_total)}</td>
+      <td class="${chgClass(marketData.change_total)}">${chgSign(marketData.change_total)}${fmtFull(marketData.change_total)}</td>
+      <td>${marketData.gr_total}</td>
+      <td></td>
+    </tr>`;
+
+    html += `</tbody></table></div>`;
+  }
+
+  // Grand total
+  const grandTotal = customerComparisonData.grand_total;
+  html += `<div style="margin-top:20px; border-top:2px solid #333; padding-top:15px">
+    <table class="data-table" style="width:100%">
+      <tbody>
+        <tr style="background-color:#c0d8e8; font-weight:700; font-size:15px">
+          <td style="width:40%">전체 합계</td>
+          <td>${fmtFull(grandTotal.py_total)}</td>
+          <td>${fmtFull(grandTotal.cy_total)}</td>
+          <td class="${chgClass(grandTotal.change_total)}">${chgSign(grandTotal.change_total)}${fmtFull(grandTotal.change_total)}</td>
+          <td>${grandTotal.gr_total}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>`;
+
+  html += `</div>`;
+  return html;
 }
 
 function renderEndUserTable(segmentId) {
