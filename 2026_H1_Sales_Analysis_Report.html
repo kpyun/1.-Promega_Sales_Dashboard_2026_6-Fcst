@@ -1201,10 +1201,23 @@ function renderEditTable(tableId, cols, rows) {
 }
 
 function renderEndUserTable(segmentId) {
-  const customers = khpyunCustomers[segmentId] || [];
+  let customers = khpyunCustomers[segmentId] || [];
   if (customers.length === 0) return '<p style="color:var(--gray-500);">데이터 없음</p>';
 
-  const rows = customers.map(c => `<tr class="market-row">
+  // Sort by change descending (largest first)
+  customers = [...customers].sort((a, b) => b.change - a.change);
+
+  // Limit display to top 12 for pharma and clinical
+  const displayLimit = (segmentId === 'pharma' || segmentId === 'clinical') ? 12 : customers.length;
+  const displayCustomers = customers.slice(0, displayLimit);
+
+  // Calculate totals from all customers in segment
+  const totalPy = customers.reduce((sum, c) => sum + c.py, 0);
+  const totalCy = customers.reduce((sum, c) => sum + c.cy, 0);
+  const totalChange = totalCy - totalPy;
+  const totalGr = totalPy === 0 ? '-' : ((totalCy / totalPy - 1) * 100).toFixed(1) + '%';
+
+  const rows = displayCustomers.map(c => `<tr class="market-row">
     <td>${c.name}</td>
     <td>${fmtFull(c.py)}</td>
     <td>${fmtFull(c.cy)}</td>
@@ -1212,15 +1225,24 @@ function renderEndUserTable(segmentId) {
     <td>${c.gr}</td>
   </tr>`).join('');
 
+  // Add total row
+  const totalRow = `<tr style="font-weight:bold; background-color:var(--gray-100)">
+    <td>합계</td>
+    <td>${fmtFull(totalPy)}</td>
+    <td>${fmtFull(totalCy)}</td>
+    <td class="${chgClass(totalChange)}">${chgSign(totalChange)}${fmtFull(totalChange)}</td>
+    <td>${totalGr}</td>
+  </tr>`;
+
   return `<table class="data-table">
     <thead><tr>
-      <th style="width:35%">KH.Pyun Account Customers</th>
+      <th style="width:35%">TOP 10 Account</th>
       <th>PY Rev.</th>
       <th>CY Rev.</th>
       <th>Rev. Change</th>
       <th>GR%</th>
     </tr></thead>
-    <tbody>${rows}</tbody>
+    <tbody>${rows}${totalRow}</tbody>
   </table>`;
 }
 
