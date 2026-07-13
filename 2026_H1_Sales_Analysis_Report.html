@@ -204,17 +204,24 @@
     color: var(--gray-500);
     margin-bottom: 12px;
   }
+  .summary-box .value-with-unit {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin: 6px 0;
+  }
   .summary-box .value {
-    font-size: 56px;
+    font-size: 40px;
     font-weight: 800;
     color: var(--navy);
     line-height: 1;
   }
   .summary-box .unit {
-    font-size: 13px;
+    font-size: 36px;
     font-weight: 500;
     color: var(--gray-500);
-    margin-top: 6px;
+    line-height: 1;
   }
   .summary-box.positive .value { color: var(--green); }
   .summary-box.negative .value { color: var(--red); }
@@ -721,13 +728,17 @@ function renderSalesOverview() {
     <div class="summary-row">
       <div class="summary-box">
         <div class="label">PY Rev. (2025 H1)</div>
-        <div class="value">${fmtFull(py)}</div>
-        <div class="unit">KRW</div>
+        <div class="value-with-unit">
+          <span class="value">${fmtFull(py)}</span>
+          <span class="unit">KRW</span>
+        </div>
       </div>
       <div class="summary-box">
         <div class="label">CY Rev. (2026 H1)</div>
-        <div class="value">${fmtFull(cy)}</div>
-        <div class="unit">KRW</div>
+        <div class="value-with-unit">
+          <span class="value">${fmtFull(cy)}</span>
+          <span class="unit">KRW</span>
+        </div>
       </div>
     </div>
 
