@@ -540,11 +540,11 @@ const DATA = {
     { name: "Applied Markets", py: 3432860, cy: 1878740, children: [] }
   ],
   products: [
-    { name: "Cell Analysis", py: 1461305590, cy: 1842571532 },
-    { name: "Sample Prep", py: 373123520, cy: 606027134 },
-    { name: "Sample Analysis", py: 235555690, cy: 239159694 },
-    { name: "Protein Analysis", py: 228070220, cy: 186330952 },
-    { name: "Genetic Identity", py: 76153120, cy: 76414646 }
+    { name: "Cell Analysis", code: "CA-001", py: 1461305590, cy: 1842571532 },
+    { name: "Sample Prep", code: "SP-001", py: 373123520, cy: 606027134 },
+    { name: "Sample Analysis", code: "SA-001", py: 235555690, cy: 239159694 },
+    { name: "Protein Analysis", code: "PA-001", py: 228070220, cy: 186330952 },
+    { name: "Genetic Identity", code: "GI-001", py: 76153120, cy: 76414646 }
   ],
   segmentDetails: ["Academic", "Pharmaceutical", "Biotechnology", "CRO", "Clinical"]
 };
@@ -556,7 +556,7 @@ const fmt = (v) => {
   return m.toFixed(1) + 'M';
 };
 const fmtFull = (v) => v.toLocaleString('ko-KR');
-const fmtPct = (py, cy) => py === 0 ? '-' : (cy / py * 100).toFixed(1) + '%';
+const fmtPct = (py, cy) => py === 0 ? '-' : ((cy / py - 1) * 100).toFixed(1) + '%';
 const chgClass = (v) => v > 0 ? 'val-pos' : v < 0 ? 'val-neg' : '';
 const chgSign = (v) => v > 0 ? '+' : '';
 
@@ -567,6 +567,8 @@ let editData = {};
 let saveTimers = {};
 let tableRows = {};
 let editingSection = null;
+let expandedSegmentsOverview = {};
+let expandedProductsOverview = {};
 
 function saveField(key, value) {
   editData[key] = value;
@@ -717,31 +719,9 @@ function renderCover() {
 }
 
 function renderSalesOverview() {
-  const py = DATA.total.py;
-  const cy = DATA.total.cy;
-  const chg = cy - py;
-  const gr = (cy / py * 100).toFixed(1);
-
   return `
     <div class="section-title"><span class="section-num">01</span> Sales Revenue Analysis</div>
     <div class="section-sub">Executive Summary 수준의 매출 현황</div>
-
-    <div class="summary-row">
-      <div class="summary-box">
-        <div class="label">PY Rev. (2025 H1)</div>
-        <div class="value-with-unit">
-          <span class="value">${fmtFull(py)}</span>
-          <span class="unit">KRW</span>
-        </div>
-      </div>
-      <div class="summary-box">
-        <div class="label">CY Rev. (2026 H1)</div>
-        <div class="value-with-unit">
-          <span class="value">${fmtFull(cy)}</span>
-          <span class="unit">KRW</span>
-        </div>
-      </div>
-    </div>
 
     <div class="two-col">
       <div class="col-card">
@@ -762,16 +742,18 @@ function renderSegmentTableCompact() {
   const chg = cy - py;
 
   let rows = '';
-  DATA.segments.forEach(seg => {
+  DATA.segments.forEach((seg, segIdx) => {
     const sc = seg.cy - seg.py;
-    rows += `<tr class="market-row">
-      <td>${seg.name}</td>
+    const isExpanded = expandedSegmentsOverview[segIdx];
+    const arrow = seg.children && seg.children.length > 0 ? (isExpanded ? '▼' : '▶') : '  ';
+    rows += `<tr class="market-row" onclick="if(${seg.children && seg.children.length > 0}) { expandedSegmentsOverview[${segIdx}] = !expandedSegmentsOverview[${segIdx}]; render(); }" style="cursor:${seg.children && seg.children.length > 0 ? 'pointer' : 'default'}">
+      <td>${arrow} ${seg.name}</td>
       <td>${fmtFull(seg.py)}</td>
       <td>${fmtFull(seg.cy)}</td>
       <td class="${chgClass(sc)}">${chgSign(sc)}${fmtFull(sc)}</td>
       <td>${fmtPct(seg.py, seg.cy)}</td>
     </tr>`;
-    if (seg.children && seg.children.length > 0) {
+    if (seg.children && seg.children.length > 0 && isExpanded) {
       seg.children.forEach(ch => {
         const cc = ch.cy - ch.py;
         rows += `<tr class="child-row">
@@ -789,9 +771,9 @@ function renderSegmentTableCompact() {
     <thead>
       <tr>
         <th style="width:35%">Segment</th>
-        <th>PY</th>
-        <th>CY</th>
-        <th>Change</th>
+        <th>PY Rev.</th>
+        <th>CY Rev.</th>
+        <th>Rev. Change</th>
         <th>GR%</th>
       </tr>
     </thead>
@@ -823,24 +805,35 @@ function renderProductTableCompact() {
   const py = DATA.total.py;
   const chg = cy - py;
 
-  let rows = DATA.products.map(p => {
+  let rows = '';
+  DATA.products.forEach((p, idx) => {
     const pc = p.cy - p.py;
-    return `<tr>
-      <td style="font-weight:600">${p.name}</td>
+    const isExpanded = expandedProductsOverview[idx];
+    rows += `<tr class="market-row" onclick="expandedProductsOverview[${idx}] = !expandedProductsOverview[${idx}]; render()" style="cursor:pointer">
+      <td style="font-weight:600">${isExpanded ? '▼' : '▶'} ${p.name}</td>
       <td>${fmtFull(p.py)}</td>
       <td>${fmtFull(p.cy)}</td>
       <td class="${chgClass(pc)}">${chgSign(pc)}${fmtFull(pc)}</td>
       <td>${fmtPct(p.py, p.cy)}</td>
     </tr>`;
-  }).join('');
+    if (isExpanded) {
+      rows += `<tr class="child-row">
+        <td style="color:var(--gray-500)">└ Product Group Code: ${p.code}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>`;
+    }
+  });
 
   return `<table class="data-table">
     <thead>
       <tr>
-        <th style="width:35%">Product</th>
-        <th>PY</th>
-        <th>CY</th>
-        <th>Change</th>
+        <th style="width:35%">Product Family</th>
+        <th>PY Rev.</th>
+        <th>CY Rev.</th>
+        <th>Rev. Change</th>
         <th>GR%</th>
       </tr>
     </thead>
