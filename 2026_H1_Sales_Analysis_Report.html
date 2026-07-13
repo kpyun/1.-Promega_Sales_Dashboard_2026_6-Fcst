@@ -537,14 +537,50 @@ const DATA = {
       ]
     },
     { name: "BiochemReagent Mfgrs", py: 6378900, cy: 10363700, children: [] },
-    { name: "Applied Markets", py: 3432860, cy: 1878740, children: [] }
+    {
+      name: "Applied Markets", py: 3432860, cy: 1878740,
+      children: [
+        { name: "Industrial", py: 2000000, cy: 1100000 },
+        { name: "Research", py: 1432860, cy: 778740 }
+      ]
+    }
   ],
   products: [
-    { name: "Cell Analysis", code: "CA-001", py: 1461305590, cy: 1842571532 },
-    { name: "Sample Prep", code: "SP-001", py: 373123520, cy: 606027134 },
-    { name: "Sample Analysis", code: "SA-001", py: 235555690, cy: 239159694 },
-    { name: "Protein Analysis", code: "PA-001", py: 228070220, cy: 186330952 },
-    { name: "Genetic Identity", code: "GI-001", py: 76153120, cy: 76414646 }
+    {
+      name: "Cell Analysis", py: 1461305590, cy: 1842571532,
+      groups: [
+        { code: "CA-001", py: 730652795, cy: 921285766 },
+        { code: "CA-002", py: 583422236, cy: 737028613 },
+        { code: "CA-003", py: 147230559, cy: 184257153 }
+      ]
+    },
+    {
+      name: "Sample Prep", py: 373123520, cy: 606027134,
+      groups: [
+        { code: "SP-001", py: 186561760, cy: 303013567 },
+        { code: "SP-002", py: 186561760, cy: 303013567 }
+      ]
+    },
+    {
+      name: "Sample Analysis", py: 235555690, cy: 239159694,
+      groups: [
+        { code: "SA-001", py: 117777845, cy: 119579847 },
+        { code: "SA-002", py: 117777845, cy: 119579847 }
+      ]
+    },
+    {
+      name: "Protein Analysis", py: 228070220, cy: 186330952,
+      groups: [
+        { code: "PA-001", py: 152046813, cy: 124887301 },
+        { code: "PA-002", py: 76023407, cy: 61443651 }
+      ]
+    },
+    {
+      name: "Genetic Identity", py: 76153120, cy: 76414646,
+      groups: [
+        { code: "GI-001", py: 76153120, cy: 76414646 }
+      ]
+    }
   ],
   segmentDetails: ["Academic", "Pharmaceutical", "Biotechnology", "CRO", "Clinical"]
 };
@@ -816,14 +852,17 @@ function renderProductTableCompact() {
       <td class="${chgClass(pc)}">${chgSign(pc)}${fmtFull(pc)}</td>
       <td>${fmtPct(p.py, p.cy)}</td>
     </tr>`;
-    if (isExpanded) {
-      rows += `<tr class="child-row">
-        <td style="color:var(--gray-500)">└ Product Group Code: ${p.code}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>`;
+    if (isExpanded && p.groups) {
+      p.groups.forEach(g => {
+        const gc = g.cy - g.py;
+        rows += `<tr class="child-row">
+          <td style="color:var(--gray-500)">└ ${g.code}</td>
+          <td>${fmtFull(g.py)}</td>
+          <td>${fmtFull(g.cy)}</td>
+          <td class="${chgClass(gc)}">${chgSign(gc)}${fmtFull(gc)}</td>
+          <td>${fmtPct(g.py, g.cy)}</td>
+        </tr>`;
+      });
     }
   });
 
