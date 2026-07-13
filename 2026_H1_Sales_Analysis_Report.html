@@ -627,7 +627,50 @@ const DATA = {
       ]
     }
   ],
-  segmentDetails: ["Academic", "Pharmaceutical", "Biotechnology", "CRO", "Clinical"]
+  segmentDetails: ["Academic", "Pharmaceutical", "Biotechnology", "CRO", "Clinical"],
+  segmentProductData: {
+    academic: {
+      children: [
+        { name: "Academic", py: 223546700, cy: 68258630 },
+        { name: "Government", py: 2443500, cy: 1395000 }
+      ],
+      products: [
+        { name: "Cell Analysis", py: 101395900, cy: 31294307 },
+        { name: "Sample Prep", py: 50697800, cy: 13931587 },
+        { name: "Sample Analysis", py: 35333353, cy: 9723745 },
+        { name: "Protein Analysis", py: 34107700, cy: 9394581 },
+        { name: "Genetic Identity", py: 4455647, cy: 5309810 }
+      ]
+    },
+    pharma: {
+      children: [
+        { name: "Pharmaceutical", py: 1150580500, cy: 1314493190 },
+        { name: "Biotechnology", py: 329219020, cy: 387203512 },
+        { name: "ContractResearch Org", py: 204565380, cy: 376497444 }
+      ],
+      products: [
+        { name: "Cell Analysis", py: 842452950, cy: 1065263463 },
+        { name: "Sample Prep", py: 210916740, cy: 460096547 },
+        { name: "Sample Analysis", py: 140277345, cy: 151919949 },
+        { name: "Protein Analysis", py: 152046813, cy: 124887301 },
+        { name: "Genetic Identity", py: 38670152, cy: 38034886 }
+      ]
+    },
+    clinical: {
+      children: [
+        { name: "Hospital", py: 225343140, cy: 398137188 },
+        { name: "Ref & Testing Lab", py: 71135960, cy: 237066864 },
+        { name: "Diagnostics Mfg", py: 157562180, cy: 155209690 }
+      ],
+      products: [
+        { name: "Cell Analysis", py: 517456740, cy: 745813762 },
+        { name: "Sample Prep", py: 111508980, cy: 131998900 },
+        { name: "Sample Analysis", py: 59944992, cy: 77516000 },
+        { name: "Protein Analysis", py: 41915694, cy: 37161959 },
+        { name: "Genetic Identity", py: 37215674, cy: 38923121 }
+      ]
+    }
+  }
 };
 
 const fmt = (v) => {
@@ -941,6 +984,7 @@ function renderProductTable() {
 }
 
 function renderSegmentHighlight(id, label, color) {
+  const segmentData = DATA.segmentProductData[id];
   const hlTableId = `${id}_hl`;
   const llTableId = `${id}_ll`;
   const hlCols = ['거래처 / 이슈', '배경', '성과', '기여 요인'];
@@ -949,10 +993,93 @@ function renderSegmentHighlight(id, label, color) {
   const llRows = getTableRows(llTableId, llCols);
   const isEditing = editingSection === id;
 
+  let segmentTableRows = '';
+  const segPy = segmentData.children.reduce((sum, ch) => sum + ch.py, 0);
+  const segCy = segmentData.children.reduce((sum, ch) => sum + ch.cy, 0);
+  const segChg = segCy - segPy;
+
+  segmentData.children.forEach(child => {
+    const chg = child.cy - child.py;
+    segmentTableRows += `<tr class="market-row">
+      <td>${child.name}</td>
+      <td>${fmtFull(child.py)}</td>
+      <td>${fmtFull(child.cy)}</td>
+      <td class="${chgClass(chg)}">${chgSign(chg)}${fmtFull(chg)}</td>
+      <td>${fmtPct(child.py, child.cy)}</td>
+    </tr>`;
+  });
+
+  let productTableRows = '';
+  segmentData.products.forEach(prod => {
+    const pchg = prod.cy - prod.py;
+    productTableRows += `<tr class="market-row">
+      <td>${prod.name}</td>
+      <td>${fmtFull(prod.py)}</td>
+      <td>${fmtFull(prod.cy)}</td>
+      <td class="${chgClass(pchg)}">${chgSign(pchg)}${fmtFull(pchg)}</td>
+      <td>${fmtPct(prod.py, prod.cy)}</td>
+    </tr>`;
+  });
+
+  const segmentTable = `<table class="data-table">
+    <thead><tr>
+      <th style="width:40%">Customer Segment</th>
+      <th>PY Rev.</th>
+      <th>CY Rev.</th>
+      <th>Rev. Change</th>
+      <th>GR%</th>
+    </tr></thead>
+    <tbody>
+      ${segmentTableRows}
+      <tr class="total-row">
+        <td>Total</td>
+        <td>${fmtFull(segPy)}</td>
+        <td>${fmtFull(segCy)}</td>
+        <td>${chgSign(segChg)}${fmtFull(segChg)}</td>
+        <td>${fmtPct(segPy, segCy)}</td>
+      </tr>
+    </tbody>
+  </table>`;
+
+  const prodPy = segmentData.products.reduce((sum, p) => sum + p.py, 0);
+  const prodCy = segmentData.products.reduce((sum, p) => sum + p.cy, 0);
+  const prodChg = prodCy - prodPy;
+
+  const productTable = `<table class="data-table">
+    <thead><tr>
+      <th style="width:40%">Product Family</th>
+      <th>PY Rev.</th>
+      <th>CY Rev.</th>
+      <th>Rev. Change</th>
+      <th>GR%</th>
+    </tr></thead>
+    <tbody>
+      ${productTableRows}
+      <tr class="total-row">
+        <td>Total</td>
+        <td>${fmtFull(prodPy)}</td>
+        <td>${fmtFull(prodCy)}</td>
+        <td>${chgSign(prodChg)}${fmtFull(prodChg)}</td>
+        <td>${fmtPct(prodPy, prodCy)}</td>
+      </tr>
+    </tbody>
+  </table>`;
+
   return `
     <div style="border-left:4px solid ${color}; padding-left:20px">
       <div class="section-title"><span class="section-num">02</span> ${label} Segment</div>
-      <div class="section-sub">Segment별 Highlights & Lowlights · Summary</div>
+      <div class="section-sub">Segment별 매출 현황 및 Highlights & Lowlights · Summary</div>
+    </div>
+
+    <div class="two-col">
+      <div class="col-card">
+        <div class="card-title">Customer Segment</div>
+        ${segmentTable}
+      </div>
+      <div class="col-card">
+        <div class="card-title">Product Family</div>
+        ${productTable}
+      </div>
     </div>
 
     <div class="card">
