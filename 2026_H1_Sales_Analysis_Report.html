@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 H1 Sales Analysis Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --navy: #0B1D3A;
+    --blue: #1B4F9B;
+    --blue-light: #3A7BD5;
+    --accent: #00B894;
+    --accent2: #FF6B6B;
+    --gray-50: #F8F9FB;
+    --gray-100: #EEF1F5;
+    --gray-200: #D8DDE6;
+    --gray-300: #B0B8C8;
+    --gray-500: #6B7A90;
+    --gray-700: #3D4A5C;
+    --gray-900: #1A2332;
+    --white: #FFFFFF;
+    --green: #00B894;
+    --red: #E74C3C;
+    --orange: #F39C12;
+    --shadow: 0 2px 12px rgba(11,29,58,0.08);
+    --shadow-lg: 0 8px 32px rgba(11,29,58,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top bar */
+  .topbar {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  .topbar-brand {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+  .topbar-info {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+  .topbar-page {
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.1);
+    padding: 4px 14px;
+    border-radius: 20px;
+  }
+
+  /* Slide area */
+  .slide-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 40px 100px;
+    scroll-behavior: smooth;
+  }
+
+  .slide {
+    display: none;
+    animation: fadeIn 0.35s ease;
+  }
+  .slide.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Cover slide */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 180px);
+    text-align: center;
+  }
+  .cover-badge {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: rgba(27,79,155,0.08);
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .cover h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .cover .subtitle {
+    font-size: 16px;
+    color: var(--gray-500);
+    margin-bottom: 40px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    font-size: 14px;
+    color: var(--gray-500);
+  }
+  .cover-meta span { font-weight: 600; color: var(--gray-700); }
+
+  /* Section headers */
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--blue);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 8px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-left: 44px;
+    margin-bottom: 24px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-200);
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  /* Summary boxes */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .summary-box {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .summary-box .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+  }
+  .summary-box .value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+  .summary-box .unit {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-500);
+  }
+  .summary-box.positive .value { color: var(--green); }
+  .summary-box.negative .value { color: var(--red); }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+  }
+  .data-table thead th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 14px;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  .data-table thead th:first-child {
+    text-align: left;
+    border-radius: 8px 0 0 0;
+  }
+  .data-table thead th:last-child {
+    border-radius: 0 8px 0 0;
+  }
+  .data-table tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .data-table tbody td:first-child {
+    text-align: left;
+    font-weight: 500;
+  }
+  .data-table tbody tr:hover {
+    background: rgba(27,79,155,0.03);
+  }
+  .data-table tbody tr.market-row td {
+    font-weight: 700;
+    background: var(--gray-50);
+    border-top: 2px solid var(--gray-200);
+  }
+  .data-table tbody tr.child-row td:first-child {
+    padding-left: 34px;
+    font-weight: 400;
+    color: var(--gray-700);
+    font-size: 12px;
+  }
+  .data-table tbody tr.total-row td {
+    font-weight: 800;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+  }
+  .data-table tbody tr.total-row td:first-child {
+    border-radius: 0 0 0 8px;
+  }
+  .data-table tbody tr.total-row td:last-child {
+    border-radius: 0 0 8px 0;
+  }
+  .val-pos { color: var(--green); font-weight: 600; }
+  .val-neg { color: var(--red); font-weight: 600; }
+
+  /* Collapsible segments */
+  .segment-block {
+    margin-bottom: 12px;
+  }
+  .segment-header {
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+    user-select: none;
+  }
+  .segment-header:hover {
+    border-color: var(--blue-light);
+    box-shadow: 0 2px 16px rgba(27,79,155,0.1);
+  }
+  .segment-header .arrow {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    transition: transform 0.3s;
+    color: var(--blue);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .segment-header .arrow.open {
+    transform: rotate(90deg);
+  }
+  .segment-header .seg-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--navy);
+    flex: 1;
+  }
+  .segment-header .seg-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-left: 8px;
+  }
+  .seg-tag.hl { background: rgba(0,184,148,0.1); color: var(--green); }
+  .seg-tag.ll { background: rgba(231,76,60,0.1); color: var(--red); }
+
+  .segment-body {
+    display: none;
+    padding: 16px 20px 20px;
+    margin-top: -4px;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    background: var(--white);
+  }
+  .segment-body.open { display: block; }
+
+  /* Editable fields */
+  .edit-group {
+    margin-bottom: 16px;
+  }
+  .edit-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+  }
+  .edit-label.hl-label { color: var(--green); }
+  .edit-label.ll-label { color: var(--red); }
+  .edit-label.summary-label { color: var(--blue); }
+
+  .editable {
+    width: 100%;
+    min-height: 60px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--gray-900);
+    resize: none;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--gray-50);
+  }
+  .editable:focus {
+    outline: none;
+    border-color: var(--blue-light);
+    box-shadow: 0 0 0 3px rgba(58,123,213,0.12);
+    background: var(--white);
+  }
+  .editable::placeholder {
+    color: var(--gray-300);
+  }
+
+  /* Editable table */
+  .edit-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 10px;
+  }
+  .edit-table th {
+    background: var(--gray-100);
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .edit-table td {
+    padding: 4px;
+    vertical-align: top;
+  }
+  .edit-table .cell-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    resize: none;
+    overflow: hidden;
+    min-height: 36px;
+    background: var(--gray-50);
+    transition: border-color 0.2s;
+  }
+  .edit-table .cell-input:focus {
+    outline: none;
+    border-color: var(--blue-light);
+    background: var(--white);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-add, .btn-save {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s;
+  }
+  .btn-add {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border: 1px dashed var(--gray-300);
+  }
+  .btn-add:hover { background: var(--gray-200); }
+  .btn-save {
+    background: var(--blue);
+    color: var(--white);
+  }
+  .btn-save:hover { background: var(--navy); }
+  .btn-del {
+    background: none;
+    border: none;
+    color: var(--gray-300);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    line-height: 1;
+  }
+  .btn-del:hover { color: var(--red); }
+  .save-indicator {
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    margin-left: 8px;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--gray-200);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+  .nav-btn {
+    padding: 8px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-btn.prev {
+    background: var(--gray-100);
+    color: var(--gray-700);
+  }
+  .nav-btn.prev:hover { background: var(--gray-200); }
+  .nav-btn.next {
+    background: var(--blue);
+    color: var(--white);
+  }
+  .nav-btn.next:hover { background: var(--navy); }
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .page-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .page-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .page-dot.active {
+    background: var(--blue);
+    width: 24px;
+    border-radius: 4px;
+  }
+  .page-dot:hover:not(.active) {
+    background: var(--gray-300);
+  }
+
+  /* Charts */
+  .chart-container {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  .chart-box {
+    flex: 1;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-200);
+  }
+  .bar-group {
+    display: flex;
+    align-items: end;
+    gap: 6px;
+    justify-content: center;
+    height: 120px;
+    margin: 12px 0;
+  }
+  .bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .bar {
+    width: 32px;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.6s ease;
+  }
+  .bar.py { background: var(--gray-300); }
+  .bar.cy { background: var(--blue); }
+  .bar-label {
+    font-size: 10px;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--gray-500);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  /* Monthly chart */
+  .monthly-bars {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    height: 100px;
+    padding: 0 8px;
+    margin: 16px 0 8px;
+  }
+  .month-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+  }
+  .month-pair {
+    display: flex;
+    gap: 3px;
+    align-items: end;
+    height: 80px;
+  }
+  .mbar {
+    width: 14px;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+  }
+  .mbar.py { background: var(--gray-300); }
+  .mbar.cy { background: var(--blue-light); }
+  .month-label {
+    font-size: 10px;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
+
+  .note-box {
+    background: rgba(27,79,155,0.04);
+    border-left: 3px solid var(--blue);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--gray-700);
+    border-radius: 0 6px 6px 0;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+
+<script>
+// ===== DATA =====
+const DATA = {
+  total: { py: 2374208140, cy: 2950503958 },
+  monthly: {
+    py: [479125030, 425092300, 285818490, 331784970, 384653560, 467733790],
+    cy: [504538723, 348174816, 510898423, 484721118, 452398350, 649772528]
+  },
+  segments: [
+    {
+      name: "Academic/Government", py: 225990200, cy: 69653630,
+      children: [
+        { name: "Academic", py: 223546700, cy: 68258630 },
+        { name: "Government", py: 2443500, cy: 1395000 }
+      ]
+    },
+    {
+      name: "Pharma/Biotech", py: 1684364900, cy: 2078194146,
+      children: [
+        { name: "Pharmaceutical", py: 1150580500, cy: 1314493190 },
+        { name: "Biotechnology", py: 329219020, cy: 387203512 },
+        { name: "ContractResearch Org", py: 204565380, cy: 376497444 }
+      ]
+    },
+    {
+      name: "Clinical", py: 454041280, cy: 790413742,
+      children: [
+        { name: "Hospital", py: 225343140, cy: 398137188 },
+        { name: "Ref & Testing Lab", py: 71135960, cy: 237066864 },
+        { name: "Diagnostics Mfg", py: 157562180, cy: 155209690 }
+      ]
+    },
+    { name: "BiochemReagent Mfgrs", py: 6378900, cy: 10363700, children: [] },
+    { name: "Applied Markets", py: 3432860, cy: 1878740, children: [] }
+  ],
+  products: [
+    { name: "Cell Analysis", py: 1461305590, cy: 1842571532 },
+    { name: "Sample Prep", py: 373123520, cy: 606027134 },
+    { name: "Sample Analysis", py: 235555690, cy: 239159694 },
+    { name: "Protein Analysis", py: 228070220, cy: 186330952 },
+    { name: "Genetic Identity", py: 76153120, cy: 76414646 }
+  ],
+  segmentDetails: ["Academic", "Pharmaceutical", "Biotechnology", "CRO", "Clinical"]
+};
+
+const fmt = (v) => {
+  if (v === 0) return '0';
+  const m = v / 1000000;
+  if (Math.abs(m) >= 1000) return (m / 1000).toFixed(1) + 'B';
+  return m.toFixed(1) + 'M';
+};
+const fmtFull = (v) => v.toLocaleString('ko-KR');
+const fmtPct = (py, cy) => py === 0 ? '-' : (cy / py * 100).toFixed(1) + '%';
+const chgClass = (v) => v > 0 ? 'val-pos' : v < 0 ? 'val-neg' : '';
+const chgSign = (v) => v > 0 ? '+' : '';
+
+// ===== STATE =====
+let currentSlide = 0;
+const totalSlides = 7;
+let editData = {};
+let saveTimers = {};
+
+function loadSaved() {
+  try {
+    const raw = sessionStorage ? null : null;
+  } catch(e) {}
+  // Using in-memory storage only
+}
+
+function saveField(key, value) {
+  editData[key] = value;
+  showSaveIndicator(key);
+}
+
+function showSaveIndicator(key) {
+  const el = document.querySelector(`.save-ind-${CSS.escape(key)}`);
+  if (el) {
+    el.classList.add('show');
+    clearTimeout(saveTimers[key]);
+    saveTimers[key] = setTimeout(() => el.classList.remove('show'), 1500);
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+// ===== TABLE ROW MANAGEMENT =====
+let tableRows = {};
+
+function getTableRows(tableId, defaultCols) {
+  if (!tableRows[tableId]) {
+    tableRows[tableId] = [defaultCols.map(() => '')];
+  }
+  return tableRows[tableId];
+}
+
+function addTableRow(tableId, numCols) {
+  if (!tableRows[tableId]) tableRows[tableId] = [];
+  tableRows[tableId].push(new Array(numCols).fill(''));
+  render();
+}
+
+function removeTableRow(tableId, idx) {
+  if (tableRows[tableId] && tableRows[tableId].length > 1) {
+    tableRows[tableId].splice(idx, 1);
+    render();
+  }
+}
+
+function updateTableCell(tableId, rowIdx, colIdx, value) {
+  if (tableRows[tableId] && tableRows[tableId][rowIdx]) {
+    tableRows[tableId][rowIdx][colIdx] = value;
+  }
+}
+
+// ===== SEGMENT EXPAND STATE =====
+let expandedSegments = {};
+
+function toggleSegment(id) {
+  expandedSegments[id] = !expandedSegments[id];
+  render();
+}
+
+// ===== NAVIGATION =====
+function goToSlide(n) {
+  if (n >= 0 && n < totalSlides) {
+    currentSlide = n;
+    render();
+    document.querySelector('.slide-container').scrollTop = 0;
+  }
+}
+
+// ===== RENDER =====
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    ${renderTopbar()}
+    <div class="slide-container">
+      ${renderSlide(0, renderCover())}
+      ${renderSlide(1, renderSalesOverview())}
+      ${renderSlide(2, renderSegmentTable())}
+      ${renderSlide(3, renderProductTable())}
+      ${renderSlide(4, renderSegmentHighlights())}
+      ${renderSlide(5, renderForecastAndIssues())}
+      ${renderSlide(6, renderExecutiveSummary())}
+    </div>
+    ${renderBottomNav()}
+  `;
+
+  // Auto-resize all textareas
+  document.querySelectorAll('textarea').forEach(el => {
+    autoResize(el);
+    el.addEventListener('input', () => autoResize(el));
+  });
+}
+
+function renderSlide(idx, content) {
+  return `<div class="slide ${idx === currentSlide ? 'active' : ''}">${content}</div>`;
+}
+
+function renderTopbar() {
+  const titles = ['Cover', '01 Sales Overview', '01-A Segment Analysis', '01-B Product Family', '02 Segment Highlight & Lowlight', '03~04 Forecast & Issues', '05 Executive Summary'];
+  return `<div class="topbar">
+    <div class="topbar-brand">Promega Korea</div>
+    <div class="topbar-page">${titles[currentSlide]}</div>
+    <div class="topbar-info">Invoice 기준 · ZEUC Segment</div>
+  </div>`;
+}
+
+function renderBottomNav() {
+  return `<div class="bottom-nav">
+    <button class="nav-btn prev" ${currentSlide === 0 ? 'disabled' : ''} onclick="goToSlide(${currentSlide - 1})">← Previous</button>
+    <div class="page-dots">
+      ${Array.from({length: totalSlides}, (_, i) =>
+        `<div class="page-dot ${i === currentSlide ? 'active' : ''}" onclick="goToSlide(${i})"></div>`
+      ).join('')}
+    </div>
+    <button class="nav-btn next" ${currentSlide === totalSlides - 1 ? 'disabled' : ''} onclick="goToSlide(${currentSlide + 1})">Next →</button>
+  </div>`;
+}
+
+// ===== SLIDE RENDERERS =====
+
+function renderCover() {
+  const py = DATA.total.py;
+  const cy = DATA.total.cy;
+  const chg = cy - py;
+  const gr = (cy / py * 100).toFixed(1);
+  return `<div class="cover">
+    <div class="cover-badge">Promega Korea · Sales Division</div>
+    <h1>2026 H1 Sales Analysis Report</h1>
+    <div class="subtitle">인보이스 매출 기준 · ZEUC Market/Customer Segment 분류</div>
+    <div class="cover-meta">
+      <div>담당자 <span>편경현</span></div>
+      <div>보고 기간 <span>2026년 H1 (1월 – 6월)</span></div>
+      <div>작성일 <span>2026년 7월</span></div>
+    </div>
+  </div>`;
+}
+
+function renderSalesOverview() {
+  const py = DATA.total.py;
+  const cy = DATA.total.cy;
+  const chg = cy - py;
+  const gr = (cy / py * 100).toFixed(1);
+  const maxMonthly = Math.max(...DATA.monthly.py, ...DATA.monthly.cy);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+  return `
+    <div class="section-title"><span class="section-num">01</span> Sales Revenue Analysis</div>
+    <div class="section-sub">Executive Summary 수준의 매출 현황 · 상세 수치는 BI Report 및 매출 실적 대시보드 참조</div>
+
+    <div class="summary-row">
+      <div class="summary-box">
+        <div class="label">PY Rev. (2025 H1)</div>
+        <div class="value">${fmt(py)}</div>
+        <div class="unit">${fmtFull(py)} KRW</div>
+      </div>
+      <div class="summary-box">
+        <div class="label">CY Rev. (2026 H1)</div>
+        <div class="value">${fmt(cy)}</div>
+        <div class="unit">${fmtFull(cy)} KRW</div>
+      </div>
+      <div class="summary-box ${chg >= 0 ? 'positive' : 'negative'}">
+        <div class="label">Rev. Change</div>
+        <div class="value">${chgSign(chg)}${fmt(chg)}</div>
+        <div class="unit">${chgSign(chg)}${fmtFull(chg)} KRW</div>
+      </div>
+      <div class="summary-box positive">
+        <div class="label">GR (%)</div>
+        <div class="value">${gr}%</div>
+        <div class="unit">CY / PY</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-box">
+        <div class="card-title">Monthly Revenue Trend</div>
+        <div class="monthly-bars">
+          ${months.map((m, i) => `
+            <div class="month-col">
+              <div class="month-pair">
+                <div class="mbar py" style="height:${(DATA.monthly.py[i]/maxMonthly)*70}px"></div>
+                <div class="mbar cy" style="height:${(DATA.monthly.cy[i]/maxMonthly)*70}px"></div>
+              </div>
+              <div class="month-label">${m}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--gray-300)"></div>2025 H1</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue-light)"></div>2026 H1</div>
+        </div>
+      </div>
+      <div class="chart-box">
+        <div class="card-title">YoY Comparison by Segment</div>
+        <div class="bar-group">
+          ${DATA.segments.slice(0, 3).map(s => {
+            const maxSeg = Math.max(s.py, s.cy);
+            const scale = 100 / Math.max(...DATA.segments.slice(0, 3).map(x => Math.max(x.py, x.cy)));
+            return `<div class="bar-col">
+              <div style="display:flex;gap:4px;align-items:end;height:100px;">
+                <div class="bar py" style="height:${s.py * scale}px"></div>
+                <div class="bar cy" style="height:${s.cy * scale}px"></div>
+              </div>
+              <div class="bar-label">${s.name.split('/')[0].substring(0,8)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--gray-300)"></div>PY</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>CY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      모든 수치는 Invoice 기준이며, Market/Customer Segment는 End Customer Segment(ZEUC) 기준입니다.
+      EndUser Sales Person: Kyung-Hyun Pyun / Kyung-Hyun Pyun_CDx 매출 합산.
+    </div>
+  `;
+}
+
+function renderSegmentTable() {
+  const py = DATA.total.py;
+  const cy = DATA.total.cy;
+  const chg = cy - py;
+
+  let rows = '';
+  DATA.segments.forEach(seg => {
+    const sc = seg.cy - seg.py;
+    rows += `<tr class="market-row">
+      <td>${seg.name}</td>
+      <td>${fmtFull(seg.py)}</td>
+      <td>${fmtFull(seg.cy)}</td>
+      <td class="${chgClass(sc)}">${chgSign(sc)}${fmtFull(sc)}</td>
+      <td>${fmtPct(seg.py, seg.cy)}</td>
+    </tr>`;
+    if (seg.children && seg.children.length > 0) {
+      seg.children.forEach(ch => {
+        const cc = ch.cy - ch.py;
+        rows += `<tr class="child-row">
+          <td>└ ${ch.name}</td>
+          <td>${fmtFull(ch.py)}</td>
+          <td>${fmtFull(ch.cy)}</td>
+          <td class="${chgClass(cc)}">${chgSign(cc)}${fmtFull(cc)}</td>
+          <td>${fmtPct(ch.py, ch.cy)}</td>
+        </tr>`;
+      });
+    }
+  });
+
+  return `
+    <div class="section-title"><span class="section-num">A</span> Sales Result by Market & Customer Segment</div>
+    <div class="section-sub">ZEUC 기준 · Market Segment & Customer Segment별 매출 분석</div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:28%">Market / Customer Segment</th>
+            <th>PY Rev. (2025 H1)</th>
+            <th>CY Rev. (2026 H1)</th>
+            <th>Rev. Change</th>
+            <th>GR (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr class="total-row">
+            <td>Total</td>
+            <td>${fmtFull(py)}</td>
+            <td>${fmtFull(cy)}</td>
+            <td>${chgSign(chg)}${fmtFull(chg)}</td>
+            <td>${fmtPct(py, cy)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderProductTable() {
+  const py = DATA.total.py;
+  const cy = DATA.total.cy;
+  const chg = cy - py;
+
+  let rows = DATA.products.map(p => {
+    const pc = p.cy - p.py;
+    return `<tr>
+      <td style="font-weight:600">${p.name}</td>
+      <td>${fmtFull(p.py)}</td>
+      <td>${fmtFull(p.cy)}</td>
+      <td class="${chgClass(pc)}">${chgSign(pc)}${fmtFull(pc)}</td>
+      <td>${fmtPct(p.py, p.cy)}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="section-title"><span class="section-num">B</span> Sales Result by Product Family</div>
+    <div class="section-sub">Product Family별 매출 분석</div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:28%">Product Family</th>
+            <th>PY Rev. (2025 H1)</th>
+            <th>CY Rev. (2026 H1)</th>
+            <th>Rev. Change</th>
+            <th>GR (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr class="total-row">
+            <td>Total</td>
+            <td>${fmtFull(py)}</td>
+            <td>${fmtFull(cy)}</td>
+            <td>${chgSign(chg)}${fmtFull(chg)}</td>
+            <td>${fmtPct(py, cy)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="chart-container" style="margin-top:20px">
+      <div class="chart-box">
+        <div class="card-title">Product Family Mix (CY)</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+          ${DATA.products.map(p => {
+            const pct = (p.cy / cy * 100).toFixed(1);
+            return `<div style="display:flex;align-items:center;gap:10px">
+              <div style="width:100px;font-size:11px;font-weight:600;color:var(--gray-700);text-align:right">${p.name}</div>
+              <div style="flex:1;height:20px;background:var(--gray-100);border-radius:4px;overflow:hidden">
+                <div style="width:${pct}%;height:100%;background:var(--blue-light);border-radius:4px;transition:width 0.8s"></div>
+              </div>
+              <div style="width:50px;font-size:11px;font-weight:700;color:var(--navy)">${pct}%</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSegmentHighlights() {
+  const segments = [
+    { id: 'academic', label: 'Academic Segment', color: '#3A7BD5' },
+    { id: 'pharma', label: 'Pharmaceutical Segment', color: '#00B894' },
+    { id: 'biotech', label: 'Biotechnology Segment', color: '#6C5CE7' },
+    { id: 'cro', label: 'CRO Segment', color: '#F39C12' },
+    { id: 'clinical', label: 'Clinical Segment', color: '#E74C3C' }
+  ];
+
+  return `
+    <div class="section-title"><span class="section-num">02</span> Segment별 Highlight & Lowlight</div>
+    <div class="section-sub">각 담당 Customer Account의 매출 증가·감소 요인을 Segment별로 분석</div>
+    ${segments.map(seg => renderSegmentBlock(seg)).join('')}
+  `;
+}
+
+function renderSegmentBlock(seg) {
+  const isOpen = expandedSegments[seg.id];
+  const hlTableId = `${seg.id}_hl`;
+  const llTableId = `${seg.id}_ll`;
+  const hlCols = ['거래처 / 이슈', '배경', '성과', '기여 요인'];
+  const llCols = ['거래처 / 이슈', '배경', '영향', '대응 방향'];
+  const hlRows = getTableRows(hlTableId, hlCols);
+  const llRows = getTableRows(llTableId, llCols);
+
+  return `
+    <div class="segment-block">
+      <div class="segment-header" onclick="toggleSegment('${seg.id}')">
+        <div class="arrow ${isOpen ? 'open' : ''}">▶</div>
+        <div class="seg-name" style="border-left:3px solid ${seg.color};padding-left:10px">${seg.label}</div>
+        <span class="seg-tag hl">HL</span>
+        <span class="seg-tag ll">LL</span>
+      </div>
+      <div class="segment-body ${isOpen ? 'open' : ''}">
+        <div class="edit-group">
+          <div class="edit-label hl-label">▸ Highlights</div>
+          ${renderEditTable(hlTableId, hlCols, hlRows)}
+          <div class="btn-row">
+            <button class="btn-add" onclick="addTableRow('${hlTableId}', ${hlCols.length})">+ 행 추가</button>
+            <span class="save-indicator save-ind-${hlTableId}">✓ 저장됨</span>
+          </div>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label ll-label">▸ Lowlights</div>
+          ${renderEditTable(llTableId, llCols, llRows)}
+          <div class="btn-row">
+            <button class="btn-add" onclick="addTableRow('${llTableId}', ${llCols.length})">+ 행 추가</button>
+            <span class="save-indicator save-ind-${llTableId}">✓ 저장됨</span>
+          </div>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label summary-label">▸ Summary & 다음 분기 포커스</div>
+          <textarea class="editable" placeholder="Segment 총평 및 다음 분기 포커스 내용을 작성하세요..." oninput="saveField('${seg.id}_summary', this.value)">${editData[`${seg.id}_summary`] || ''}</textarea>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label" style="color:var(--navy)">▸ 핵심 전략 & 향후 계획</div>
+          <textarea class="editable" placeholder="2026 Segment Plan 핵심 전략과 향후 계획을 작성하세요..." oninput="saveField('${seg.id}_plan', this.value)">${editData[`${seg.id}_plan`] || ''}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEditTable(tableId, cols, rows) {
+  return `<table class="edit-table">
+    <thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}<th style="width:30px"></th></tr></thead>
+    <tbody>
+      ${rows.map((row, ri) => `<tr>
+        ${row.map((cell, ci) => `<td>
+          <textarea class="cell-input" placeholder="${cols[ci]}..." oninput="updateTableCell('${tableId}', ${ri}, ${ci}, this.value); autoResize(this)">${cell}</textarea>
+        </td>`).join('')}
+        <td><button class="btn-del" onclick="removeTableRow('${tableId}', ${ri})" title="삭제">×</button></td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+function renderForecastAndIssues() {
+  const fcstId = 'q2_forecast';
+  const fcstCols = ['Key Account', 'Segment', 'Q2 Forecast', '주요 제품 / 프로젝트', 'Forecast 근거', '리스크'];
+  const fcstRows = getTableRows(fcstId, fcstCols);
+
+  const isFcstOpen = expandedSegments['forecast'];
+  const isIssueOpen = expandedSegments['issues'];
+
+  return `
+    <div class="section-title"><span class="section-num">03</span> Q2 Key Account Forecast</div>
+    <div class="section-sub">Q2에 매출이 예상되는 거래처 기재</div>
+
+    <div class="segment-block">
+      <div class="segment-header" onclick="toggleSegment('forecast')">
+        <div class="arrow ${isFcstOpen ? 'open' : ''}">▶</div>
+        <div class="seg-name">Q2 Key Account Forecast</div>
+      </div>
+      <div class="segment-body ${isFcstOpen ? 'open' : ''}">
+        ${renderEditTable(fcstId, fcstCols, fcstRows)}
+        <div class="btn-row">
+          <button class="btn-add" onclick="addTableRow('${fcstId}', ${fcstCols.length})">+ 행 추가</button>
+          <span class="save-indicator save-ind-${fcstId}">✓ 저장됨</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px">
+      <div class="section-title"><span class="section-num">04</span> 이슈 & 리스크 / 지원 요청 사항</div>
+      <div class="section-sub">현재 진행 중인 이슈와 필요한 지원 사항</div>
+    </div>
+
+    <div class="segment-block">
+      <div class="segment-header" onclick="toggleSegment('issues')">
+        <div class="arrow ${isIssueOpen ? 'open' : ''}">▶</div>
+        <div class="seg-name">이슈 & 리스크 / 지원 요청</div>
+      </div>
+      <div class="segment-body ${isIssueOpen ? 'open' : ''}">
+        <div class="edit-group">
+          <div class="edit-label ll-label">▸ 이슈 & 리스크</div>
+          <textarea class="editable" placeholder="현재 진행 중인 이슈와 리스크를 작성하세요..." oninput="saveField('issues_risk', this.value)">${editData['issues_risk'] || ''}</textarea>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label summary-label">▸ 지원 요청 사항</div>
+          <textarea class="editable" placeholder="HQ 또는 내부 지원이 필요한 사항을 작성하세요..." oninput="saveField('issues_support', this.value)">${editData['issues_support'] || ''}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderExecutiveSummary() {
+  const isOpen = expandedSegments['execsummary'];
+  return `
+    <div class="section-title"><span class="section-num">05</span> Executive Summary by SBU</div>
+    <div class="section-sub">담당 Customer Account 매출에 영향을 준 시장 분석 및 영업전략 핵심 요약</div>
+
+    <div class="segment-block">
+      <div class="segment-header" onclick="toggleSegment('execsummary')">
+        <div class="arrow ${isOpen ? 'open' : ''}">▶</div>
+        <div class="seg-name">Executive Summary by Account</div>
+      </div>
+      <div class="segment-body ${isOpen ? 'open' : ''}">
+        <div class="edit-group">
+          <div class="edit-label" style="color:var(--navy)">▸ 시장 환경 및 전반적 동향</div>
+          <textarea class="editable" placeholder="시장 환경 및 전반적 동향을 작성하세요..." oninput="saveField('exec_market', this.value)" style="min-height:80px">${editData['exec_market'] || ''}</textarea>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label hl-label">▸ 매출 성장 요인</div>
+          <textarea class="editable" placeholder="매출 성장에 기여한 핵심 요인을 작성하세요..." oninput="saveField('exec_growth', this.value)" style="min-height:80px">${editData['exec_growth'] || ''}</textarea>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label ll-label">▸ 매출 감소 요인</div>
+          <textarea class="editable" placeholder="매출 감소 요인을 작성하세요..." oninput="saveField('exec_decline', this.value)" style="min-height:80px">${editData['exec_decline'] || ''}</textarea>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label summary-label">▸ H1 핵심 영업전략 실행 성과</div>
+          <textarea class="editable" placeholder="핵심 영업전략 실행 성과를 작성하세요..." oninput="saveField('exec_strategy', this.value)" style="min-height:80px">${editData['exec_strategy'] || ''}</textarea>
+        </div>
+        <div class="edit-group">
+          <div class="edit-label" style="color:var(--orange)">▸ H2 전망 및 주요 리스크</div>
+          <textarea class="editable" placeholder="하반기 전망 및 주요 리스크를 작성하세요..." oninput="saveField('exec_outlook', this.value)" style="min-height:80px">${editData['exec_outlook'] || ''}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
