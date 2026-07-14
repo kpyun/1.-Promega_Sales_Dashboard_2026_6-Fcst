@@ -499,7 +499,7 @@
     background: var(--gray-300);
   }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/pako@2/dist/pako.min.js"></script>
+<script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
 </head>
 <body>
 
@@ -633,11 +633,12 @@ const zeucSalesPersonsH1 = ["#", "Capital_All", "Ho-Young Kim", "Hyeong-Joon Kim
 
 // ===== DECOMPRESS ZEUC DATA =====
 function decompressZEUCDataH1() {
-  if (!window.pako) {
-    console.error('pako library not loaded');
+  // Check if pako is available, with timeout check
+  if (typeof pako === 'undefined' || !pako) {
+    console.error('pako library not loaded yet');
     return null;
   }
-  
+
   try {
     const binaryString = atob(zeucCompressedH1);
     const bytes = new Uint8Array(binaryString.length);
@@ -648,7 +649,8 @@ function decompressZEUCDataH1() {
     const data = JSON.parse(decompressed);
     return data;
   } catch (e) {
-    console.error('Decompression error:', e);
+    console.error('ZEUC Decompression error:', e.message);
+    console.error('Decompression error details:', e);
     return null;
   }
 }
@@ -1587,8 +1589,17 @@ function renderAdditionalSlides2() {
   return `<div class="card"><p style="color:var(--gray-500)">추가 슬라이드 영역 2 - 필요시 콘텐츠 추가</p></div>`;
 }
 
-// Initial render
-render();
+// Initial render with pako library check
+function initRender() {
+  if (typeof pako === 'undefined' || !pako) {
+    // pako not loaded yet, wait a bit and try again
+    setTimeout(initRender, 100);
+  } else {
+    render();
+  }
+}
+
+initRender();
 </script>
 </body>
 </html>
