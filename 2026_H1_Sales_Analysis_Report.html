@@ -624,160 +624,173 @@ function saveEdit(sectionId) {
   render();
 }
 
-// ===== ZEUC H1 DATA (Kyung-Hyun Pyun & Kyung-Hyun Pyun_CDx, Jan-June) =====
-const zeucH1Data = {"Kyung-Hyun Pyun": {"April": {"Academic/Government": {"Academic": {"경희대학교 국제": {"경희대학교 국제 김미주": {"py": 0, "cy": 187500}}, "명지대학교": {"명지대학교 김도현": {"py": 745500, "cy": 0}}, "삼성서울병원": {"삼성서울병원 강민용": {"py": 1430210, "cy": 0}, "삼성서울병원 김영곤": {"py": 0, "cy": 724890}, "삼성서울병원 김예진": {"py": 89080, "cy": 0}, "삼성서울병원 김정훈": {"py": 104040, "cy": 1891430}, "삼성서울병원 김현호": {"py": 250240, "cy": 0}, "삼성서울병원 나덕렬": {"py": 168300, "cy": 0}, "삼성서울병원 딜러": {"py": 0, "cy": 233250}, "삼성서울병원 방오영": {"py": 0, "cy": 40880}, "삼성서울병원 장혜련": {"py": 0, "cy": 2396590}}, "용인대학교": {"용인대학교 딜러": {"py": 0, "cy": 225000}}, "한림대학교 한강성심병원": {"한림대학교 한강성심병원 서정훈": {"py": 0, "cy": 700500}}, "한양대학교 에리카": {"한양대학교 에리카 배옥남": {"py": 123000, "cy": 0}}}}, "Applied Markets": {"Agri/Food Sciences": {"한국야쿠르트 중앙연구소": {"한국야쿠르트 중앙연구소": {"py": 286380, "cy": 0}}}, "Personal Care": {"아모레퍼시픽": {"아모레퍼시픽": {"py": 147920, "cy": 0}}}}, "BiochemReagent Mfgrs": {"Life Science": {"코스모진텍 연구소": {"코스모진텍 연구소": {"py": 4263000, "cy": 0}}}}, "Clinical": {"Hospital": {"고려대학교안암병원": {"고려대학교안암병원CDx 진단검사의학과": {"py": 9910800, "cy": 2580000}}, "서울대학교병원": {"서울대학교병원CDx 병리과": {"py": 5846100, "cy": 8532600}}, "서울아산병원": {"서울아산병원CDx 진단검사의학과": {"py": 704370, "cy": 4197966}}, "세브란스병원": {"신촌세브란스병원CDx 병리과": {"py": 0, "cy": 3892000}}}, "Ref & Testing Lab": {"녹십자의료재단": {"녹십자의료재단": {"py": 12824800, "cy": 9258450}}, "서울의과학연구소": {"서울의과학연구소": {"py": 0, "cy": 33224052}}, "씨젠의료재단": {"씨젠의료재단": {"py": 1005000, "cy": 3814612}}}}}, "June": {"Clinical": {"Hospital": {"서울대학교병원": {"서울대학교병원 진단검사의학과": {"py": 0, "cy": 5824650}}, "서울아산병원": {"서울아산병원 진단검사의학과": {"py": 0, "cy": 5680000}}}, "Ref & Testing Lab": {"라의료네트워크": {"라의료네트워크": {"py": 0, "cy": 1000000}}}}, "Pharma/Biotech": {"Biotechnology": {"KT&G 연초 기술원": {"KT&G 연초 기술원": {"py": 0, "cy": 5166180}}, "더앤유코퍼레이션": {"더앤유코퍼레이션": {"py": 0, "cy": 1254400}}, "머스트바이오": {"머스트바이오": {"py": 0, "cy": 91889760}}, "바이오컨버젼스": {"바이오컨버젼스": {"py": 0, "cy": 7535610}}, "비에톡": {"비에톡": {"py": 0, "cy": 1076400}}}, "Pharmaceutical": {"동광제약": {"동광제약": {"py": 0, "cy": 42360}}, "삼성바이오에피스": {"삼성바이오에피스": {"py": 0, "cy": 10704330}}, "스투디오": {"스투디오": {"py": 0, "cy": 1090800}}}}}}, "Kyung-Hyun Pyun_CDx": {"January": {"Clinical": {"Diagnostics Mfg": {"씨젠": {"씨젠": {"py": 110062400, "cy": 80058500}}}, "Hospital": {"강남세브란스병원": {"강남세브란스병원CDx 진단검사의학과": {"py": 41201200, "cy": 0}}, "고려대학교안암병원": {"고려대학교안암병원CDx 진단검사의학과": {"py": 0, "cy": 5000000}}}}}}};
 
-const zeucSalesPersons = ["Kyung-Hyun Pyun", "Kyung-Hyun Pyun_CDx"];
-const zeucMonths = ["April", "June", "January"];
+// ===== ZEUC H1 DATA (All Sales Persons, Jan-June 2026 Totals) =====
+const zeucCompressedH1 = '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GqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqbBGqBGAAAA=';
 
-// ===== RENDER ZEUC ACCOUNT ANALYSIS (NEW STRUCTURE) =====
-function renderZEUCAccountAnalysis() {
-  if (!window.zeucFilterState) {
-    window.zeucFilterState = {
-      salesperson: [],
-      months: []
-    };
-  }
-  if (!window.zeucExpandState) {
-    window.zeucExpandState = {};
+const zeucSalesPersonsH1 = ["#", "Capital_All", "Ho-Young Kim", "Hyeong-Joon Kim", "Jung-Ah Kim", "Junseong Yun", "Kyung-Hyun Pyun", "Kyung-Hyun Pyun_CDx"];
+
+// ===== DECOMPRESS ZEUC DATA =====
+function decompressZEUCDataH1() {
+  if (!window.pako) {
+    console.error('pako library not loaded');
+    return null;
   }
   
-  // Initialize with all selected if empty
-  if (window.zeucFilterState.salesperson.length === 0) {
-    window.zeucFilterState.salesperson = zeucSalesPersons.slice();
+  try {
+    const binaryString = atob(zeucCompressedH1);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const decompressed = pako.ungzip(bytes, { to: 'string' });
+    const data = JSON.parse(decompressed);
+    return data;
+  } catch (e) {
+    console.error('Decompression error:', e);
+    return null;
   }
-  if (window.zeucFilterState.months.length === 0) {
-    window.zeucFilterState.months = zeucMonths.slice();
-  }
+}
 
-  function toggleFilter(type, value) {
-    if (type === 'sp') {
-      const idx = window.zeucFilterState.salesperson.indexOf(value);
-      if (idx > -1) {
-        window.zeucFilterState.salesperson.splice(idx, 1);
-      } else {
-        window.zeucFilterState.salesperson.push(value);
-      }
+// ===== BUILD ZEUC PIVOT DATA =====
+let zeucPivotDataH1 = null;
+
+function buildZEUCPivotH1() {
+  if (zeucPivotDataH1) return zeucPivotDataH1;
+  
+  const compressed = decompressZEUCDataH1();
+  if (!compressed) return null;
+  
+  zeucPivotDataH1 = {
+    sp: compressed.sp,
+    dt: compressed.dt
+  };
+  
+  return zeucPivotDataH1;
+}
+
+// ===== RENDER ZEUC ACCOUNT ANALYSIS (H1 TOTAL) =====
+function renderZEUCAccountAnalysis() {
+  if (!window.zeucFilterStateH1) {
+    window.zeucFilterStateH1 = {
+      salespeople: zeucSalesPersonsH1.slice()
+    };
+  }
+  if (!window.zeucExpandStateH1) {
+    window.zeucExpandStateH1 = {};
+  }
+  
+  const pivot = buildZEUCPivotH1();
+  if (!pivot) {
+    return '<div class="card"><p>Failed to load ZEUC data</p></div>';
+  }
+  
+  function toggleFilter(sp) {
+    const idx = window.zeucFilterStateH1.salespeople.indexOf(sp);
+    if (idx > -1) {
+      window.zeucFilterStateH1.salespeople.splice(idx, 1);
     } else {
-      const idx = window.zeucFilterState.months.indexOf(value);
-      if (idx > -1) {
-        window.zeucFilterState.months.splice(idx, 1);
-      } else {
-        window.zeucFilterState.months.push(value);
-      }
+      window.zeucFilterStateH1.salespeople.push(sp);
     }
     render();
   }
-
-  function renderRows() {
+  
+  function renderHierarchy() {
     let html = '';
-    let totalPy = 0, totalCy = 0;
-    const state = window.zeucFilterState;
-    const expandState = window.zeucExpandState;
+    let totalCy = 0;
     
-    // Iterate through filtered data
-    for (const sp of state.salesperson) {
-      if (!zeucH1Data[sp]) continue;
+    // Build hierarchical structure from flat data
+    const hierarchy = {};
+    
+    for (const record of pivot.dt) {
+      const [spIdx, market, custSeg, address, custName, cy] = record;
+      const sp = pivot.sp[spIdx];
       
-      for (const month of state.months) {
-        if (!zeucH1Data[sp][month]) continue;
-        
-        const monthData = zeucH1Data[sp][month];
-        
-        // Market segment level
-        for (const market in monthData) {
-          const mktKey = `mkt_${sp}_${month}_${market}`;
-          const isMktExpanded = expandState[mktKey];
+      // Check if this sales person is selected
+      if (!window.zeucFilterStateH1.salespeople.includes(sp)) continue;
+      
+      if (!hierarchy[market]) hierarchy[market] = {};
+      if (!hierarchy[market][custSeg]) hierarchy[market][custSeg] = {};
+      if (!hierarchy[market][custSeg][address]) hierarchy[market][custSeg][address] = {};
+      if (!hierarchy[market][custSeg][address][custName]) {
+        hierarchy[market][custSeg][address][custName] = 0;
+      }
+      hierarchy[market][custSeg][address][custName] += cy;
+    }
+    
+    // Render market segments
+    for (const market in hierarchy) {
+      const mktKey = `mkt_${market}`;
+      const isMktExpanded = window.zeucExpandStateH1[mktKey];
+      
+      let mktTotal = 0;
+      for (const cs in hierarchy[market]) {
+        for (const addr in hierarchy[market][cs]) {
+          for (const cn in hierarchy[market][cs][addr]) {
+            mktTotal += hierarchy[market][cs][addr][cn];
+          }
+        }
+      }
+      
+      html += `<tr style="background-color:var(--navy); color:var(--white); font-weight:600; cursor:pointer" onclick="toggleZEUCExpandH1('${mktKey}')">
+        <td style="padding:12px; text-align:left; width:150px">${isMktExpanded ? '▼' : '▶'} ${market}</td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${(mktTotal).toLocaleString()}</td>
+      </tr>`;
+      
+      totalCy += mktTotal;
+      
+      if (isMktExpanded) {
+        for (const cs in hierarchy[market]) {
+          const csKey = `cs_${market}_${cs}`;
+          const isCsExpanded = window.zeucExpandStateH1[csKey];
           
-          let mktPy = 0, mktCy = 0;
-          for (const cs in monthData[market]) {
-            for (const addr in monthData[market][cs]) {
-              for (const cn in monthData[market][cs][addr]) {
-                mktPy += monthData[market][cs][addr][cn].py || 0;
-                mktCy += monthData[market][cs][addr][cn].cy || 0;
-              }
+          let csTotal = 0;
+          for (const addr in hierarchy[market][cs]) {
+            for (const cn in hierarchy[market][cs][addr]) {
+              csTotal += hierarchy[market][cs][addr][cn];
             }
           }
           
-          html += `<tr style="background-color:var(--navy); color:var(--white); font-weight:600; cursor:pointer" onclick="toggleZEUCExpand('${mktKey}')">
-            <td style="padding:12px; text-align:left; width:150px">${isMktExpanded ? '▼' : '▶'} ${market}</td>
+          html += `<tr style="background-color:var(--gray-100); font-weight:500; cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleZEUCExpandH1('${csKey}'); event.stopPropagation()">
+            <td style="padding:12px"></td>
+            <td style="padding:12px; padding-left:36px; text-align:left; width:140px">${isCsExpanded ? '▼' : '▶'} ${cs}</td>
             <td style="padding:12px"></td>
             <td style="padding:12px"></td>
-            <td style="padding:12px"></td>
-            <td style="padding:12px; text-align:right; font-family:monospace">${fmtFull(mktPy)}</td>
-            <td style="padding:12px; text-align:right; font-family:monospace">${fmtFull(mktCy)}</td>
-            <td style="padding:12px; text-align:right; font-family:monospace">${fmtFull(mktCy - mktPy)}</td>
-            <td style="padding:12px; text-align:right; font-family:monospace">${mktPy > 0 ? ((mktCy / mktPy - 1) * 100).toFixed(1) + '%' : '-'}</td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${(csTotal).toLocaleString()}</td>
           </tr>`;
           
-          totalPy += mktPy;
-          totalCy += mktCy;
-          
-          if (isMktExpanded) {
-            for (const cs in monthData[market]) {
-              const csKey = `cs_${sp}_${month}_${market}_${cs}`;
-              const isCsExpanded = expandState[csKey];
+          if (isCsExpanded) {
+            for (const addr in hierarchy[market][cs]) {
+              const addrKey = `addr_${market}_${cs}_${addr}`;
+              const isAddrExpanded = window.zeucExpandStateH1[addrKey];
               
-              let csPy = 0, csCy = 0;
-              for (const addr in monthData[market][cs]) {
-                for (const cn in monthData[market][cs][addr]) {
-                  csPy += monthData[market][cs][addr][cn].py || 0;
-                  csCy += monthData[market][cs][addr][cn].cy || 0;
-                }
+              let addrTotal = 0;
+              for (const cn in hierarchy[market][cs][addr]) {
+                addrTotal += hierarchy[market][cs][addr][cn];
               }
               
-              html += `<tr style="background-color:var(--gray-100); font-weight:500; cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleZEUCExpand('${csKey}'); event.stopPropagation()">
-                <td style="padding:12px"></td>
-                <td style="padding:12px; padding-left:36px; text-align:left; width:140px">${isCsExpanded ? '▼' : '▶'} ${cs}</td>
+              html += `<tr style="background-color:var(--white); cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleZEUCExpandH1('${addrKey}'); event.stopPropagation()">
                 <td style="padding:12px"></td>
                 <td style="padding:12px"></td>
-                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${fmtFull(csPy)}</td>
-                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${fmtFull(csCy)}</td>
-                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${fmtFull(csCy - csPy)}</td>
-                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${csPy > 0 ? ((csCy / csPy - 1) * 100).toFixed(1) + '%' : '-'}</td>
+                <td style="padding:12px; padding-left:36px; text-align:left; width:140px">${isAddrExpanded ? '▼' : '▶'} ${addr}</td>
+                <td style="padding:12px"></td>
+                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${(addrTotal).toLocaleString()}</td>
               </tr>`;
               
-              if (isCsExpanded) {
-                for (const addr in monthData[market][cs]) {
-                  const addrKey = `addr_${sp}_${month}_${market}_${cs}_${addr}`;
-                  const isAddrExpanded = expandState[addrKey];
+              if (isAddrExpanded) {
+                for (const cn in hierarchy[market][cs][addr]) {
+                  const val = hierarchy[market][cs][addr][cn];
                   
-                  let addrPy = 0, addrCy = 0;
-                  for (const cn in monthData[market][cs][addr]) {
-                    addrPy += monthData[market][cs][addr][cn].py || 0;
-                    addrCy += monthData[market][cs][addr][cn].cy || 0;
-                  }
-                  
-                  html += `<tr style="background-color:var(--white); cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleZEUCExpand('${addrKey}'); event.stopPropagation()">
+                  html += `<tr style="border-bottom:1px solid var(--gray-200)">
                     <td style="padding:12px"></td>
                     <td style="padding:12px"></td>
-                    <td style="padding:12px; padding-left:36px; text-align:left; width:140px">${isAddrExpanded ? '▼' : '▶'} ${addr}</td>
                     <td style="padding:12px"></td>
-                    <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${fmtFull(addrPy)}</td>
-                    <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${fmtFull(addrCy)}</td>
-                    <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${fmtFull(addrCy - addrPy)}</td>
-                    <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${addrPy > 0 ? ((addrCy / addrPy - 1) * 100).toFixed(1) + '%' : '-'}</td>
+                    <td style="padding:12px; padding-left:60px; text-align:left; color:var(--gray-700); font-size:13px">${cn}</td>
+                    <td style="padding:12px; text-align:right; color:var(--gray-600); font-size:13px; font-family:monospace">${(val).toLocaleString()}</td>
                   </tr>`;
-                  
-                  if (isAddrExpanded) {
-                    for (const cn in monthData[market][cs][addr]) {
-                      const val = monthData[market][cs][addr][cn];
-                      const pyColor = val.py >= 0 ? 'var(--gray-600)' : 'var(--red)';
-                      const cyColor = val.cy >= 0 ? 'var(--gray-600)' : 'var(--red)';
-                      const changeColor = (val.cy - val.py) >= 0 ? 'var(--gray-600)' : 'var(--red)';
-                      
-                      html += `<tr style="border-bottom:1px solid var(--gray-200)">
-                        <td style="padding:12px"></td>
-                        <td style="padding:12px"></td>
-                        <td style="padding:12px"></td>
-                        <td style="padding:12px; padding-left:60px; text-align:left; color:var(--gray-700); font-size:13px">${cn}</td>
-                        <td style="padding:12px; text-align:right; color:${pyColor}; font-size:13px; font-family:monospace">${fmtFull(val.py)}</td>
-                        <td style="padding:12px; text-align:right; color:${cyColor}; font-size:13px; font-family:monospace">${fmtFull(val.cy)}</td>
-                        <td style="padding:12px; text-align:right; color:${changeColor}; font-size:13px; font-family:monospace">${fmtFull(val.cy - val.py)}</td>
-                        <td style="padding:12px; text-align:right; color:${val.py > 0 ? (val.cy / val.py - 1) * 100 >= 0 ? 'var(--green)' : 'var(--red)' : 'var(--gray-500)'}; font-size:13px; font-family:monospace">${val.py > 0 ? ((val.cy / val.py - 1) * 100).toFixed(1) + '%' : '-'}</td>
-                      </tr>`;
-                    }
-                  }
                 }
               }
             }
@@ -786,32 +799,22 @@ function renderZEUCAccountAnalysis() {
       }
     }
     
-    return { html, totalPy, totalCy };
+    return { html, totalCy };
   }
-
-  const { html: rowsHtml, totalPy, totalCy } = renderRows();
-  const totalChange = totalCy - totalPy;
-  const totalGr = totalPy > 0 ? ((totalCy / totalPy - 1) * 100).toFixed(1) : null;
-
+  
+  const { html: rowsHtml, totalCy } = renderHierarchy();
+  
   return `
     <div class="section-title"><span class="section-num">10</span> ZEUC Account Analysis</div>
-    <div class="section-sub">고객사별 매출 분석 (CY 2025 vs 2026, H1)</div>
+    <div class="section-sub">고객사별 매출 분석 (H1 2026: Jan-Jun Total)</div>
 
     <div class="card">
       <div style="margin-bottom:16px">
-        <div style="margin-bottom:12px">
-          <strong style="font-size:12px; color:var(--gray-700)">Sales Person:</strong>
-          ${zeucSalesPersons.map(sp => `
-            <label style="margin-right:16px; font-size:12px; cursor:pointer">
-              <input type="checkbox" ${window.zeucFilterState.salesperson.includes(sp) ? 'checked' : ''} onchange="window.zeucToggleFilter=function(t,v){const idx=window.zeucFilterState[t==='sp'?'salesperson':'months'].indexOf(v);if(idx>-1){window.zeucFilterState[t==='sp'?'salesperson':'months'].splice(idx,1)}else{window.zeucFilterState[t==='sp'?'salesperson':'months'].push(v)}render()};window.zeucToggleFilter('sp','${sp}')"> ${sp}
-            </label>
-          `).join('')}
-        </div>
         <div>
-          <strong style="font-size:12px; color:var(--gray-700)">Month:</strong>
-          ${zeucMonths.map(mo => `
+          <strong style="font-size:12px; color:var(--gray-700)">Sales Person:</strong>
+          ${zeucSalesPersonsH1.map(sp => `
             <label style="margin-right:16px; font-size:12px; cursor:pointer">
-              <input type="checkbox" ${window.zeucFilterState.months.includes(mo) ? 'checked' : ''} onchange="window.zeucToggleFilter=function(t,v){const idx=window.zeucFilterState[t==='sp'?'salesperson':'months'].indexOf(v);if(idx>-1){window.zeucFilterState[t==='sp'?'salesperson':'months'].splice(idx,1)}else{window.zeucFilterState[t==='sp'?'salesperson':'months'].push(v)}render()};window.zeucToggleFilter('mo','${mo}')"> ${mo}
+              <input type="checkbox" ${window.zeucFilterStateH1.salespeople.includes(sp) ? 'checked' : ''} onchange="(function(){const idx=window.zeucFilterStateH1.salespeople.indexOf('${sp}');if(idx>-1){window.zeucFilterStateH1.salespeople.splice(idx,1)}else{window.zeucFilterStateH1.salespeople.push('${sp}')}render()})()"> ${sp}
             </label>
           `).join('')}
         </div>
@@ -821,24 +824,18 @@ function renderZEUCAccountAnalysis() {
         <table class="data-table" style="width:100%; border-collapse:collapse; font-size:13px">
           <thead>
             <tr style="background-color:var(--navy); color:var(--white); position:sticky; top:0">
-              <th style="text-align:left; padding:8px; font-weight:600; width:150px">Market Segment</th>
-              <th style="text-align:left; padding:8px; font-weight:600; width:140px">Customer Segment</th>
-              <th style="text-align:left; padding:8px; font-weight:600; width:140px">Address</th>
-              <th style="text-align:left; padding:8px; font-weight:600; flex:1">Customer Name</th>
-              <th style="text-align:right; padding:12px; font-weight:600; width:140px">CY 2025 (KRW)</th>
-              <th style="text-align:right; padding:12px; font-weight:600; width:140px">CY 2026 (KRW)</th>
-              <th style="text-align:right; padding:12px; font-weight:600; width:120px">Rev Change</th>
-              <th style="text-align:right; padding:12px; font-weight:600; width:90px">GR%</th>
+              <th style="text-align:left; padding:8px; font-weight:600; width:200px">EndUser Market Segment Name</th>
+              <th style="text-align:left; padding:8px; font-weight:600; width:200px">EndUser Customer Segment Name</th>
+              <th style="text-align:left; padding:8px; font-weight:600; width:200px">EndUser Address 1</th>
+              <th style="text-align:left; padding:8px; font-weight:600; flex:1">EndUser Customer Name 2</th>
+              <th style="text-align:right; padding:12px; font-weight:600; width:160px">Net Sales (KRW)</th>
             </tr>
           </thead>
           <tbody>
             ${rowsHtml}
             <tr style="background-color:var(--navy); color:var(--white); font-weight:600">
-              <td colspan="4" style="padding:12px">Total</td>
-              <td style="text-align:right; padding:12px; font-family:monospace">${fmtFull(totalPy)}</td>
-              <td style="text-align:right; padding:12px; font-family:monospace">${fmtFull(totalCy)}</td>
-              <td style="text-align:right; padding:12px; font-family:monospace">${fmtFull(totalChange)}</td>
-              <td style="text-align:right; padding:12px; font-family:monospace">${totalGr !== null ? totalGr + '%' : '-'}</td>
+              <td colspan="4" style="padding:12px">H1 2026 Total (Jan-Jun)</td>
+              <td style="text-align:right; padding:12px; font-family:monospace">${(totalCy).toLocaleString()}</td>
             </tr>
           </tbody>
         </table>
@@ -848,13 +845,14 @@ function renderZEUCAccountAnalysis() {
 }
 
 // ===== ZEUC TOGGLE EXPAND =====
-function toggleZEUCExpand(key) {
-  if (!window.zeucExpandState) {
-    window.zeucExpandState = {};
+function toggleZEUCExpandH1(key) {
+  if (!window.zeucExpandStateH1) {
+    window.zeucExpandStateH1 = {};
   }
-  window.zeucExpandState[key] = !window.zeucExpandState[key];
+  window.zeucExpandStateH1[key] = !window.zeucExpandStateH1[key];
   render();
 }
+
 
 // ===== CUSTOMER LIST DATA =====
 const customerListDataWithRevenue = {"Academic/Government":{"Government":{"국제백신연구소":{"국제백신연구소":{"py":225990200,"cy":69653630,"change":-156336570,"gr":-69.2}}}},"Applied Markets":{"Agri/Food Sciences":{"한국아쿠아르트":{"한국아쿠아르트 중앙연구소":{"py":3432860,"cy":1878740,"change":-1554120,"gr":-45.3}}}},"BiochemReagent Mfgrs":{"BiochemReagent":{"BiochemReagent":{"BiochemReagent":{"py":6378900,"cy":10363700,"change":3984800,"gr":62.5}}}},"Clinical":{"Clinical":{"Clinical":{"Clinical":{"py":454041280,"cy":790413742,"change":336372462,"gr":74.1}}}},"Pharma/Biotech":{"Pharma/Biotech":{"Pharma/Biotech":{"Pharma/Biotech":{"py":1684364900,"cy":2078194146,"change":393829246,"gr":23.4}}}}};
