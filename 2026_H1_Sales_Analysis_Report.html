@@ -631,12 +631,17 @@ const customerListDataWithRevenue = {"Academic/Government":{"Academic":{"DGIST":
 
 window.customerExpandState = window.customerExpandState || {};
 
+// ===== TOGGLE EXPAND FUNCTION =====
 function toggleCustomerExpand(key) {
+  if (!window.customerExpandState) {
+    window.customerExpandState = {};
+  }
   window.customerExpandState[key] = !window.customerExpandState[key];
   render();
 }
 
 // ===== RENDER CUSTOMER LIST ANALYSIS =====
+
 function renderCustomerListAnalysis() {
   if (!window.customerFilterState) {
     window.customerFilterState = {
@@ -675,11 +680,6 @@ function renderCustomerListAnalysis() {
       addresses: Array.from(addresses).sort(),
       customers: Array.from(customers).sort()
     };
-  }
-
-  function toggleExpand(key) {
-    window.customerExpandState[key] = !window.customerExpandState[key];
-    render();
   }
 
   function calculateSubtotals(market, segment, address) {
@@ -737,7 +737,7 @@ function renderCustomerListAnalysis() {
         });
       });
 
-      html += `<tr style="background-color:var(--navy); color:var(--white); font-weight:600; cursor:pointer" onclick="toggleExpand('${marketKey}')">
+      html += `<tr style="background-color:var(--navy); color:var(--white); font-weight:600; cursor:pointer" onclick="toggleCustomerExpand('${marketKey}')">
         <td style="padding:12px; text-align:left; width:140px">${isMarketExpanded ? '▼' : '▶'} ${market}</td>
         <td style="padding:12px"></td>
         <td style="padding:12px"></td>
@@ -766,7 +766,7 @@ function renderCustomerListAnalysis() {
             });
           });
 
-          html += `<tr style="background-color:var(--gray-100); font-weight:500; cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleExpand('${segKey}'); event.stopPropagation()">
+          html += `<tr style="background-color:var(--gray-100); font-weight:500; cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleCustomerExpand('${segKey}'); event.stopPropagation()">
             <td style="padding:12px; padding-left:36px; text-align:left; width:140px">${isSegExpanded ? '▼' : '▶'}</td>
             <td style="padding:12px; text-align:left; width:130px">${segment}</td>
             <td style="padding:12px"></td>
@@ -790,7 +790,7 @@ function renderCustomerListAnalysis() {
                 addrCy += custData.cy || 0;
               });
 
-              html += `<tr style="background-color:var(--white); cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleExpand('${addrKey}'); event.stopPropagation()">
+              html += `<tr style="background-color:var(--white); cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleCustomerExpand('${addrKey}'); event.stopPropagation()">
                 <td style="padding:12px"></td>
                 <td style="padding:12px"></td>
                 <td style="padding:12px; padding-left:36px; text-align:left; width:150px">${isAddrExpanded ? '▼' : '▶'} ${address}</td>
