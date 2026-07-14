@@ -675,8 +675,10 @@ function renderTopbar() {
     'Additional 1',
     'Additional 2'
   ];
+  const slideNum = String(currentSlide + 1).padStart(2, '0');
+  const totalNum = String(totalSlides).padStart(2, '0');
   return `<div class="topbar">
-    <div class="topbar-brand">Promega Korea</div>
+    <div class="topbar-brand">Promega Korea · <span style="opacity:0.7">${slideNum}/${totalNum}</span></div>
     <div class="topbar-page">${titles[currentSlide]}</div>
     <div class="topbar-info">Invoice 기준 · ZEUC Segment</div>
   </div>`;
