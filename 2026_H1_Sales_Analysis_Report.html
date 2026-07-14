@@ -630,7 +630,6 @@ function render() {
   const slides = [
     renderCover(),
     renderSalesOverview(),
-    renderSegmentTable(),
     renderSegmentHighlight('academic', 'Academic/Government', '#3A7BD5'),
     renderSegmentHighlight('pharma', 'Pharma/Biotech', '#00B894'),
     renderSegmentHighlight('clinical', 'Clinical', '#E74C3C'),
@@ -638,7 +637,8 @@ function render() {
     renderExecutiveSummary(),
     renderIssuesRisk(),
     renderAdditionalSlides1(),
-    renderAdditionalSlides2()
+    renderAdditionalSlides2(),
+    renderSegmentTable()
   ];
 
   app.innerHTML = `
@@ -663,7 +663,6 @@ function renderTopbar() {
   const titles = [
     'Cover',
     '01 Sales Overview',
-    '01-A Segment Analysis',
     '02 Academic/Government',
     '02 Pharma/Biotech',
     '02 Clinical',
@@ -671,7 +670,8 @@ function renderTopbar() {
     '04 Executive Summary',
     '05 Issues & Risk',
     'Additional 1',
-    'Additional 2'
+    'Additional 2',
+    '01-A Segment Analysis'
   ];
   const slideNum = String(currentSlide + 1).padStart(2, '0');
   const totalNum = String(totalSlides).padStart(2, '0');
