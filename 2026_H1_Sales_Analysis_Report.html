@@ -646,6 +646,9 @@ function renderCustomerListAnalysis() {
       customer: ''
     };
   }
+  if (!window.customerExpandState) {
+    window.customerExpandState = {};
+  }
 
   function getFilterOptions() {
     const markets = new Set();
@@ -674,95 +677,161 @@ function renderCustomerListAnalysis() {
     };
   }
 
-  function getFilteredData() {
+  function toggleExpand(key) {
+    window.customerExpandState[key] = !window.customerExpandState[key];
+    render();
+  }
+
+  function calculateSubtotals(market, segment, address) {
+    const data = customerListDataWithRevenue[market];
+    if (!data) return { py: 0, cy: 0, change: 0, gr: null };
+
+    let totPy = 0, totCy = 0;
+    Object.entries(data[segment] || {}).forEach(([addr, addrData]) => {
+      if (address && addr !== address) return;
+      Object.entries(addrData).forEach(([cust, custData]) => {
+        totPy += custData.py || 0;
+        totCy += custData.cy || 0;
+      });
+    });
+
+    return {
+      py: totPy,
+      cy: totCy,
+      change: totCy - totPy,
+      gr: totPy > 0 ? (((totCy / totPy) - 1) * 100) : null
+    };
+  }
+
+  function formatRevenue(value, isGr = false) {
+    if (isGr) {
+      return value !== null ? value.toFixed(1) + '%' : '-';
+    }
+    return fmtFull(value);
+  }
+
+  function getRevenueColor(value, isGr = false) {
+    if (isGr) return (value !== null && value >= 0) ? 'var(--green)' : 'var(--red)';
+    return value >= 0 ? 'var(--gray-600)' : 'var(--red)';
+  }
+
+  function renderRows() {
     const state = window.customerFilterState;
-    const filtered = [];
+    const expandState = window.customerExpandState;
+    let html = '';
     let totalPy = 0, totalCy = 0;
 
     Object.entries(customerListDataWithRevenue).forEach(([market, marketData]) => {
       if (state.market && market !== state.market) return;
 
+      const marketKey = `market_${market}`;
+      const isMarketExpanded = expandState[marketKey];
+
+      let marketPy = 0, marketCy = 0;
       Object.entries(marketData).forEach(([segment, segmentData]) => {
-        if (state.segment && segment !== state.segment) return;
-
         Object.entries(segmentData).forEach(([address, addressData]) => {
-          if (state.address && address !== state.address) return;
-
-          Object.entries(addressData).forEach(([customer, data]) => {
-            if (state.customer && customer !== state.customer) return;
-
-            filtered.push({
-              market,
-              segment,
-              address,
-              customer,
-              py: data.py || 0,
-              cy: data.cy || 0,
-              change: data.change || 0,
-              gr: data.gr
-            });
-
-            totalPy += data.py || 0;
-            totalCy += data.cy || 0;
+          Object.entries(addressData).forEach(([customer, custData]) => {
+            marketPy += custData.py || 0;
+            marketCy += custData.cy || 0;
           });
         });
       });
-    });
 
-    return { filtered, totalPy, totalCy };
-  }
-
-  function renderRows() {
-    const { filtered } = getFilteredData();
-    let html = '';
-    let prevMarket = '', prevSegment = '', prevAddress = '';
-
-    filtered.forEach(row => {
-      const showMarket = row.market !== prevMarket;
-      const showSegment = row.segment !== prevSegment;
-      const showAddress = row.address !== prevAddress;
-
-      const pyColor = row.py >= 0 ? 'var(--gray-600)' : 'var(--red)';
-      const cyColor = row.cy >= 0 ? 'var(--gray-600)' : 'var(--red)';
-      const changeColor = row.change >= 0 ? 'var(--green)' : 'var(--red)';
-      const grColor = (row.gr !== null && row.gr >= 0) ? 'var(--green)' : 'var(--red)';
-
-      html += `<tr style="border-bottom:1px solid var(--gray-200)">
-        <td style="padding:10px 12px; text-align:left; font-weight:${showMarket ? '600' : '400'}; background-color:${showMarket ? 'var(--gray-50)' : 'var(--white)'}">
-          ${showMarket ? row.market : ''}
-        </td>
-        <td style="padding:10px 12px; text-align:left; font-weight:${showSegment ? '500' : '400'}; background-color:${showSegment ? 'var(--gray-100)' : 'var(--white)'}">
-          ${showSegment ? row.segment : ''}
-        </td>
-        <td style="padding:10px 12px; text-align:left; color:var(--gray-700); background-color:${showAddress ? 'var(--gray-50)' : 'var(--white)'}">
-          ${showAddress ? row.address : ''}
-        </td>
-        <td style="padding:10px 12px; text-align:left; color:var(--gray-700); font-size:13px">
-          ${row.customer}
-        </td>
-        <td style="padding:10px 12px; text-align:right; color:${pyColor}; font-size:13px; font-family:monospace">
-          ${fmtFull(row.py)}
-        </td>
-        <td style="padding:10px 12px; text-align:right; color:${cyColor}; font-size:13px; font-family:monospace">
-          ${fmtFull(row.cy)}
-        </td>
-        <td style="padding:10px 12px; text-align:right; color:${changeColor}; font-size:13px; font-family:monospace">
-          ${fmtFull(row.change)}
-        </td>
-        <td style="padding:10px 12px; text-align:right; color:${grColor}; font-size:13px; font-family:monospace">
-          ${row.gr !== null ? row.gr.toFixed(1) + '%' : '-'}
-        </td>
+      html += `<tr style="background-color:var(--navy); color:var(--white); font-weight:600; cursor:pointer" onclick="toggleExpand('${marketKey}')">
+        <td style="padding:12px; text-align:left; width:140px">${isMarketExpanded ? '▼' : '▶'} ${market}</td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(marketPy)}</td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(marketCy)}</td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(marketCy - marketPy)}</td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(marketPy > 0 ? (((marketCy / marketPy) - 1) * 100) : null, true)}</td>
       </tr>`;
 
-      prevMarket = row.market;
-      prevSegment = row.segment;
-      prevAddress = row.address;
+      totalPy += marketPy;
+      totalCy += marketCy;
+
+      if (isMarketExpanded) {
+        Object.entries(marketData).forEach(([segment, segmentData]) => {
+          if (state.segment && segment !== state.segment) return;
+
+          const segKey = `seg_${market}_${segment}`;
+          const isSegExpanded = expandState[segKey];
+
+          let segPy = 0, segCy = 0;
+          Object.entries(segmentData).forEach(([address, addressData]) => {
+            Object.entries(addressData).forEach(([customer, custData]) => {
+              segPy += custData.py || 0;
+              segCy += custData.cy || 0;
+            });
+          });
+
+          html += `<tr style="background-color:var(--gray-100); font-weight:500; cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleExpand('${segKey}'); event.stopPropagation()">
+            <td style="padding:12px; padding-left:36px; text-align:left; width:140px">${isSegExpanded ? '▼' : '▶'}</td>
+            <td style="padding:12px; text-align:left; width:130px">${segment}</td>
+            <td style="padding:12px"></td>
+            <td style="padding:12px"></td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(segPy)}</td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(segCy)}</td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(segCy - segPy)}</td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(segPy > 0 ? (((segCy / segPy) - 1) * 100) : null, true)}</td>
+          </tr>`;
+
+          if (isSegExpanded) {
+            Object.entries(segmentData).forEach(([address, addressData]) => {
+              if (state.address && address !== state.address) return;
+
+              const addrKey = `addr_${market}_${segment}_${address}`;
+              const isAddrExpanded = expandState[addrKey];
+
+              let addrPy = 0, addrCy = 0;
+              Object.entries(addressData).forEach(([customer, custData]) => {
+                addrPy += custData.py || 0;
+                addrCy += custData.cy || 0;
+              });
+
+              html += `<tr style="background-color:var(--white); cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleExpand('${addrKey}'); event.stopPropagation()">
+                <td style="padding:12px"></td>
+                <td style="padding:12px"></td>
+                <td style="padding:12px; padding-left:36px; text-align:left; width:150px">${isAddrExpanded ? '▼' : '▶'} ${address}</td>
+                <td style="padding:12px"></td>
+                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${formatRevenue(addrPy)}</td>
+                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${formatRevenue(addrCy)}</td>
+                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${formatRevenue(addrCy - addrPy)}</td>
+                <td style="padding:12px; text-align:right; font-family:monospace; color:var(--gray-600)">${formatRevenue(addrPy > 0 ? (((addrCy / addrPy) - 1) * 100) : null, true)}</td>
+              </tr>`;
+
+              if (isAddrExpanded) {
+                Object.entries(addressData).forEach(([customer, custData]) => {
+                  if (state.customer && customer !== state.customer) return;
+
+                  const pyColor = getRevenueColor(custData.py || 0);
+                  const cyColor = getRevenueColor(custData.cy || 0);
+                  const changeColor = getRevenueColor((custData.cy || 0) - (custData.py || 0));
+                  const grColor = getRevenueColor(custData.gr, true);
+
+                  html += `<tr style="border-bottom:1px solid var(--gray-200)">
+                    <td style="padding:12px"></td>
+                    <td style="padding:12px"></td>
+                    <td style="padding:12px"></td>
+                    <td style="padding:12px; padding-left:60px; text-align:left; color:var(--gray-700); font-size:13px">${customer}</td>
+                    <td style="padding:12px; text-align:right; color:${pyColor}; font-size:13px; font-family:monospace">${formatRevenue(custData.py || 0)}</td>
+                    <td style="padding:12px; text-align:right; color:${cyColor}; font-size:13px; font-family:monospace">${formatRevenue(custData.cy || 0)}</td>
+                    <td style="padding:12px; text-align:right; color:${changeColor}; font-size:13px; font-family:monospace">${formatRevenue((custData.cy || 0) - (custData.py || 0))}</td>
+                    <td style="padding:12px; text-align:right; color:${grColor}; font-size:13px; font-family:monospace">${formatRevenue(custData.gr, true)}</td>
+                  </tr>`;
+                });
+              }
+            });
+          }
+        });
+      }
     });
 
-    return html;
+    return { html, totalPy, totalCy };
   }
 
-  const { filtered, totalPy, totalCy } = getFilteredData();
+  const { html: rowsHtml, totalPy, totalCy } = renderRows();
   const options = getFilterOptions();
   const state = window.customerFilterState;
   const totalChange = totalCy - totalPy;
@@ -820,7 +889,7 @@ function renderCustomerListAnalysis() {
             </tr>
           </thead>
           <tbody>
-            ${renderRows()}
+            ${rowsHtml}
             <tr style="background-color:var(--navy); color:var(--white); font-weight:600">
               <td colspan="4" style="padding:12px">Total</td>
               <td style="text-align:right; padding:12px; font-family:monospace">${fmtFull(totalPy)}</td>
