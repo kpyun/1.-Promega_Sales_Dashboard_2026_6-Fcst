@@ -562,7 +562,7 @@ const chgSign = (v) => v > 0 ? '+' : '';
 
 // ===== STATE =====
 let currentSlide = 0;
-const totalSlides = 11;
+const totalSlides = 12;
 let editData = {};
 let saveTimers = {};
 let tableRows = {};
@@ -621,6 +621,193 @@ function startEdit(sectionId) {
 function saveEdit(sectionId) {
   showSaveIndicator(sectionId);
   editingSection = null;
+  render();
+}
+
+// ===== ZEUC ACCOUNT DATA =====
+const zeucAccountData = {"#":{"Forensic & Paternity":{"Forensic & Paternity":{"py":4983233450,"cy":5333272100,"change":350038650,"gr":7.02}}},"Capital_All":{"Distributors":{"Distributor/Reseller":{"py":1214509920,"cy":362419275,"change":-852090645,"gr":-70.16}}},"Ho-Young Kim":{"Academic/Government":{"Academic":{"py":1229358370,"cy":568922640,"change":-660435730,"gr":-53.72},"Government":{"py":2456372746,"cy":1540417660,"change":-915955086,"gr":-37.29}},"Applied Markets":{"Agri/Food Sciences":{"py":16357160,"cy":5191800,"change":-11165360,"gr":-68.26},"Personal Care":{"py":1320000,"cy":0,"change":-1320000,"gr":-100}},"BiochemReagent Mfgrs":{"Life Science":{"py":11227260,"cy":0,"change":-11227260,"gr":-100}},"Clinical":{"Diagnostics Mfg":{"py":95700000,"cy":26800000,"change":-68900000,"gr":-72},"Hospital":{"py":4558212,"cy":3552700,"change":-1005512,"gr":-22.06}},"Distributors":{"Distributor/Reseller":{"py":1046629030,"cy":449320540,"change":-597308490,"gr":-57.07}},"Forensic & Paternity":{"Forensic & Paternity":{"py":3394600,"cy":651150,"change":-2743450,"gr":-80.82}},"Pharma/Biotech":{"Biotechnology":{"py":752520652,"cy":467119660,"change":-285400992,"gr":-37.93},"ContractResearch Org":{"py":123865530,"cy":52405350,"change":-71460180,"gr":-57.69},"Pharmaceutical":{"py":118212170,"cy":38448750,"change":-79763420,"gr":-67.47}}},"Hyeong-Joon Kim":{"Academic/Government":{"Academic":{"py":1855810353,"cy":773773201,"change":-1082037152,"gr":-58.31},"Government":{"py":315486137,"cy":226587694,"change":-88898443,"gr":-28.18}},"Applied Markets":{"Agri/Food Sciences":{"py":15538650,"cy":8927620,"change":-6611030,"gr":-42.55},"Enviro Sciences":{"py":5000040,"cy":1346250,"change":-3653790,"gr":-73.08},"Personal Care":{"py":280360,"cy":4364120,"change":4083760,"gr":1456.61},"Veterinary Sciences":{"py":591750,"cy":0,"change":-591750,"gr":-100}},"Clinical":{"Diagnostics Mfg":{"py":8345980,"cy":4529850,"change":-3816130,"gr":-45.72},"Hospital":{"py":68668320,"cy":14430400,"change":-54237920,"gr":-78.99},"Ref & Testing Lab":{"py":79039360,"cy":41843290,"change":-37196070,"gr":-47.06}},"Forensic & Paternity":{"Forensic & Paternity":{"py":121866620,"cy":24937641,"change":-96928979,"gr":-79.54}},"Pharma/Biotech":{"Biotechnology":{"py":798888060,"cy":776146804,"change":-22741256,"gr":-2.85},"ContractResearch Org":{"py":465750,"cy":1224000,"change":758250,"gr":162.8},"Pharmaceutical":{"py":455422230,"cy":159084350,"change":-296337880,"gr":-65.07}}},"Jung-Ah Kim":{"Forensic & Paternity":{"Forensic & Paternity":{"py":721401300,"cy":179004546,"change":-542396754,"gr":-75.19}}},"Junseong Yun":{"Academic/Government":{"Academic":{"py":478622810,"cy":260662600,"change":-217960210,"gr":-45.54},"Government":{"py":320403690,"cy":223781560,"change":-96622130,"gr":-30.16}},"Applied Markets":{"Agri/Food Sciences":{"py":16317120,"cy":15319610,"change":-997510,"gr":-6.11},"Personal Care":{"py":1038400,"cy":2041500,"change":1003100,"gr":96.6},"Veterinary Sciences":{"py":31549600,"cy":738750,"change":-30810850,"gr":-97.66}},"Clinical":{"Diagnostics Mfg":{"py":215018478,"cy":117563100,"change":-97455378,"gr":-45.32},"Ref & Testing Lab":{"py":79416480,"cy":14913000,"change":-64503480,"gr":-81.22}},"Forensic & Paternity":{"Forensic & Paternity":{"py":222000,"cy":0,"change":-222000,"gr":-100}},"Pharma/Biotech":{"Biotechnology":{"py":1597103804,"cy":813435661,"change":-783668143,"gr":-49.07},"ContractResearch Org":{"py":27448100,"cy":11806670,"change":-15641430,"gr":-56.99},"Pharmaceutical":{"py":1094125820,"cy":642254324,"change":-451871496,"gr":-41.3}}},"Kyung-Hyun Pyun":{"Academic/Government":{"Academic":{"py":374740890,"cy":68258630,"change":-306482260,"gr":-81.79},"Government":{"py":2443500,"cy":1395000,"change":-1048500,"gr":-42.91}},"Applied Markets":{"Agri/Food Sciences":{"py":1419860,"cy":1190240,"change":-229620,"gr":-16.17},"Personal Care":{"py":2203920,"cy":100500,"change":-2103420,"gr":-95.44},"Veterinary Sciences":{"py":0,"cy":588000,"change":588000,"gr":null}},"BiochemReagent Mfgrs":{"Life Science":{"py":125909580,"cy":10363700,"change":-115545880,"gr":-91.77}},"Clinical":{"Hospital":{"py":244742124,"cy":123733724,"change":-121008400,"gr":-49.44},"Ref & Testing Lab":{"py":147207092,"cy":237066864,"change":89859772,"gr":61.04}},"Pharma/Biotech":{"Biotechnology":{"py":746524523,"cy":386756392,"change":-359768131,"gr":-48.19},"ContractResearch Org":{"py":503155990,"cy":376497444,"change":-126658546,"gr":-25.17},"Pharmaceutical":{"py":2683427310,"cy":1314493190,"change":-1368934120,"gr":-51.01}}},"Kyung-Hyun Pyun_CDx":{"Clinical":{"Diagnostics Mfg":{"py":487511330,"cy":155209690,"change":-332301640,"gr":-68.16},"Hospital":{"py":241271220,"cy":274403464,"change":33132244,"gr":13.73}},"Pharma/Biotech":{"Biotechnology":{"py":4356642,"cy":447120,"change":-3909522,"gr":-89.74}}}};
+
+// ===== GLOBAL EXPAND STATE =====
+window.zeucExpandState = window.zeucExpandState || {};
+
+// ===== RENDER ZEUC ACCOUNT ANALYSIS =====
+function renderZEUCAccountAnalysis() {
+  if (!window.zeucFilterState) {
+    window.zeucFilterState = {
+      salesperson: '',
+      market: ''
+    };
+  }
+  if (!window.zeucExpandState) {
+    window.zeucExpandState = {};
+  }
+
+  function getFilterOptions() {
+    const salespeople = new Set();
+    const markets = new Set();
+
+    Object.entries(zeucAccountData).forEach(([sp, spData]) => {
+      salespeople.add(sp);
+      Object.entries(spData).forEach(([market]) => {
+        markets.add(market);
+      });
+    });
+
+    return {
+      salespeople: Array.from(salespeople).sort(),
+      markets: Array.from(markets).sort()
+    };
+  }
+
+  function formatRevenue(value, isGr = false) {
+    if (isGr) {
+      return value !== null ? value.toFixed(1) + '%' : '-';
+    }
+    return fmtFull(value);
+  }
+
+  function getRevenueColor(value, isGr = false) {
+    if (isGr) return (value !== null && value >= 0) ? 'var(--green)' : 'var(--red)';
+    return value >= 0 ? 'var(--gray-600)' : 'var(--red)';
+  }
+
+  function renderRows() {
+    const state = window.zeucFilterState;
+    const expandState = window.zeucExpandState;
+    let html = '';
+    let totalPy = 0, totalCy = 0;
+
+    Object.entries(zeucAccountData).forEach(([salesperson, spData]) => {
+      if (state.salesperson && salesperson !== state.salesperson) return;
+
+      const spKey = `sp_${salesperson}`;
+      const isSpExpanded = expandState[spKey];
+
+      let spPy = 0, spCy = 0;
+      Object.entries(spData).forEach(([market, marketData]) => {
+        Object.entries(marketData).forEach(([custSeg, custData]) => {
+          spPy += custData.py || 0;
+          spCy += custData.cy || 0;
+        });
+      });
+
+      html += `<tr style="background-color:var(--navy); color:var(--white); font-weight:600; cursor:pointer" onclick="toggleZEUCExpand('${spKey}')">
+        <td style="padding:12px; text-align:left; width:160px">${isSpExpanded ? '▼' : '▶'} ${salesperson}</td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px"></td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(spPy)}</td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(spCy)}</td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(spCy - spPy)}</td>
+        <td style="padding:12px; text-align:right; font-family:monospace">${formatRevenue(spPy > 0 ? (((spCy / spPy) - 1) * 100) : null, true)}</td>
+      </tr>`;
+
+      totalPy += spPy;
+      totalCy += spCy;
+
+      if (isSpExpanded) {
+        Object.entries(spData).forEach(([market, marketData]) => {
+          if (state.market && market !== state.market) return;
+
+          const mktKey = `mkt_${salesperson}_${market}`;
+          const isMktExpanded = expandState[mktKey];
+
+          let mktPy = 0, mktCy = 0;
+          Object.entries(marketData).forEach(([custSeg, custData]) => {
+            mktPy += custData.py || 0;
+            mktCy += custData.cy || 0;
+          });
+
+          html += `<tr style="background-color:var(--gray-100); font-weight:500; cursor:pointer; border-bottom:1px solid var(--gray-200)" onclick="toggleZEUCExpand('${mktKey}'); event.stopPropagation()">
+            <td style="padding:12px"></td>
+            <td style="padding:12px; padding-left:36px; text-align:left; width:150px">${isMktExpanded ? '▼' : '▶'} ${market}</td>
+            <td style="padding:12px"></td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(mktPy)}</td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(mktCy)}</td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(mktCy - mktPy)}</td>
+            <td style="padding:12px; text-align:right; font-family:monospace; color:var(--blue)">${formatRevenue(mktPy > 0 ? (((mktCy / mktPy) - 1) * 100) : null, true)}</td>
+          </tr>`;
+
+          if (isMktExpanded) {
+            Object.entries(marketData).forEach(([custSeg, custData]) => {
+              const pyColor = getRevenueColor(custData.py || 0);
+              const cyColor = getRevenueColor(custData.cy || 0);
+              const changeColor = getRevenueColor((custData.cy || 0) - (custData.py || 0));
+              const grColor = getRevenueColor(custData.gr, true);
+
+              html += `<tr style="border-bottom:1px solid var(--gray-200)">
+                <td style="padding:12px"></td>
+                <td style="padding:12px"></td>
+                <td style="padding:12px; padding-left:60px; text-align:left; color:var(--gray-700); font-size:13px">${custSeg}</td>
+                <td style="padding:12px; text-align:right; color:${pyColor}; font-size:13px; font-family:monospace">${formatRevenue(custData.py || 0)}</td>
+                <td style="padding:12px; text-align:right; color:${cyColor}; font-size:13px; font-family:monospace">${formatRevenue(custData.cy || 0)}</td>
+                <td style="padding:12px; text-align:right; color:${changeColor}; font-size:13px; font-family:monospace">${formatRevenue((custData.cy || 0) - (custData.py || 0))}</td>
+                <td style="padding:12px; text-align:right; color:${grColor}; font-size:13px; font-family:monospace">${formatRevenue(custData.gr, true)}</td>
+              </tr>`;
+            });
+          }
+        });
+      }
+    });
+
+    return { html, totalPy, totalCy };
+  }
+
+  const { html: rowsHtml, totalPy, totalCy } = renderRows();
+  const options = getFilterOptions();
+  const state = window.zeucFilterState;
+  const totalChange = totalCy - totalPy;
+  const totalGr = totalPy > 0 ? ((totalCy / totalPy - 1) * 100).toFixed(1) : null;
+
+  return `
+    <div class="section-title"><span class="section-num">10</span> ZEUC Account Analysis</div>
+    <div class="section-sub">End User Customer별 매출 분석 (2025 vs 2026)</div>
+
+    <div class="card">
+      <div style="overflow-x:auto">
+        <table class="data-table" style="width:100%; border-collapse:collapse; font-size:13px">
+          <thead>
+            <tr style="background-color:var(--navy); color:var(--white); position:sticky; top:0">
+              <th style="text-align:left; padding:8px; font-weight:600; width:160px">
+                <select onchange="window.zeucFilterState.salesperson=this.value; render()" style="width:100%; padding:6px; border:1px solid var(--gray-400); border-radius:3px; font-size:12px; background-color:var(--navy); color:var(--white)">
+                  <option value="">Sales Person</option>
+                  ${options.salespeople.map(sp => `<option value="${sp}" ${state.salesperson === sp ? 'selected' : ''}>${sp}</option>`).join('')}
+                </select>
+              </th>
+              <th style="text-align:left; padding:8px; font-weight:600; width:150px">
+                <select onchange="window.zeucFilterState.market=this.value; render()" style="width:100%; padding:6px; border:1px solid var(--gray-400); border-radius:3px; font-size:12px; background-color:var(--navy); color:var(--white)">
+                  <option value="">Market Segment</option>
+                  ${options.markets.map(m => `<option value="${m}" ${state.market === m ? 'selected' : ''}>${m}</option>`).join('')}
+                </select>
+              </th>
+              <th style="text-align:left; padding:8px; font-weight:600; flex:1">Customer Segment</th>
+              <th style="text-align:right; padding:12px; font-weight:600; width:140px">CY 2025 (KRW)</th>
+              <th style="text-align:right; padding:12px; font-weight:600; width:140px">CY 2026 (KRW)</th>
+              <th style="text-align:right; padding:12px; font-weight:600; width:120px">Rev Change</th>
+              <th style="text-align:right; padding:12px; font-weight:600; width:90px">GR%</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+            <tr style="background-color:var(--navy); color:var(--white); font-weight:600">
+              <td colspan="3" style="padding:12px">Total</td>
+              <td style="text-align:right; padding:12px; font-family:monospace">${fmtFull(totalPy)}</td>
+              <td style="text-align:right; padding:12px; font-family:monospace">${fmtFull(totalCy)}</td>
+              <td style="text-align:right; padding:12px; font-family:monospace">${fmtFull(totalChange)}</td>
+              <td style="text-align:right; padding:12px; font-family:monospace">${totalGr !== null ? totalGr + '%' : '-'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ===== ZEUC TOGGLE EXPAND =====
+function toggleZEUCExpand(key) {
+  if (!window.zeucExpandState) {
+    window.zeucExpandState = {};
+  }
+  window.zeucExpandState[key] = !window.zeucExpandState[key];
   render();
 }
 
@@ -907,6 +1094,7 @@ function render() {
     renderIssuesRisk(),
     renderAdditionalSlides1(),
     renderAdditionalSlides2(),
+    renderZEUCAccountAnalysis(),
     renderCustomerListAnalysis()
   ];
 
@@ -940,7 +1128,8 @@ function renderTopbar() {
     '05 Issues & Risk',
     'Additional 1',
     'Additional 2',
-    '고객사 리스트 및 매출 분석'
+    '10 ZEUC Account Analysis',
+    '11 고객사 리스트 및 매출 분석'
   ];
   const slideNum = String(currentSlide + 1).padStart(2, '0');
   const totalNum = String(totalSlides).padStart(2, '0');
