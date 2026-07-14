@@ -637,59 +637,42 @@ function toggleCustomerExpand(key) {
 
 // ===== RENDER CUSTOMER LIST ANALYSIS =====
 function renderCustomerListAnalysis() {
-  const expandState = window.customerExpandState;
-
-  function renderMarketRows() {
+  function renderRows() {
     let html = '';
+    let prevMarket = '', prevSegment = '', prevAddress = '';
+
     Object.entries(customerListData).forEach(([market, marketData]) => {
-      const mKey = `market_${market}`;
-      const isExpanded = expandState[mKey];
+      Object.entries(marketData.segments || {}).forEach(([segment, segmentData]) => {
+        Object.entries(segmentData.addresses || {}).forEach(([address, addressData]) => {
+          Object.entries(addressData.customers || {}).forEach(([customer, sales]) => {
+            const showMarket = market !== prevMarket;
+            const showSegment = segment !== prevSegment;
+            const showAddress = address !== prevAddress;
 
-      html += `<tr class="level-1-row" style="background-color:var(--gray-50); font-weight:600; cursor:pointer" onclick="toggleCustomerExpand('${mKey}')">
-        <td style="padding-left:12px">${isExpanded ? '▼' : '▶'} ${market}</td>
-        <td></td>
-        <td></td>
-        <td style="text-align:right; font-weight:600">${fmtFull(marketData.total)}</td>
-      </tr>`;
+            html += `<tr style="border-bottom:1px solid var(--gray-200)">
+              <td style="padding:10px 12px; font-weight:${showMarket ? '600' : '400'}; background-color:${showMarket ? 'var(--gray-50)' : 'var(--white)'}">
+                ${showMarket ? market : ''}
+              </td>
+              <td style="padding:10px 12px; font-weight:${showSegment ? '500' : '400'}; background-color:${showSegment ? 'var(--gray-100)' : 'var(--white)'}">
+                ${showSegment ? segment : ''}
+              </td>
+              <td style="padding:10px 12px; color:var(--gray-700); background-color:${showAddress ? 'var(--gray-50)' : 'var(--white)'}">
+                ${showAddress ? address : ''}
+              </td>
+              <td style="padding:10px 12px; color:var(--gray-700); font-size:13px">
+                ${customer}
+              </td>
+              <td style="padding:10px 12px; text-align:right; color:var(--gray-600); font-size:13px; background-color:var(--gray-50)">
+                ${fmtFull(sales)}
+              </td>
+            </tr>`;
 
-      if (isExpanded && marketData.segments) {
-        Object.entries(marketData.segments).forEach(([segment, segmentData]) => {
-          const sKey = `segment_${market}_${segment}`;
-          const sIsExpanded = expandState[sKey];
-
-          html += `<tr class="level-2-row" style="background-color:var(--gray-100); cursor:pointer" onclick="toggleCustomerExpand('${sKey}'); event.stopPropagation()">
-            <td style="padding-left:36px">${sIsExpanded ? '▼' : '▶'} ${segment}</td>
-            <td></td>
-            <td></td>
-            <td style="text-align:right; font-weight:500; color:var(--blue)">${fmtFull(segmentData.total)}</td>
-          </tr>`;
-
-          if (sIsExpanded && segmentData.addresses) {
-            Object.entries(segmentData.addresses).forEach(([address, addressData]) => {
-              const aKey = `address_${market}_${segment}_${address}`;
-              const aIsExpanded = expandState[aKey];
-
-              html += `<tr class="level-3-row" style="background-color:var(--white); cursor:pointer" onclick="toggleCustomerExpand('${aKey}'); event.stopPropagation()">
-                <td style="padding-left:60px">${aIsExpanded ? '▼' : '▶'} ${address}</td>
-                <td></td>
-                <td></td>
-                <td style="text-align:right; color:var(--gray-700)">${fmtFull(addressData.total)}</td>
-              </tr>`;
-
-              if (aIsExpanded && addressData.customers) {
-                Object.entries(addressData.customers).forEach(([customer, sales]) => {
-                  html += `<tr class="level-4-row" style="border-bottom:1px solid var(--gray-200)">
-                    <td style="padding-left:84px; color:var(--gray-700); font-size:13px">${customer}</td>
-                    <td></td>
-                    <td></td>
-                    <td style="text-align:right; color:var(--gray-600); font-size:13px">${fmtFull(sales)}</td>
-                  </tr>`;
-                });
-              }
-            });
-          }
+            prevMarket = market;
+            prevSegment = segment;
+            prevAddress = address;
+          });
         });
-      }
+      });
     });
 
     return html;
@@ -699,24 +682,23 @@ function renderCustomerListAnalysis() {
 
   return `
     <div class="section-title"><span class="section-num">11</span> 고객사 리스트 및 매출 분석</div>
-    <div class="section-sub">Market Segment별 EndUser 고객사 매출 현황 (2026년 H1 기준)</div>
+    <div class="section-sub">EndUser Market Segment별 고객사 매출 현황 (2026년 H1 기준)</div>
 
     <div class="card" style="overflow-x:auto">
-      <table class="data-table" style="width:100%; border-collapse:collapse">
+      <table class="data-table" style="width:100%; border-collapse:collapse; font-size:13px">
         <thead>
-          <tr style="background-color:var(--navy); color:var(--white)">
-            <th style="text-align:left; padding:12px; font-weight:600">Market Segment / Customer Segment / Address / Customer</th>
-            <th style="text-align:center; padding:12px; font-weight:600; width:100px"></th>
-            <th style="text-align:center; padding:12px; font-weight:600; width:100px"></th>
-            <th style="text-align:right; padding:12px; font-weight:600; width:150px">Net Sales (KRW)</th>
+          <tr style="background-color:var(--navy); color:var(--white); position:sticky; top:0">
+            <th style="text-align:left; padding:12px; font-weight:600; width:150px">Market Segment</th>
+            <th style="text-align:left; padding:12px; font-weight:600; width:140px">Customer Segment</th>
+            <th style="text-align:left; padding:12px; font-weight:600; width:160px">Address</th>
+            <th style="text-align:left; padding:12px; font-weight:600; flex:1">Customer Name</th>
+            <th style="text-align:right; padding:12px; font-weight:600; width:140px">Net Sales (KRW)</th>
           </tr>
         </thead>
         <tbody>
-          ${renderMarketRows()}
-          <tr class="total-row" style="background-color:var(--navy); color:var(--white); font-weight:600">
-            <td style="padding:12px">Total</td>
-            <td></td>
-            <td></td>
+          ${renderRows()}
+          <tr style="background-color:var(--navy); color:var(--white); font-weight:600">
+            <td colspan="4" style="padding:12px">Total</td>
             <td style="text-align:right; padding:12px">${fmtFull(totalSales)}</td>
           </tr>
         </tbody>
