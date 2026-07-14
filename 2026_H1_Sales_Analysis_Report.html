@@ -852,25 +852,9 @@ function renderCustomerListAnalysis() {
                   ${options.markets.map(m => `<option value="${m}" ${state.market === m ? 'selected' : ''}>${m}</option>`).join('')}
                 </select>
               </th>
-              <th style="text-align:left; padding:8px; font-weight:600; width:130px">
-                <select onchange="window.customerFilterState.segment=this.value; render()" style="width:100%; padding:6px; border:1px solid var(--gray-400); border-radius:3px; font-size:12px; background-color:var(--navy); color:var(--white)">
-                  <option value="">Customer Segment</option>
-                  ${options.segments.map(s => `<option value="${s}" ${state.segment === s ? 'selected' : ''}>${s}</option>`).join('')}
-                </select>
-              </th>
-              <th style="text-align:left; padding:8px; font-weight:600; width:150px">
-                <select onchange="window.customerFilterState.address=this.value; render()" style="width:100%; padding:6px; border:1px solid var(--gray-400); border-radius:3px; font-size:12px; background-color:var(--navy); color:var(--white)">
-                  <option value="">Address</option>
-                  ${options.addresses.map(a => `<option value="${a}" ${state.address === a ? 'selected' : ''}>${a}</option>`).join('')}
-                </select>
-              </th>
-              <th style="text-align:left; padding:8px; font-weight:600; flex:1; display:flex; align-items:center; gap:8px">
-                <select onchange="window.customerFilterState.customer=this.value; render()" style="flex:1; padding:6px; border:1px solid var(--gray-400); border-radius:3px; font-size:12px; background-color:var(--navy); color:var(--white)">
-                  <option value="">Customer Name</option>
-                  ${options.customers.map(c => `<option value="${c}" ${state.customer === c ? 'selected' : ''}>${c}</option>`).join('')}
-                </select>
-                <button onclick="window.customerFilterState={market:'',segment:'',address:'',customer:''}; render()" style="padding:6px 12px; background:var(--gray-300); color:var(--navy); border:none; border-radius:3px; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap">Reset</button>
-              </th>
+              <th style="text-align:left; padding:12px; font-weight:600; width:130px">Customer Segment</th>
+              <th style="text-align:left; padding:12px; font-weight:600; width:150px">Address</th>
+              <th style="text-align:left; padding:12px; font-weight:600; flex:1">Customer Name</th>
               <th style="text-align:right; padding:12px; font-weight:600; width:140px">PY Rev. (KRW)</th>
               <th style="text-align:right; padding:12px; font-weight:600; width:140px">CY Rev. (KRW)</th>
               <th style="text-align:right; padding:12px; font-weight:600; width:120px">Rev Change</th>
