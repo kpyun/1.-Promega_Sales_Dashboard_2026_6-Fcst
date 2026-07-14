@@ -556,7 +556,7 @@ const fmt = (v) => {
   return m.toFixed(1) + 'M';
 };
 const fmtFull = (v) => v.toLocaleString('ko-KR');
-const fmtPct = (py, cy) => py === 0 ? '-' : (cy / py * 100).toFixed(1) + '%';
+const fmtPct = (py, cy) => py === 0 ? '-' : ((cy / py - 1) * 100).toFixed(1) + '%';
 const chgClass = (v) => v > 0 ? 'val-pos' : v < 0 ? 'val-neg' : '';
 const chgSign = (v) => v > 0 ? '+' : '';
 
